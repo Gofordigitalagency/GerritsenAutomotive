@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerritsen Automotive</title>
 
-    <link rel="icon" type="{{ asset('images/logo.png') }}" href="/favicon.png">
+    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
 
     <link rel="stylesheet" href="{{ asset('css/occasions.css') }}">
     <script src="{{ asset('js/occasions.js') }}" defer></script>
