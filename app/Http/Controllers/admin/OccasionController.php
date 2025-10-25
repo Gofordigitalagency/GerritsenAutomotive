@@ -4,6 +4,8 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Occasion;
+use App\Http\Requests\StoreOccasionRequest;
+use App\Rules\TotalUploadSize;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
@@ -29,9 +31,9 @@ class OccasionController extends Controller
     }
 
     /* ===== Store ===== */
-    public function store(Request $r)
+    public function store(StoreOccasionRequest $request)
     {
-        $data = $this->validateData($r);
+        $data = $request->validated();
 
         // Textareas -> arrays (opties)
         $data['exterieur_options'] = $this->linesToArray($data['exterieur_options_text'] ?? null);
@@ -46,14 +48,14 @@ class OccasionController extends Controller
         );
 
         // Hoofdfoto
-        if ($r->hasFile('hoofdfoto')) {
-            $data['hoofdfoto_path'] = $r->file('hoofdfoto')->store('occasions', 'public');
+        if ($request->hasFile('hoofdfoto')) {
+            $data['hoofdfoto_path'] = $request->file('hoofdfoto')->store('occasions', 'public');
         }
 
-        // Galerij (meerdere foto's via formulier)
+        // Galerij (meerdere foto's)
         $galleryPaths = [];
-        if ($r->hasFile('gallery')) {
-            foreach ($r->file('gallery') as $file) {
+        if ($request->hasFile('gallery')) {
+            foreach ($request->file('gallery') as $file) {
                 if ($file && $file->isValid()) {
                     $galleryPaths[] = $file->store('occasions', 'public');
                 }
@@ -71,9 +73,9 @@ class OccasionController extends Controller
     }
 
     /* ===== Update ===== */
-    public function update(Request $r, Occasion $occasion)
+    public function update(StoreOccasionRequest $request, Occasion $occasion)
     {
-        $data = $this->validateData($r);
+        $data = $request->validated();
 
         // Textareas -> arrays (opties)
         $data['exterieur_options'] = $this->linesToArray($data['exterieur_options_text'] ?? null);
@@ -88,17 +90,17 @@ class OccasionController extends Controller
         );
 
         // Hoofdfoto
-        if ($r->hasFile('hoofdfoto')) {
+        if ($request->hasFile('hoofdfoto')) {
             if ($occasion->hoofdfoto_path) {
                 Storage::disk('public')->delete($occasion->hoofdfoto_path);
             }
-            $data['hoofdfoto_path'] = $r->file('hoofdfoto')->store('occasions', 'public');
+            $data['hoofdfoto_path'] = $request->file('hoofdfoto')->store('occasions', 'public');
         }
 
         // Galerij: voeg nieuwe toe aan bestaande
         $gallery = $occasion->galerij ?? [];
-        if ($r->hasFile('gallery')) {
-            foreach ($r->file('gallery') as $file) {
+        if ($request->hasFile('gallery')) {
+            foreach ($request->file('gallery') as $file) {
                 if ($file && $file->isValid()) {
                     $gallery[] = $file->store('occasions', 'public');
                 }
@@ -130,17 +132,20 @@ class OccasionController extends Controller
     /* ===== Galerij acties (losse knoppen) ===== */
 
     // Foto's toevoegen zonder overige wijzigingen
-    public function addGallery(Request $r, Occasion $occasion)
+    public function addGallery(Request $request, Occasion $occasion)
     {
-        $r->validate([
-            'gallery'   => 'required|array',
-            'gallery.*' => 'required|image|max:6144',
+        // Extra check: max aantal + totale MB (zelfde grenzen als StoreOccasionRequest)
+        $request->validate([
+            'gallery'   => ['required','array','max:15', new TotalUploadSize(30)], // totaal ≤ 30MB
+            'gallery.*' => ['required','image','mimes:jpg,jpeg,png,webp','max:6144'], // ≤ 6MB per foto
         ]);
 
         $gallery = $occasion->galerij ?? [];
 
-        foreach ($r->file('gallery') as $file) {
-            $gallery[] = $file->store('occasions', 'public');
+        foreach ($request->file('gallery') as $file) {
+            if ($file && $file->isValid()) {
+                $gallery[] = $file->store('occasions', 'public');
+            }
         }
 
         $occasion->galerij = $gallery;
@@ -186,57 +191,12 @@ class OccasionController extends Controller
         return back()->with('ok', 'Hoofdfoto ingesteld.');
     }
 
-    /* ===== Helpers & Validatie ===== */
-
-    private function validateData(Request $r): array
-    {
-        return $r->validate([
-            'merk' => 'required|string|max:100',
-            'model' => 'required|string|max:100',
-            'type' => 'nullable|string|max:100',
-            'transmissie' => 'required|string|max:50',
-            'brandstof' => 'required|string|max:50',
-            'kenteken' => 'nullable|string|max:20',
-            'interieurkleur' => 'nullable|string|max:50',
-            'kleur' => 'nullable|string|max:50',            // <— NIEUW veld (exterieurkleur)
-            'btw_marge' => 'nullable|string|max:20',
-            'cilinderinhoud' => 'nullable|integer',
-            'carrosserie' => 'nullable|string|max:50',
-            'max_trekgewicht' => 'nullable|integer',
-            'apk_tot' => 'nullable|date',
-            'energielabel' => 'nullable|string|max:5',
-            'wegenbelasting_min' => 'nullable|string|max:50',
-            'aantal_deuren' => 'nullable|integer',
-            'tellerstand' => 'nullable|integer',
-            'bouwjaar' => 'nullable|integer',
-            'prijs' => 'nullable|integer',
-            'bekleding' => 'nullable|string|max:50',
-            'aantal_cilinders' => 'nullable|integer',
-            'topsnelheid' => 'nullable|integer',
-            'gewicht' => 'nullable|integer',
-            'laadvermogen' => 'nullable|integer',
-            'bijtelling' => 'nullable|string|max:50',
-            'gemiddeld_verbruik' => 'nullable|numeric',
-
-            // bestanden
-            'hoofdfoto'  => 'nullable|image|max:4096',
-
-            // multi-upload: array + per file
-            'gallery'    => 'nullable|array',
-            'gallery.*'  => 'nullable|image|max:6144',
-
-            // textareas (opties) + omschrijving
-            'exterieur_options_text' => 'nullable|string',
-            'interieur_options_text' => 'nullable|string',
-            'veiligheid_options_text'=> 'nullable|string',
-            'overige_options_text'   => 'nullable|string',
-            'omschrijving'           => 'nullable|string',
-        ]);
-    }
+    /* ===== Helpers ===== */
 
     private function linesToArray(?string $txt): ?array
     {
         if (!$txt) return null;
+
         return collect(preg_split('/\r\n|\r|\n/', (string)$txt))
             ->map(fn($s) => trim($s))
             ->filter()
