@@ -1,0 +1,87 @@
+/* ===== Gerritsen Auth (dark) ===== */
+:root{
+  --muted:#d1d5db;         /* lichte grijs voor labels */
+  --border:rgba(255,255,255,.35);
+  --border-focus:#ffffff;
+  --brand:#c1121f;         /* rood */
+  --brand-600:#a50f1a; 
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#fff}
+
+/* Achtergrond */
+.auth-wrap{
+  min-height:100%;
+  display:grid;
+  place-items:center;
+  padding:24px;
+  background-color:#747474;
+}
+
+/* Card is alleen nog een container (geen wit vlak) */
+.auth-card{
+  width:100%;
+  max-width:420px;
+  background:transparent;
+  border:0;
+  border-radius:18px;
+  padding:28px 26px;
+  color:#fff;
+}
+
+.auth-brand{ text-align:center; margin-bottom:18px; }
+.auth-logo{ height:56px; object-fit:contain; opacity:.95; filter:brightness(1.2); }
+.auth-brand h1{ margin:12px 0 0; font-size:20px; font-weight:700; }
+
+/* Alerts in dark stijl */
+.auth-alert{
+  padding:10px 12px; border-radius:10px; margin:10px 0 16px; font-size:14px; border:1px solid var(--border);
+  background:rgba(255,255,255,.08); color:#fff;
+}
+.auth-alert.ok{ border-color:rgba(34,197,94,.45); background:rgba(34,197,94,.15); }
+.auth-alert.error{ border-color:rgba(248,113,113,.5); background:rgba(248,113,113,.12); }
+
+.auth-form{ display:flex; flex-direction:column; gap:14px; }
+
+.auth-field span{ display:block; font-size:13px; color:var(--muted); margin-bottom:6px; }
+.auth-field input{
+  width:100%; height:44px; border-radius:12px; border:1px solid var(--border);
+  padding:0 12px; font-size:15px; outline:none; background:transparent; color:#fff;
+}
+.auth-field input::placeholder{ color:rgba(255,255,255,.55); }
+.auth-field input:focus{ border-color:var(--border-focus); box-shadow:0 0 0 3px rgba(255,255,255,.18); }
+
+.auth-password{ position:relative; display:flex; align-items:center; }
+.auth-password input{ padding-right:42px; }
+.auth-eye{
+  position:absolute; right:6px; width:34px; height:34px; border-radius:10px;
+  display:grid; place-items:center; border:1px solid var(--border);
+  background:transparent; color:#fff;
+}
+.auth-eye:hover{ background:rgba(255,255,255,.06) }
+
+/* Checkbox en label */
+.auth-check{ display:flex; align-items:center; gap:8px; font-size:14px; color:#fff; }
+.auth-check input{ accent-color: var(--brand); }
+
+/* RODE knop blijft */
+.auth-btn{
+  width:100%; height:46px; border:none; border-radius:12px; color:#fff; font-weight:600;
+  background:linear-gradient(180deg,var(--brand),var(--brand-600));
+  box-shadow:0 8px 24px rgba(193,18,31,.35);
+  cursor:pointer;
+}
+.auth-btn:hover{ filter:brightness(.98) }
+
+/* Footer link */
+.auth-footer{ margin-top:14px; text-align:center; }
+.auth-link{ color:#fff; opacity:.9; font-size:14px; text-decoration:none; }
+.auth-link:hover{ opacity:1; text-decoration:underline; }
+
+/* Klein scherm */
+@media (max-width:420px){
+  .auth-card{ padding:22px 18px; }
+  .auth-logo{ height:50px; }
+}
