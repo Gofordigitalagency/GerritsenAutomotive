@@ -143,7 +143,7 @@
         <span>Onderdeel</span>
         <div class="seg">
           <a href="{{ route('booking.show',['type'=>'aanhanger']) }}" class="{{ $type==='aanhanger'?'active':'' }}">Aanhanger</a>
-          <a href="{{ route('booking.show',['type'=>'stofzuiger']) }}" class="{{ $type==='stofzuiger'?'active':'' }}">Stofzuiger</a>
+          <a href="{{ route('booking.show',['type'=>'stofzuiger']) }}" class="{{ $type==='stofzuiger'?'active':'' }}">Tapijtreiniger</a>
         </div>
       </div>
 
