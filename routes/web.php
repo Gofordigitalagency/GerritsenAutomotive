@@ -4,8 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\PublicOccasionController;
-use App\Http\Controllers\Admin\OccasionController as AdminOccasionController;
-use App\Http\Controllers\Admin\ReservationController;
+use App\Http\Controllers\admin\OccasionController as AdminOccasionController;
+use App\Http\Controllers\admin\ReservationController;
 
 
 use App\Http\Controllers\BookingController;
