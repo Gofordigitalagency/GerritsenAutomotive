@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>@yield('title','Gerritsen Admin')</title>
   <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+        <link rel="icon" type="image/png" href="{{ asset('images/FAVICON-GERRITSEN.png') }}">
+
 </head>
 <body>
   <div class="admin-shell">

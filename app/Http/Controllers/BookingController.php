@@ -2,21 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
-use App\Mail\ReservationCreatedMail;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\BookingSubmitted;
 
 class BookingController extends Controller
 {
     // Openingstijden & slot-instellingen
     private const OPEN_TIME    = '08:00';
     private const CLOSE_TIME   = '18:00';
-    private const SLOT_MINUTES = 30;                 // raster
-    private const DURATIONS    = [                   // duur per resource
+    private const SLOT_MINUTES = 30; // raster
+    private const DURATIONS    = [    // duur per resource
         'aanhanger'  => 60,
         'stofzuiger' => 30,
     ];
@@ -28,16 +28,16 @@ class BookingController extends Controller
     }
 
     /** Publieke reserveringspagina */
-public function show(Request $request)
-{
-    $type = $this->normalizeType($request->query('type'));
-    return view('booking', [
-        'type'        => $type,
-        'openTime'    => self::OPEN_TIME,
-        'closeTime'   => self::CLOSE_TIME,
-        'slotMinutes' => self::SLOT_MINUTES,
-    ]);
-}
+    public function show(Request $request)
+    {
+        $type = $this->normalizeType($request->query('type'));
+        return view('booking', [
+            'type'        => $type,
+            'openTime'    => self::OPEN_TIME,
+            'closeTime'   => self::CLOSE_TIME,
+            'slotMinutes' => self::SLOT_MINUTES,
+        ]);
+    }
 
     /** AJAX: vrije starttijden voor een datum & resource */
     public function slots(Request $request)
@@ -73,52 +73,73 @@ public function show(Request $request)
                 ];
             }
         }
+
         return response()->json($slots);
     }
 
     /** Reservering opslaan (publiek) */
-public function store(Request $request)
-{
-    $type = $this->normalizeType($request->input('type'));
+    public function store(Request $request)
+    {
+        $type = $this->normalizeType($request->input('type'));
 
-    $data = $request->validate([
-        'type'     => ['required', Rule::in(self::RESOURCES)],
-        'name'     => ['required','string','max:120'],
-        'phone'    => ['required','string','max:30'],
-        'email'    => ['required','email','max:160'],
-        'start_at' => ['required','date'],
-        'end_at'   => ['required','date','after:start_at'],
-    ]);
+        $data = $request->validate([
+            'type'     => ['required', Rule::in(self::RESOURCES)],
+            'name'     => ['required','string','max:120'],
+            'phone'    => ['required','string','max:30'],
+            'email'    => ['required','email','max:160'],
+            'start_at' => ['required','date'],
+            'end_at'   => ['required','date','after:start_at'],
+        ]);
 
-    $start = Carbon::parse($data['start_at'], 'Europe/Amsterdam');
-    $end   = Carbon::parse($data['end_at'], 'Europe/Amsterdam');
+        $start = Carbon::parse($data['start_at'], 'Europe/Amsterdam');
+        $end   = Carbon::parse($data['end_at'],   'Europe/Amsterdam');
 
-    // Blokkeer overlap (server-side)
-    if (Reservation::overlaps($type, $start, $end)) {
-        return back()->withInput()
-            ->withErrors(['start_at' => 'Dit tijdslot overlapt met een bestaande reservering. Kies een andere range.']);
-    }
+        // Blokkeer overlap (server-side)
+        if (Reservation::overlaps($type, $start, $end)) {
+            return back()->withInput()
+                ->withErrors(['start_at' => 'Dit tijdslot overlapt met een bestaande reservering. Kies een andere range.']);
+        }
 
-    $reservation = Reservation::create([
-        'resource_type' => $type,
-        'start_at'      => $start,
-        'end_at'        => $end,
-        'reserved_by'   => $data['name'],
-        'phone'         => $data['phone'],
-        'email'         => $data['email'],
-        'status'        => 'confirmed',
-        'notes'         => null,
-        'created_by'    => null,
-    ]);
+        // Opslaan
+        $reservation = Reservation::create([
+            'resource_type' => $type,
+            'start_at'      => $start,
+            'end_at'        => $end,
+            'reserved_by'   => $data['name'],
+            'phone'         => $data['phone'],
+            'email'         => $data['email'],
+            'status'        => 'confirmed',
+            'notes'         => null,
+            'created_by'    => null,
+        ]);
 
-    // E-mails volgen later (Mailgun), code kan al blijven staan in try/catch
-    try {
-        Mail::to($reservation->email)->send(new ReservationCreatedMail($reservation, true));
-        Mail::to(config('booking.admin_email'))->send(new ReservationCreatedMail($reservation, false));
-    } catch (\Throwable $e) {}
+        // Mail naar admin (alleen admin)
+        try {
+    // Admin (naar CONTACT_TO_EMAIL)
+    \Mail::send(new \App\Mail\BookingSubmitted([
+        'type'     => $type,
+        'start_at' => $start->format('Y-m-d H:i'),
+        'end_at'   => $end->format('Y-m-d H:i'),
+        'name'     => $data['name'],
+        'phone'    => $data['phone'] ?? null,
+        'email'    => $data['email'],
+    ]));
 
-    return redirect()
-        ->route('booking.show', ['type' => $type])
-        ->with('ok', 'Bedankt! Je reservering is bevestigd en staat in de agenda.');
+    // Klantbevestiging
+    \Mail::send(new \App\Mail\BookingConfirmation([
+        'type'     => $type,
+        'start_at' => $start->format('Y-m-d H:i'),
+        'end_at'   => $end->format('Y-m-d H:i'),
+        'name'     => $data['name'],
+        'phone'    => $data['phone'] ?? null,
+        'email'    => $data['email'],
+    ]));
+} catch (\Throwable $e) {
+    \Log::error('Booking mail failed: '.$e->getMessage(), ['exception' => $e]);
+    // reservering is wel opgeslagen; gebruiker krijgt nog steeds de success melding
 }
+        return redirect()
+            ->route('booking.show', ['type' => $type])
+            ->with('ok', 'Bedankt! Je reservering is bevestigd en staat in de agenda.');
+    }
 }

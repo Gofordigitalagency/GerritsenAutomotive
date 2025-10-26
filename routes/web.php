@@ -19,6 +19,7 @@ Route::get('/occasions/{slug}', [PublicOccasionController::class, 'show'])->name
 
   // Contact
 Route::post('contact', [ContactController::class, 'send'])->name('contact.send');
+Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
 // --- Auth ---
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');

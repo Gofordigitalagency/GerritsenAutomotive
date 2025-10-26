@@ -240,32 +240,112 @@
             </div>
 
             <div class="footer-content-right">
-                <form method="POST" action="{{ route('contact.send') }}" class="contact-form" novalidate>
-                    @csrf
-                    <div class="row two">
-                    <div class="field">
-                        <input class="inputform" type="text" name="name" placeholder="Naam">
-                    </div>
-                    <div class="field">
-                        <input class="inputform" type="text" name="phone" placeholder="Telefoonnummer">
-                    </div>
-                    </div>
+               <form method="POST" action="{{ route('contact.store') }}" class="contact-form" novalidate>
+    @csrf
 
-                    <div class="field">
-                    <input class="inputform" type="email" name="email" placeholder="Email">
-                    </div>
+    {{-- Honeypot (spamprotectie) --}}
+    <input type="text" name="website" style="display:none" tabindex="-1" autocomplete="off">
 
-                    <div class="field">
-                    <textarea class="inputform" name="message" rows="5" placeholder="Bericht:"></textarea>
-                    </div>
+    <div class="row two">
+        <div class="field">
+            <input class="inputform" 
+                   type="text" 
+                   name="name" 
+                   placeholder="Naam *"
+                   value="{{ old('name') }}"
+                   required>
+            @error('name')
+                <span class="error">{{ $message }}</span>
+            @enderror
+        </div>
 
-                    <label class="check">
-                    <input type="checkbox" name="privacy">
-                    <span class="inputform">Ik heb het privacybeleid gelezen en begrepen.</span>
-                    </label>
+        <div class="field">
+            <input class="inputform" 
+                   type="text" 
+                   name="phone" 
+                   placeholder="Telefoonnummer"
+                   value="{{ old('phone') }}">
+            @error('phone')
+                <span class="error">{{ $message }}</span>
+            @enderror
+        </div>
+    </div>
 
-                    <button type="submit" class="submit">Verzenden</button>
-                </form>
+    <div class="field">
+        <input class="inputform" 
+               type="email" 
+               name="email" 
+               placeholder="Email *"
+               value="{{ old('email') }}"
+               required>
+        @error('email')
+            <span class="error">{{ $message }}</span>
+        @enderror
+    </div>
+
+    <div class="field">
+        <textarea class="inputform" 
+                  name="message" 
+                  rows="5" 
+                  placeholder="Bericht *" 
+                  required>{{ old('message') }}</textarea>
+        @error('message')
+            <span class="error">{{ $message }}</span>
+        @enderror
+    </div>
+
+    <label class="check">
+        <input type="checkbox" name="privacy" required>
+        <span class="inputform">Ik heb het privacybeleid gelezen en begrepen.</span>
+        @error('privacy')
+            <span class="error">{{ $message }}</span>
+        @enderror
+    </label>
+
+    <button type="submit" class="submit">Verzenden</button>
+
+    {{-- Succes melding --}}
+    @if(session('success'))
+<div id="contactModal" class="gd-modal" role="dialog" aria-modal="true" aria-labelledby="contactModalTitle">
+  <div class="gd-modal-box">
+    <h3 id="contactModalTitle">Bedankt!</h3>
+    <p>Je bericht is verstuurd. We nemen zo snel mogelijk contact met je op.</p>
+    <div class="gd-actions">
+      <button type="button" data-close-modal>Sluiten</button>
+    </div>
+  </div>
+</div>
+@endif
+
+<style>
+.gd-modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.6);z-index:9999;padding:16px;}
+.gd-modal-box{background:#fff;color:#111;max-width:420px;width:100%;border-radius:12px;padding:24px;box-shadow:0 10px 30px rgba(0,0,0,.25);text-align:center}
+.gd-actions{margin-top:16px}
+.gd-actions button{padding:10px 16px;border:0;border-radius:8px;cursor:pointer;background:#111;color:#fff}
+.gd-actions button:hover{opacity:.9}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var modal = document.getElementById('contactModal');
+  if (!modal) return;
+  function closeModal(){ modal.remove(); }
+  modal.querySelectorAll('[data-close-modal]').forEach(function(btn){
+    btn.addEventListener('click', closeModal);
+  });
+  // klik buiten de box sluit ook
+  modal.addEventListener('click', function(e){
+    if(e.target === modal){ closeModal(); }
+  });
+  // ESC sluit
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape'){ closeModal(); }
+  });
+});
+</script>
+
+</form>
+
             </div>
         </div>
     </div>
