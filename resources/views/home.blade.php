@@ -354,13 +354,7 @@ document.addEventListener('DOMContentLoaded', function () {
 </section>
 
 <div class="contact-map">
-  <iframe
-    src="https://www.google.com/maps?q=Handelstraat%2010,%206851%20EH%20Huissen&output=embed"
-    loading="lazy"
-    allowfullscreen
-    referrerpolicy="no-referrer-when-downgrade">
-  </iframe>
-</div>
+<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2458.0517541550735!2d5.901556076625399!3d51.96948127192204!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47c7a70883823355%3A0xa6dd7685a8359450!2sGerritsen%20Automotive!5e0!3m2!1sen!2snl!4v1761597008139!5m2!1sen!2snl" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
 
 <section class="rechten-section">
     <div class="container">
