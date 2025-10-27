@@ -198,6 +198,7 @@
                 <h1>Openingstijden</h1>
                 <p>Je bent van harte welkom tijdens onze vaste openingstijden. Of je nu komt voor verhuur, een reservering wilt ophalen of iets wilt inleveren: wij staan klaar om je snel en prettig te helpen. We denken graag met je mee, zorgen dat alles vlot geregeld is en laten je niet onnodig wachten. Zo weet je precies waar je aan toe bent en kun je snel weer op weg.</p>
                 <p><strong>Ma–Vr:</strong> 08:30–17:30 · <strong>Za:</strong> 09:00–16:00 · <strong>Zo:</strong> gesloten</p>
+                <p>U bent welkom tijdens onze reguliere openingstijden. Wilt u langskomen buiten deze tijden? <br> Dat kan! Neem gerust contact met ons op om een afspraak te maken.</p>
                 <div class="btn-aanbod"><a href="#footer" class="btn btn-primary">Maak Afspraak</a></div>
             </div>
             <div class="openingstijden-image">

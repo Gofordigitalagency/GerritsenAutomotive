@@ -1,17 +1,35 @@
+/* app.js – Gerritsen Automotive
+   - Mobiel menu (open/close + focus + ESC)
+   - Sticky header + smooth scroll met offset
+   - Dark mode toggle (desktop + mobiel) met localStorage
+*/
+'use strict';
+
+/* ========== Theme pre-apply (voorkom flits) ========== */
+(() => {
+  try {
+    const saved = localStorage.getItem('ga_theme');
+    if (saved === 'dark') document.documentElement.classList.add('dark');
+  } catch (_) {}
+})();
+
 document.addEventListener('DOMContentLoaded', () => {
+  /* ===========================
+     NAV / MENU / SCROLL
+  ============================ */
   const toggleBtn = document.getElementById('menuToggle');
   const overlay   = document.getElementById('navOverlay');
   const closeBtn  = document.getElementById('menuClose');
   const navbar    = document.querySelector('.navbar');
 
-  // --- Header offset (voor fixed header) ---
+  // Header offset variabele bijhouden
   const setHeaderOffset = () => {
     if (!navbar) return;
     const h = navbar.offsetHeight;
     document.documentElement.style.setProperty('--header-offset', `${h}px`);
   };
 
-  // --- Mobiel menu open/dicht ---
+  // Menu openen/sluiten
   const openMenu = () => {
     document.body.classList.add('menu-open');
     if (toggleBtn) {
@@ -51,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'Escape' && overlay?.classList.contains('is-open')) closeMenu();
   });
 
-  // --- Sticky header behavior + offset updaten ---
+  // Sticky header + offset
   const onScroll = () => {
     if (!navbar) return;
     if (window.scrollY > 8) navbar.classList.add('scrolled');
@@ -59,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setHeaderOffset();
   };
 
-  // --- Smooth scroll met offset ---
+  // Smooth scroll met offset
   const getOffset = () => {
     const cssVar = getComputedStyle(document.documentElement).getPropertyValue('--header-offset').trim();
     const n = parseInt(cssVar, 10);
@@ -74,7 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const isSamePageHash = (a) => {
     if (!a.hash || !a.hash.startsWith('#')) return false;
-    // zelfde path (negeer trailing slash)
     const cur = location.pathname.replace(/\/+$/, '');
     const linkPath = a.pathname.replace(/\/+$/, '');
     return cur === linkPath;
@@ -82,28 +99,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const handleAnchorClick = (e) => {
     const a = e.currentTarget;
-    // Alleen eigen pagina hashes (#info, #aanbod, #footer)
     if (!isSamePageHash(a)) return;
 
     const target = document.querySelector(a.hash);
     if (!target) return;
 
     e.preventDefault();
-
-    // Sluit mobiel menu indien open
     if (overlay?.classList.contains('is-open')) closeMenu();
-
-    // Scroll + update URL hash
     smoothScrollTo(target);
     history.pushState(null, '', a.hash);
   };
 
-  // Koppel handlers aan alle anchor-links die met # beginnen (site-breed)
   document.querySelectorAll('a[href^="#"]').forEach((a) => {
     a.addEventListener('click', handleAnchorClick);
   });
 
-  // Optioneel: aparte knop die je had in het grid
   const btnBekijkAanbod = document.getElementById('btnBekijkAanbod');
   if (btnBekijkAanbod) {
     btnBekijkAanbod.addEventListener('click', () => {
@@ -115,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- Init ---
+  // Init
   onScroll();
   setHeaderOffset();
 
@@ -123,9 +133,54 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('resize', setHeaderOffset);
   window.addEventListener('orientationchange', setHeaderOffset);
 
-  // Recalc offset als de navbar-hoogte dynamisch verandert
   if ('ResizeObserver' in window && navbar) {
     const ro = new ResizeObserver(setHeaderOffset);
     ro.observe(navbar);
   }
+
+  /* ===========================
+     THEME: Dark/Light (robust)
+  ============================ */
+  const STORAGE_KEY = 'ga_theme';
+
+  // 1) Toepassen huidige theme (als pre-apply niet liep)
+  (function applyInitial() {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved === 'dark' || saved === 'light') {
+        document.documentElement.classList.toggle('dark', saved === 'dark');
+      }
+    } catch (_) {}
+  })();
+
+  // 2) Delegated clicks: werkt altijd, ook als knoppen later wisselen
+  function isToggleButton(el) {
+    return !!el && (el.id === 'themeToggle' || el.id === 'themeToggleMobile' || el.closest?.('#themeToggle, #themeToggleMobile'));
+  }
+
+  function syncAria() {
+    const dark = document.documentElement.classList.contains('dark');
+    document.querySelectorAll('#themeToggle, #themeToggleMobile').forEach(btn => {
+      btn.setAttribute('aria-pressed', String(dark));
+    });
+  }
+
+  function toggleTheme() {
+    const nextDark = !document.documentElement.classList.contains('dark');
+    document.documentElement.classList.toggle('dark', nextDark);
+    try { localStorage.setItem(STORAGE_KEY, nextDark ? 'dark' : 'light'); } catch(_) {}
+    syncAria();
+  }
+
+  // Koppel één listener op document (delegation)
+  document.addEventListener('click', (e) => {
+    const target = e.target;
+    if (isToggleButton(target)) {
+      e.preventDefault();
+      toggleTheme();
+    }
+  });
+
+  // Sync aria state bij load
+  syncAria();
 });

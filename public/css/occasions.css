@@ -512,3 +512,96 @@ body.menu-open { overflow: hidden; }
 .oc-detail .ocd-thumb--more .ocd-thumb-badge small{
   display:block; font-size:14px; font-weight:700; margin-top:6px; letter-spacing:.2px;
 }
+
+
+
+
+
+/* ============== DARK MODE TOGGLE STYLES ============== */
+.theme-toggle{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:40px; height:40px; border:0; background:transparent; cursor:pointer;
+  padding:6px; border-radius:10px; transition: background-color .2s ease;
+}
+.theme-toggle:hover{ background: rgba(255,255,255,.08); }
+.theme-toggle img{ filter: invert(1); display:block; }
+
+.panel-theme-toggle{
+  margin-top: 12px;
+  display:inline-flex; align-items:center; gap:10px;
+  border:1px solid rgba(255,255,255,.35);
+  background: transparent; color:#fff; padding:10px 12px; border-radius:10px;
+  cursor:pointer; font-weight:600;
+}
+.panel-theme-toggle:hover{ background: rgba(255,255,255,.08); }
+.panel-theme-toggle img{ filter: invert(1); }
+
+/* ============== DARK THEME ============== */
+/* We zetten de klasse "dark" op <html>. */
+html.dark body{ background:#000; color:#fff; }
+
+/* Algemene tekst en links wit, zonder buttons te beïnvloeden */
+html.dark :where(p, h1, h2, h3, h4, h5, h6, li, small, strong, span){ color:#fff; }
+html.dark a{ color:#fff; }
+
+/* Header + nav */
+html.dark .navbar{ background: rgba(0,0,0,.65); }
+html.dark .navbar.scrolled{ background: rgba(0,0,0,.75); }
+html.dark .nav-desktop a{ color:#fff; }
+html.dark .nav-desktop a:hover,
+html.dark .nav-desktop a.active{ background:#747474; color:#fff; }
+
+/* Secties met vaste lichte achtergronden → donker maken */
+html.dark .info-section,
+html.dark .openingstijden-section,
+html.dark .nieuw-binnen,
+html.dark .rechten-section{ background:#000; color:#fff; }
+
+html.dark .info-content,
+html.dark .openingstijden-content{ color:#fff; }
+
+/* Nieuw binnen cards */
+html.dark .nieuw-binnen .sectie-titel{ color:#fff; }
+html.dark .nieuw-binnen .car-card{ background:#111; }
+html.dark .nieuw-binnen .car-info{ background:#151515; }
+html.dark .nieuw-binnen .car-title,
+html.dark .nieuw-binnen .car-type,
+html.dark .nieuw-binnen .car-meta{ color:#fff; }
+
+/* Hero/afspraak/footer hebben al donkere overlays → tekst blijft wit */
+html.dark .footer-section{ color:#fff; }
+
+/* Form elements in footer op donker beter zichtbaar */
+html.dark .footer-content-right input,
+html.dark .footer-content-right textarea{
+  border-color: rgba(255,255,255,.7);
+  color:#fff;
+}
+html.dark .footer-content-right input::placeholder,
+html.dark .footer-content-right textarea::placeholder{ color: rgba(255,255,255,.85); }
+
+/* ===== Occasions/detail pagina's ===== */
+html.dark .oc-detail{ background:#000; color:#fff; }
+html.dark .oc-detail .ocd-back{ color:#fff; }
+html.dark .oc-detail .ocd-title{ color:#fff; }
+html.dark .oc-detail .ocd-sub{ color:#d0d0d0; }
+html.dark .oc-detail .ocd-price{ color:#fff; }
+html.dark .oc-detail .ocd-kv .k{ color:#bbb; }
+html.dark .oc-detail .ocd-kv .v{ color:#fff; }
+html.dark .oc-detail .ocd-stage{ background:#111; border:1px solid #2a2a2a; }
+html.dark .oc-detail .ocd-thumb.is-active{ outline-color:#5B5B5B; }
+html.dark .oc-detail .ocd-thumb:hover{ outline-color:#777; }
+html.dark .oc-detail .ocd-seller-info .name{ color:#fff; }
+html.dark .oc-detail .ocd-seller-info a{ color:#eee; }
+html.dark .ocd-tabs{ border-bottom:1px solid #2a2a2a; }
+html.dark .ocd-tab{ color:#bbb; }
+html.dark .ocd-tab.is-active{ color:#fff; border-bottom-color:#fff; }
+html.dark .spec-list li::before{ color:#fff; }
+html.dark .spec-list .k{ color:#bbb; }
+html.dark .spec-list .v{ color:#fff; }
+html.dark .opt-col h4{ border-bottom-color:#2a2a2a; }
+
+/* Lightbox */
+html.dark .ocd-lightbox-inner{ background:#111; }
+
+/* Belangrijk: buttons NIET veranderen in dark mode */

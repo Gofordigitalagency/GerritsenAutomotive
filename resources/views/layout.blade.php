@@ -27,38 +27,44 @@
     </a>
 
     <div class="icons">
+      <!-- Telefoon (alleen mobiel zichtbaar via CSS) -->
+      <a href="tel:+31649951874" class="phone-btn" aria-label="Bel ons">
+        <img src="{{ asset('images/phone-call.svg') }}" alt="" class="phone-icon">
+      </a>
 
-
-    <!-- Telefoon (alleen mobiel zichtbaar via CSS) -->
-    <a href="tel:+31649951874" class="phone-btn" aria-label="Bel ons">
-      <img src="{{ asset('images/phone-call.svg') }}" alt="" class="phone-icon">
-    </a>
-
-    <!-- Menu toggle: één knop met morphende SVG -->
-    <button
-      id="menuToggle"
-      class="menu-toggle"
-      aria-label="Menu openen"
-      aria-controls="mainNav"
-      aria-expanded="false"
-      type="button"
-    >
-      <svg class="hamburger-svg" viewBox="0 0 24 24" width="40" height="40" aria-hidden="true">
-        <line class="line top"    x1="4" y1="7"  x2="20" y2="7"  />
-        <line class="line middle" x1="4" y1="12" x2="20" y2="12" />
-        <line class="line bottom" x1="4" y1="17" x2="20" y2="17" />
-      </svg>
-      <span class="sr-only">Menu</span>
-    </button>
-
+      <!-- Menu toggle: één knop met morphende SVG -->
+      <button
+        id="menuToggle"
+        class="menu-toggle"
+        aria-label="Menu openen"
+        aria-controls="mainNav"
+        aria-expanded="false"
+        type="button"
+      >
+        <svg class="hamburger-svg" viewBox="0 0 24 24" width="40" height="40" aria-hidden="true">
+          <line class="line top"    x1="4" y1="7"  x2="20" y2="7"  />
+          <line class="line middle" x1="4" y1="12" x2="20" y2="12" />
+          <line class="line bottom" x1="4" y1="17" x2="20" y2="17" />
+        </svg>
+        <span class="sr-only">Menu</span>
+      </button>
     </div>
 
     <!-- Desktop menu -->
     <nav id="mainNav" class="nav-desktop" aria-label="Hoofdmenu">
       <a href="/"       class="{{ request()->is('/') ? 'active' : '' }}">HOME</a>
-      <a href="#info" class="{{ request()->is('over-ons') ? 'active' : '' }}">OVER ONS</a>
+      <a href="#info"   class="{{ request()->is('over-ons') ? 'active' : '' }}">OVER ONS</a>
       <a href="#aanbod" class="{{ request()->is('aanbod') ? 'active' : '' }}">AANBOD</a>
       <a href="#footer" class="{{ request()->is('contact') ? 'active' : '' }}">CONTACT</a>
+
+      <!-- Dark mode toggle (DESKTOP – naast CONTACT) -->
+      <button id="themeToggle"
+              class="theme-toggle theme-toggle--nav"
+              type="button"
+              aria-label="Dark mode wisselen"
+              aria-pressed="false">
+        <img src="{{ asset('images/moon.svg') }}" alt="" width="20" height="20">
+      </button>
     </nav>
   </div>
 
@@ -83,6 +89,16 @@
         <a href="#footer">CONTACT</a>
       </nav>
 
+      <!-- Dark mode toggle (MOBIEL – in hamburger menu) -->
+      <button id="themeToggleMobile"
+              class="panel-theme-toggle"
+              type="button"
+              aria-label="Dark mode wisselen"
+              aria-pressed="false">
+        <img src="{{ asset('images/moon.svg') }}" alt="" width="22" height="22">
+        <span>Dark mode</span>
+      </button>
+
       <a href="tel:+31649951874" class="panel-call">
         <img src="{{ asset('images/phone-call.svg') }}" alt="" class="phone-icon"> Bel ons
       </a>
@@ -90,13 +106,10 @@
   </div>
 </header>
 
+<main>
+  @yield('content')
+</main>
 
-    <main>
-        @yield('content')
-    </main>
-
-    <script src="{{ asset('js/app.js') }}"></script>
+<script src="{{ asset('js/app.js') }}"></script>
 </body>
-
-
 </html>

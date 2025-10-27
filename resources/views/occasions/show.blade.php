@@ -20,38 +20,44 @@
     </a>
 
     <div class="icons">
+      <!-- Telefoon (alleen mobiel zichtbaar via CSS) -->
+      <a href="tel:+31649951874" class="phone-btn" aria-label="Bel ons">
+        <img src="{{ asset('images/phone-call.svg') }}" alt="" class="phone-icon">
+      </a>
 
-
-    <!-- Telefoon (alleen mobiel zichtbaar via CSS) -->
-    <a href="tel:+31649951874" class="phone-btn" aria-label="Bel ons">
-      <img src="{{ asset('images/phone-call.svg') }}" alt="" class="phone-icon">
-    </a>
-
-    <!-- Menu toggle: één knop met morphende SVG -->
-    <button
-      id="menuToggle"
-      class="menu-toggle"
-      aria-label="Menu openen"
-      aria-controls="mainNav"
-      aria-expanded="false"
-      type="button"
-    >
-      <svg class="hamburger-svg" viewBox="0 0 24 24" width="40" height="40" aria-hidden="true">
-        <line class="line top"    x1="4" y1="7"  x2="20" y2="7"  />
-        <line class="line middle" x1="4" y1="12" x2="20" y2="12" />
-        <line class="line bottom" x1="4" y1="17" x2="20" y2="17" />
-      </svg>
-      <span class="sr-only">Menu</span>
-    </button>
-
+      <!-- Menu toggle: één knop met morphende SVG -->
+      <button
+        id="menuToggle"
+        class="menu-toggle"
+        aria-label="Menu openen"
+        aria-controls="mainNav"
+        aria-expanded="false"
+        type="button"
+      >
+        <svg class="hamburger-svg" viewBox="0 0 24 24" width="40" height="40" aria-hidden="true">
+          <line class="line top"    x1="4" y1="7"  x2="20" y2="7"  />
+          <line class="line middle" x1="4" y1="12" x2="20" y2="12" />
+          <line class="line bottom" x1="4" y1="17" x2="20" y2="17" />
+        </svg>
+        <span class="sr-only">Menu</span>
+      </button>
     </div>
 
     <!-- Desktop menu -->
     <nav id="mainNav" class="nav-desktop" aria-label="Hoofdmenu">
       <a href="/"       class="{{ request()->is('/') ? 'active' : '' }}">HOME</a>
-      <a href="#info" class="{{ request()->is('over-ons') ? 'active' : '' }}">OVER ONS</a>
+      <a href="#info"   class="{{ request()->is('over-ons') ? 'active' : '' }}">OVER ONS</a>
       <a href="#aanbod" class="{{ request()->is('aanbod') ? 'active' : '' }}">AANBOD</a>
       <a href="#footer" class="{{ request()->is('contact') ? 'active' : '' }}">CONTACT</a>
+
+      <!-- Dark mode toggle (DESKTOP – naast CONTACT) -->
+      <button id="themeToggle"
+              class="theme-toggle theme-toggle--nav"
+              type="button"
+              aria-label="Dark mode wisselen"
+              aria-pressed="false">
+        <img src="{{ asset('images/moon.svg') }}" alt="" width="20" height="20">
+      </button>
     </nav>
   </div>
 
@@ -75,6 +81,16 @@
         <a href="#aanbod">AANBOD</a>
         <a href="#footer">CONTACT</a>
       </nav>
+
+      <!-- Dark mode toggle (MOBIEL – in hamburger menu) -->
+      <button id="themeToggleMobile"
+              class="panel-theme-toggle"
+              type="button"
+              aria-label="Dark mode wisselen"
+              aria-pressed="false">
+        <img src="{{ asset('images/moon.svg') }}" alt="" width="22" height="22">
+        <span>Dark mode</span>
+      </button>
 
       <a href="tel:+31649951874" class="panel-call">
         <img src="{{ asset('images/phone-call.svg') }}" alt="" class="phone-icon"> Bel ons
@@ -425,7 +441,16 @@
 </section>
 
 <script>
- document.addEventListener('DOMContentLoaded', () => {
+/* ===== THEME PRE-APPLY (voorkom flits) ===== */
+(() => {
+  try {
+    const saved = localStorage.getItem('ga_theme');
+    if (saved === 'dark') document.documentElement.classList.add('dark');
+  } catch (_) {}
+})();
+
+/* ===== NAV / MENU / SCROLL ===== */
+document.addEventListener('DOMContentLoaded', () => {
   const toggleBtn = document.getElementById('menuToggle');
   const overlay   = document.getElementById('navOverlay');
   const closeBtn  = document.getElementById('menuClose');
@@ -480,6 +505,7 @@
     window.scrollTo({ top, behavior: 'smooth' });
   };
   const isSamePageHash = (a) => a.hash?.startsWith('#') && a.pathname.replace(/\/+$/,'') === location.pathname.replace(/\/+$/,'');
+
   document.querySelectorAll('.nav-desktop a[href^="#"], .nav-mobile a[href^="#"]').forEach((a) => {
     a.addEventListener('click', (e) => {
       if (!isSamePageHash(a)) return;
@@ -499,28 +525,65 @@
   window.addEventListener('resize', setHeaderOffset);
   window.addEventListener('orientationchange', setHeaderOffset);
   if ('ResizeObserver' in window && navbar) new ResizeObserver(setHeaderOffset).observe(navbar);
+
+  /* ===== THEME: Dark/Light (desktop + mobiel) ===== */
+  const STORAGE_KEY = 'ga_theme';
+
+  const applyTheme = (theme) => {
+    const dark = theme === 'dark';
+    document.documentElement.classList.toggle('dark', dark);
+    // aria-pressed sync op beide knoppen
+    document.querySelectorAll('#themeToggle, #themeToggleMobile')
+      .forEach((btn) => btn.setAttribute('aria-pressed', String(dark)));
+  };
+  const currentTheme = () => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved === 'dark' || saved === 'light') return saved;
+    } catch (_) {}
+    return 'light';
+  };
+  const toggleTheme = () => {
+    const next = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+    try { localStorage.setItem(STORAGE_KEY, next); } catch (_) {}
+    applyTheme(next);
+  };
+
+  // Theme toepassen bij load (als pre-apply niet draaide) + aria sync
+  applyTheme(currentTheme());
+
+  // Eén document-listener (event delegation) → werkt ook als markup verandert
+  document.addEventListener('click', (e) => {
+    const el = e.target;
+    const isToggle =
+      (el && (el.id === 'themeToggle' || el.id === 'themeToggleMobile')) ||
+      el.closest?.('#themeToggle, #themeToggleMobile');
+    if (isToggle) {
+      e.preventDefault();
+      toggleTheme();
+    }
+  });
 });
 
-  // Tabs
-  (function(){
-    const tabs = Array.from(document.querySelectorAll('.ocd-tab'));
-    const panels = {
-      specs: document.getElementById('tab-specs'),
-      options: document.getElementById('tab-options'),
-      desc: document.getElementById('tab-desc'),
-    };
-    tabs.forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        tabs.forEach(b=>b.classList.remove('is-active'));
-        Object.values(panels).forEach(p=>p.classList.remove('is-active'));
-        btn.classList.add('is-active');
-        panels[btn.dataset.tab]?.classList.add('is-active');
-      });
+/* ===== TABS ===== */
+(function(){
+  const tabs = Array.from(document.querySelectorAll('.ocd-tab'));
+  const panels = {
+    specs: document.getElementById('tab-specs'),
+    options: document.getElementById('tab-options'),
+    desc: document.getElementById('tab-desc'),
+  };
+  tabs.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      tabs.forEach(b=>b.classList.remove('is-active'));
+      Object.values(panels).forEach(p=>p?.classList.remove('is-active'));
+      btn.classList.add('is-active');
+      panels[btn.dataset.tab]?.classList.add('is-active');
     });
-  })();
+  });
+})();
 
-
-  // ===== OCCASION GALLERY (4 thumbs + prev/next) =====
+/* ===== OCCASION GALLERY (4 thumbs + prev/next) ===== */
 (function(){
   const stage   = document.querySelector('.ocd-stage');
   if (!stage) return;
@@ -569,5 +632,6 @@
   nextBtn?.addEventListener('click', () => show(current + 1));
 })();
 </script>
+
 </body>
 </html>
