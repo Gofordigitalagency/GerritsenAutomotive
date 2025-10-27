@@ -6,13 +6,19 @@ use App\Http\Controllers\Controller;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Carbon;
 
 class ReservationController extends Controller
 {
     private function typeFromRoute(Request $request): string
     {
         $name = $request->route()?->getName() ?? '';
-        return str_contains($name, 'aanhanger') ? 'aanhanger' : 'stofzuiger';
+
+        if (str_contains($name, 'aanhanger'))  return 'aanhanger';
+        if (str_contains($name, 'stofzuiger')) return 'stofzuiger';
+        if (str_contains($name, 'koplampen'))  return 'koplampen';
+
+        return 'aanhanger';
     }
 
     public function index(Request $request)
@@ -30,67 +36,69 @@ class ReservationController extends Controller
     {
         $type = $this->typeFromRoute($request);
         $reservation = new Reservation(['status' => 'confirmed']);
+
         return view('admin.reservations.create', compact('type','reservation'));
     }
 
     public function store(Request $request)
-{
-    $type = $this->typeFromRoute($request);
+    {
+        $type = $this->typeFromRoute($request);
 
-    $data = $request->validate([
-        'reserved_by' => ['nullable','string','max:120'],
-        'phone'       => ['nullable','string','max:30'],
-        'email'       => ['nullable','email','max:160'],
-        'start_at'    => ['required','date'],
-        'end_at'      => ['required','date','after:start_at'],
-        'status'      => ['required', Rule::in(['confirmed','pending','cancelled'])],
-        'notes'       => ['nullable','string','max:1000'],
-    ]);
+        $data = $request->validate([
+            'reserved_by' => ['nullable','string','max:120'],
+            'phone'       => ['nullable','string','max:30'],
+            'email'       => ['nullable','email','max:160'],
+            'start_at'    => ['required','date'],
+            'end_at'      => ['required','date','after:start_at'],
+            'status'      => ['required', Rule::in(['confirmed','pending','cancelled'])],
+            'notes'       => ['nullable','string','max:1000'],
+        ]);
 
-    // Alleen als info: is er overlap? (niet blokkeren)
-    $heeftOverlap = \App\Models\Reservation::overlaps($type, $data['start_at'], $data['end_at']);
+        // Alleen info: overlap?
+        $heeftOverlap = Reservation::overlaps($type, $data['start_at'], $data['end_at']);
 
-    \App\Models\Reservation::create($data + [
-        'resource_type' => $type,
-        'created_by'    => optional($request->user())->id,
-    ]);
+        Reservation::create($data + [
+            'resource_type' => $type,
+            'created_by'    => optional($request->user())->id,
+        ]);
 
-    return redirect()
-        ->route("admin.$type.index")
-        ->with('ok', 'Reservering aangemaakt.'.($heeftOverlap ? ' (Let op: overlapt met een andere reservering)' : ''));
-}
+        return redirect()
+            ->route("admin.$type.index")
+            ->with('ok', 'Reservering aangemaakt.' . ($heeftOverlap ? ' (Let op: overlapt met een andere reservering)' : ''));
+    }
 
     public function edit(Request $request, Reservation $reservation)
     {
         $type = $this->typeFromRoute($request);
         abort_if($reservation->resource_type !== $type, 404);
+
         return view('admin.reservations.edit', compact('reservation','type'));
     }
 
-  public function update(Request $request, \App\Models\Reservation $reservation)
-{
-    $type = $this->typeFromRoute($request);
-    abort_if($reservation->resource_type !== $type, 404);
+    public function update(Request $request, Reservation $reservation)
+    {
+        $type = $this->typeFromRoute($request);
+        abort_if($reservation->resource_type !== $type, 404);
 
-    $data = $request->validate([
-        'reserved_by' => ['nullable','string','max:120'],
-        'phone'       => ['nullable','string','max:30'],
-        'email'       => ['nullable','email','max:160'],
-        'start_at'    => ['required','date'],
-        'end_at'      => ['required','date','after:start_at'],
-        'status'      => ['required', Rule::in(['confirmed','pending','cancelled'])],
-        'notes'       => ['nullable','string','max:1000'],
-    ]);
+        $data = $request->validate([
+            'reserved_by' => ['nullable','string','max:120'],
+            'phone'       => ['nullable','string','max:30'],
+            'email'       => ['nullable','email','max:160'],
+            'start_at'    => ['required','date'],
+            'end_at'      => ['required','date','after:start_at'],
+            'status'      => ['required', Rule::in(['confirmed','pending','cancelled'])],
+            'notes'       => ['nullable','string','max:1000'],
+        ]);
 
-    // Alleen als info: is er overlap? (niet blokkeren)
-    $heeftOverlap = \App\Models\Reservation::overlaps($type, $data['start_at'], $data['end_at'], $reservation->id);
+        // Alleen info: overlap?
+        $heeftOverlap = Reservation::overlaps($type, $data['start_at'], $data['end_at'], $reservation->id);
 
-    $reservation->update($data);
+        $reservation->update($data);
 
-    return redirect()
-        ->route("admin.$type.index")
-        ->with('ok','Reservering bijgewerkt.'.($heeftOverlap ? ' (Let op: overlapt met een andere reservering)' : ''));
-}
+        return redirect()
+            ->route("admin.$type.index")
+            ->with('ok','Reservering bijgewerkt.' . ($heeftOverlap ? ' (Let op: overlapt met een andere reservering)' : ''));
+    }
 
     public function destroy(Request $request, Reservation $reservation)
     {
@@ -103,26 +111,31 @@ class ReservationController extends Controller
     }
 
     /** Agenda (FullCalendar) */
-        public function calendar()
-        {
-            $tz = 'Europe/Amsterdam';
+    public function calendar()
+    {
+        $tz = 'Europe/Amsterdam';
 
-            $events = Reservation::where('status','!=','cancelled')
-                ->orderBy('start_at')
-                ->get()
-                ->map(function ($r) use ($tz) {
-                    return [
-                        'id'    => $r->id,
-                        'title' => ucfirst($r->resource_type) . ($r->reserved_by ? ' – '.$r->reserved_by : ''),
-                        'start' => $r->start_at->copy()->timezone($tz)->toIso8601String(),
-                        'end'   => $r->end_at->copy()->timezone($tz)->toIso8601String(),
-                        'color' => $r->resource_type === 'aanhanger' ? '#0ea5e9' : '#f97316',
-                        'url'   => route('admin.'.$r->resource_type.'.edit', $r),
-                    ];
-                })->values();
+        $events = Reservation::where('status','!=','cancelled')
+            ->orderBy('start_at')
+            ->get()
+            ->map(function ($r) use ($tz) {
+                $color = match ($r->resource_type) {
+                    'aanhanger'  => '#0ea5e9', // blauw
+                    'stofzuiger' => '#f97316', // oranje
+                    'koplampen'  => '#22c55e', // groen
+                    default      => '#6b7280', // grijs
+                };
 
-            return view('admin.reservations.calendar', compact('events'));
-        }
+                return [
+                    'id'    => $r->id,
+                    'title' => ucfirst($r->resource_type) . ($r->reserved_by ? ' – '.$r->reserved_by : ''),
+                    'start' => $r->start_at->copy()->timezone($tz)->toIso8601String(),
+                    'end'   => $r->end_at->copy()->timezone($tz)->toIso8601String(),
+                    'color' => $color,
+                    'url'   => route('admin.'.$r->resource_type.'.edit', $r),
+                ];
+            })->values();
 
+        return view('admin.reservations.calendar', compact('events'));
+    }
 }
-

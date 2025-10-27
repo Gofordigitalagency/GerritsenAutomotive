@@ -170,7 +170,7 @@
             <div class="openingstijden-content">
                 <h1>Koplampen polijsten</h1>
                 <p>Door verwering, zonlicht en vuil kunnen koplampen na verloop van tijd dof en geel worden, wat de lichtopbrengst en uitstraling van je auto vermindert. Met een professionele polijstbehandeling herstellen wij de helderheid en glans van je koplampen. Dit zorgt voor beter zicht in het donker, een veiligere rijervaring en een frisse, verzorgde uitstraling van je auto vaak met zichtbaar resultaat binnen één behandeling.<br></p>
-                <div class="btn-aanbod"><a href="#footer" class="btn btn-primary">Maak een afspraak</a></div>
+                <div class="btn-aanbod"><a href="{{ route('booking.show', ['type' => 'aanhanger']) }}" class="btn btn-primary">Boek nu!</a></div>
             </div>
             <div class="openingstijden-image">
                 <img src="{{ asset('images/head-lights-car.jpg') }}" alt="Handdruk">

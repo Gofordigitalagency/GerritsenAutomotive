@@ -36,6 +36,11 @@
         <img src="{{ asset('images/agenda.svg') }}" alt="" aria-hidden="true">
         <span>Agenda</span>
       </a>
+
+      <a href="{{ route('admin.koplampen.index') }}" class="menu-item {{ request()->routeIs('admin.koplampen.*') ? 'active' : '' }}">
+        <img src="{{ asset('images/headlights.svg') }}" alt="" aria-hidden="true"> {{-- kies je eigen icoonbestand --}}
+        <span>Koplampen</span>
+      </a>
       </nav>
 
 

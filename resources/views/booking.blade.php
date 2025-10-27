@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-      <link rel="icon" type="image/png" href="{{ asset('images/FAVICON-GERRITSEN.png') }}">
+  <link rel="icon" type="image/png" href="{{ asset('images/FAVICON-GERRITSEN.png') }}">
 
   <title>Reserveren</title>
   <style>
@@ -28,7 +28,6 @@
     .wrap{max-width:980px;margin:36px auto;padding:0 16px}
     .title{font-size:34px;font-weight:800;margin:0 0 18px}
 
-    /* Kaart */
     .card{
       background:var(--card);
       color:var(--text);
@@ -38,13 +37,11 @@
       box-shadow:var(--shadow);
     }
 
-    /* Layout helpers */
     .row{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap)}
     .row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
     .input-row{display:flex;flex-direction:column;gap:8px}
     label span{font-size:14px;color:var(--muted)}
 
-    /* === Input styling (geldt voor ALLES, incl. NAAM) === */
     .control{
       -webkit-appearance:none; appearance:none;
       width:100%;
@@ -64,12 +61,10 @@
       border-color:#fff;
       box-shadow:0 0 0 3px rgba(255,255,255,.15);
     }
-    /* Date picker icoon beter zichtbaar */
     input[type="date"].control::-webkit-calendar-picker-indicator{
       filter: invert(1) opacity(.85);
       cursor:pointer;
     }
-    /* Autofill (Chrome) */
     input.control:-webkit-autofill{
       -webkit-text-fill-color:#fff;
       box-shadow:0 0 0 30px var(--chip) inset !important;
@@ -79,7 +74,6 @@
       box-shadow:0 0 0 30px var(--chip-hover) inset !important;
     }
 
-    /* Segment knoppen (Aanhanger/Stofzuiger) */
     .seg{display:flex;gap:10px;flex-wrap:wrap}
     .seg a{
       padding:10px 14px; border:1px solid var(--line); border-radius:12px;
@@ -90,7 +84,6 @@
     .seg a:active{transform:translateY(1px)}
     .seg a.active{background:#111;border-color:#111;color:#fff}
 
-    /* Tijdsloten */
     .times{display:flex;flex-wrap:wrap;gap:10px;min-height:44px}
     .times button{
       padding:10px 12px; border-radius:12px;
@@ -123,7 +116,6 @@
 
     .summary{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text)}
 
-    /* Responsive */
     @media (max-width:900px){ .row,.row-3{grid-template-columns:1fr} }
     @media (max-width:480px){
       .wrap{padding:0 12px}
@@ -144,8 +136,9 @@
       <div class="input-row">
         <span>Onderdeel</span>
         <div class="seg">
-          <a href="{{ route('booking.show',['type'=>'aanhanger']) }}" class="{{ $type==='aanhanger'?'active':'' }}">Aanhanger</a>
+          <a href="{{ route('booking.show',['type'=>'aanhanger']) }}"  class="{{ $type==='aanhanger'?'active':'' }}">Aanhanger</a>
           <a href="{{ route('booking.show',['type'=>'stofzuiger']) }}" class="{{ $type==='stofzuiger'?'active':'' }}">Tapijtreiniger</a>
+          <a href="{{ route('booking.show',['type'=>'koplampen']) }}"  class="{{ $type==='koplampen'?'active':'' }}">Koplampen polijsten</a>
         </div>
       </div>
 
@@ -195,6 +188,9 @@
 
   <script>
     const type = @json($type);
+    const durationMin = @json($durationMin ?? 60);   // komt uit controller
+    const oneClick = (type === 'koplampen');         // vaste duur -> 1 klik
+
     const dateEl = document.getElementById('date');
     const timesEl = document.getElementById('times');
     const bookForm = document.getElementById('bookForm');
@@ -202,6 +198,14 @@
     const endInput = document.getElementById('end_at');
     const selSummary = document.getElementById('selSummary');
     const submitBtn = document.getElementById('submitBtn');
+    const pickRange = document.getElementById('pickRange');
+
+    // Instructietekst afhankelijk van modus
+    if (pickRange) {
+      pickRange.textContent = oneClick
+        ? 'Selecteer een tijd.'
+        : 'Selecteer eerst een starttijd (klik), daarna een eindtijd (tweede klik).';
+    }
 
     let slots = [];             // [{start:"YYYY-MM-DD HH:mm", label:"HH:mm"}]
     let selStartIndex = null;   // index in slots
@@ -256,7 +260,29 @@
     }
 
     function handleClick(i, btn){
-      if(selStartIndex === null){
+      // 1-klik modus (koplampen): direct vaste duur
+      if (oneClick) {
+        [...timesEl.children].forEach(b => b.classList.remove('sel-start','range','selected'));
+        selStartIndex = i;
+        btn.classList.add('selected');
+
+        const start = new Date(slots[i].start.replace(' ', 'T'));
+        const end   = new Date(start.getTime() + durationMin * 60000);
+
+        const pad = (n)=> (n<10?'0':'')+n;
+        const toISOshort = (d)=> d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+' '+pad(d.getHours())+':'+pad(d.getMinutes());
+
+        startInput.value = toISOshort(start);
+        endInput.value   = toISOshort(end);
+
+        selSummary.textContent = `Gekozen tijd: ${slots[i].label} – ${pad(end.getHours())}:${pad(end.getMinutes())}`;
+        bookForm.style.display = 'block';
+        submitBtn.disabled = false;
+        return;
+      }
+
+      // 2-klikken modus (aanhanger/tapijtreiniger): range
+      if (selStartIndex === null) {
         selStartIndex = i;
         btn.classList.add('sel-start','selected');
         selSummary.textContent = `Start: ${slots[i].label}`;
@@ -264,23 +290,23 @@
         submitBtn.disabled = true;
         return;
       }
-      if(i <= selStartIndex) { resetSelection(); handleClick(i, btn); return; }
-      if(!contiguous(selStartIndex, i)) { resetSelection(); handleClick(i, btn); return; }
+      if (i <= selStartIndex) { resetSelection(); handleClick(i, btn); return; }
+      if (!contiguous(selStartIndex, i)) { resetSelection(); handleClick(i, btn); return; }
 
       selEndIndex = i;
 
       // highlight range
       [...timesEl.children].forEach(b => b.classList.remove('range','selected'));
-      for(let k=selStartIndex; k<=selEndIndex; k++){
+      for (let k = selStartIndex; k <= selEndIndex; k++) {
         timesEl.children[k].classList.add('range');
       }
       timesEl.children[selStartIndex].classList.add('sel-start','selected');
       timesEl.children[selEndIndex].classList.add('selected');
 
-      // end = slotEnd + 30 min
+      // end = laatste slot + 30 min
       const start = new Date(slots[selStartIndex].start.replace(' ', 'T'));
       const endBase = new Date(slots[selEndIndex].start.replace(' ', 'T'));
-      const end = new Date(endBase.getTime() + 30*60000);
+      const end = new Date(endBase.getTime() + 30 * 60000);
 
       const pad = (n)=> (n<10?'0':'')+n;
       const toISOshort = (d)=> d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+' '+pad(d.getHours())+':'+pad(d.getMinutes());

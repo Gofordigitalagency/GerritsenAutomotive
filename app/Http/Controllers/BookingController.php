@@ -9,6 +9,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\BookingSubmitted;
+use App\Mail\BookingConfirmation;
 
 class BookingController extends Controller
 {
@@ -16,11 +17,23 @@ class BookingController extends Controller
     private const OPEN_TIME    = '08:00';
     private const CLOSE_TIME   = '18:00';
     private const SLOT_MINUTES = 30; // raster
-    private const DURATIONS    = [    // duur per resource
+
+    // Duur per resource (in minuten)
+    private const DURATIONS = [
         'aanhanger'  => 60,
         'stofzuiger' => 30,
+        'koplampen'  => 60, // nieuw: vaste duur, 1-klik
     ];
-    private const RESOURCES = ['aanhanger','stofzuiger'];
+
+    // Toegestane resources
+    private const RESOURCES = ['aanhanger','stofzuiger','koplampen'];
+
+    // Labels voor nette weergave in mails
+    private const LABELS = [
+        'aanhanger'  => 'Aanhanger',
+        'stofzuiger' => 'Tapijtreiniger',
+        'koplampen'  => 'Koplampen polijsten',
+    ];
 
     private function normalizeType(?string $t): string
     {
@@ -31,53 +44,59 @@ class BookingController extends Controller
     public function show(Request $request)
     {
         $type = $this->normalizeType($request->query('type'));
+
         return view('booking', [
             'type'        => $type,
+            'typeLabel'   => self::LABELS[$type] ?? ucfirst($type),
             'openTime'    => self::OPEN_TIME,
             'closeTime'   => self::CLOSE_TIME,
             'slotMinutes' => self::SLOT_MINUTES,
+            'durationMin' => self::DURATIONS[$type], // <-- voor 1-klik modus
         ]);
     }
 
-    /** AJAX: vrije starttijden voor een datum & resource */
-    public function slots(Request $request)
-    {
-        $type = $this->normalizeType($request->query('type'));
-        $date = Carbon::parse($request->query('date'))->timezone('Europe/Amsterdam');
+    /** AJAX: vrije starttijden */
+  public function slots(Request $request)
+{
+    $type = $this->normalizeType($request->query('type'));
+    $date = \Illuminate\Support\Carbon::parse($request->query('date'))->timezone('Europe/Amsterdam');
 
-        $open        = Carbon::parse($date->format('Y-m-d').' '.self::OPEN_TIME,  'Europe/Amsterdam');
-        $close       = Carbon::parse($date->format('Y-m-d').' '.self::CLOSE_TIME, 'Europe/Amsterdam');
-        $durationMin = self::DURATIONS[$type];
+    $open        = \Illuminate\Support\Carbon::parse($date->format('Y-m-d').' '.self::OPEN_TIME,  'Europe/Amsterdam');
+    $close       = \Illuminate\Support\Carbon::parse($date->format('Y-m-d').' '.self::CLOSE_TIME, 'Europe/Amsterdam');
+    $durationMin = self::DURATIONS[$type];
 
-        // bestaande reserveringen op die dag
-        $dayReservations = Reservation::ofType($type)
-            ->where('status','!=','cancelled')
-            ->whereDate('start_at', $date->toDateString())
-            ->get(['start_at','end_at']);
+    // ✅ stapgrootte per resource: koplampen = 60 min, rest 30 min
+    $stepMinutes = ($type === 'koplampen') ? 60 : self::SLOT_MINUTES;
 
-        $slots = [];
-        for ($t = $open->copy(); $t->lt($close); $t->addMinutes(self::SLOT_MINUTES)) {
-            $start = $t->copy();
-            $end   = $t->copy()->addMinutes($durationMin);
+    // bestaande reserveringen op die dag
+    $dayReservations = Reservation::ofType($type)
+        ->where('status','!=','cancelled')
+        ->whereDate('start_at', $date->toDateString())
+        ->get(['start_at','end_at']);
 
-            if ($end->gt($close)) continue;
+    $slots = [];
+    for ($t = $open->copy(); $t->lt($close); $t->addMinutes($stepMinutes)) { // 👈 hier $stepMinutes
+        $start = $t->copy();
+        $end   = $t->copy()->addMinutes($durationMin);
 
-            $overlap = $dayReservations->first(function($r) use ($start,$end) {
-                return $r->end_at->gt($start) && $r->start_at->lt($end);
-            });
+        if ($end->gt($close)) continue;
 
-            if (!$overlap && $start->isFuture()) {
-                $slots[] = [
-                    'start' => $start->format('Y-m-d H:i'),
-                    'label' => $start->format('H:i'),
-                ];
-            }
+        $overlap = $dayReservations->first(function($r) use ($start,$end) {
+            return $r->end_at->gt($start) && $r->start_at->lt($end);
+        });
+
+        if (!$overlap && $start->isFuture()) {
+            $slots[] = [
+                'start' => $start->format('Y-m-d H:i'),
+                'label' => $start->format('H:i'),
+            ];
         }
-
-        return response()->json($slots);
     }
 
-    /** Reservering opslaan (publiek) */
+    return response()->json($slots);
+}
+
+    /** Reservering opslaan + mails sturen */
     public function store(Request $request)
     {
         $type = $this->normalizeType($request->input('type'));
@@ -94,7 +113,7 @@ class BookingController extends Controller
         $start = Carbon::parse($data['start_at'], 'Europe/Amsterdam');
         $end   = Carbon::parse($data['end_at'],   'Europe/Amsterdam');
 
-        // Blokkeer overlap (server-side)
+        // Overlap-check
         if (Reservation::overlaps($type, $start, $end)) {
             return back()->withInput()
                 ->withErrors(['start_at' => 'Dit tijdslot overlapt met een bestaande reservering. Kies een andere range.']);
@@ -113,31 +132,36 @@ class BookingController extends Controller
             'created_by'    => null,
         ]);
 
-        // Mail naar admin (alleen admin)
+        // Mail naar admin + klant
         try {
-    // Admin (naar CONTACT_TO_EMAIL)
-    \Mail::send(new \App\Mail\BookingSubmitted([
-        'type'     => $type,
-        'start_at' => $start->format('Y-m-d H:i'),
-        'end_at'   => $end->format('Y-m-d H:i'),
-        'name'     => $data['name'],
-        'phone'    => $data['phone'] ?? null,
-        'email'    => $data['email'],
-    ]));
+            $label = self::LABELS[$type] ?? ucfirst($type);
 
-    // Klantbevestiging
-    \Mail::send(new \App\Mail\BookingConfirmation([
-        'type'     => $type,
-        'start_at' => $start->format('Y-m-d H:i'),
-        'end_at'   => $end->format('Y-m-d H:i'),
-        'name'     => $data['name'],
-        'phone'    => $data['phone'] ?? null,
-        'email'    => $data['email'],
-    ]));
-} catch (\Throwable $e) {
-    \Log::error('Booking mail failed: '.$e->getMessage(), ['exception' => $e]);
-    // reservering is wel opgeslagen; gebruiker krijgt nog steeds de success melding
-}
+            // Admin
+            Mail::send(new BookingSubmitted([
+                'type'       => $type,
+                'type_label' => $label,
+                'start_at'   => $start->format('Y-m-d H:i'),
+                'end_at'     => $end->format('Y-m-d H:i'),
+                'name'       => $data['name'],
+                'phone'      => $data['phone'] ?? null,
+                'email'      => $data['email'],
+            ]));
+
+            // Klant
+            Mail::send(new BookingConfirmation([
+                'type'       => $type,
+                'type_label' => $label,
+                'start_at'   => $start->format('Y-m-d H:i'),
+                'end_at'     => $end->format('Y-m-d H:i'),
+                'name'       => $data['name'],
+                'phone'      => $data['phone'] ?? null,
+                'email'      => $data['email'],
+            ]));
+
+        } catch (\Throwable $e) {
+            Log::error('Booking mail failed: '.$e->getMessage(), ['exception' => $e]);
+        }
+
         return redirect()
             ->route('booking.show', ['type' => $type])
             ->with('ok', 'Bedankt! Je reservering is bevestigd en staat in de agenda.');
