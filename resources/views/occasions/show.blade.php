@@ -375,7 +375,7 @@
             </div>
 
             <div class="footer-content-right">
-                <form method="POST" action="{{ route('contact.send') }}"  class="contact-form" novalidate>
+                <form method="POST" action="{{ route('contact.store') }}"  class="contact-form" novalidate>
                    @csrf
                     <div class="row two">
                     <div class="field">

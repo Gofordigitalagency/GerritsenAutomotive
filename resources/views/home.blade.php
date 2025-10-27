@@ -99,7 +99,7 @@
 </section>
 
 
-<section class="openingstijden-section">
+<!-- <section class="openingstijden-section">
     <div class="container">
         <div class="openingstijden-section-inner">
             <div class="openingstijden-image">
@@ -124,7 +124,7 @@
             </div>
         </div>
     </div>
-</section>
+</section> -->
 
 <section class="openingstijden-section">
     <div class="container">
