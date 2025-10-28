@@ -373,3 +373,21 @@ input,select,textarea{width:100%;padding:10px 12px;border:1px solid #e5e7eb;bord
 #calendar .fc-timegrid-col.fc-day-today {
   background-color: #fffaf5; /* net wat lichter dan var */
 }
+
+
+
+
+/* Primary button (fix voor iOS tekst/klik) */
+.btn.primary{
+  background:#334155;   /* slate-700 */
+  border-color:#334155;
+  color:#fff;
+  font-weight:700;
+  justify-content:center;   /* text centreren bij inline-flex */
+  gap:8px;
+  -webkit-appearance: none; /* iOS rendering fix */
+  appearance: none;
+  pointer-events:auto;      /* just in case er een overlay is */
+}
+.btn.primary:active{ transform:translateY(1px); }
+.btn{ display:inline-flex; align-items:center; justify-content:center; }

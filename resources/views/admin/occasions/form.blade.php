@@ -263,7 +263,9 @@ echo old('overige_options_text', collect($occasion->overige_options ?? [])->impl
     <div class="page-actions" style="margin-top:14px;">
       <a href="{{ route('admin.occasions.index') }}" class="btn">Annuleren</a>
       <div class="spacer"></div>
-      <button class="btn primary" type="submit"> {{ $occasion->exists ? 'Opslaan' : 'Aanmaken' }} </button>
+      <button class="btn primary" type="submit" name="save" value="1">
+  <span>{{ $occasion->exists ? 'Opslaan' : 'Aanmaken' }}</span>
+</button>
     </div>
   </form>
   {{-- ===== HOOFDFORMULIER SLUIT ===== --}}
