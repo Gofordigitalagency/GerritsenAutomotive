@@ -49,15 +49,27 @@
           <input name="type" value="{{ old('type',$occasion->type) }}">
         </label>
 
-        <label class="input-row">
-          <span>Transmissie</span>
-          <input name="transmissie" value="{{ old('transmissie',$occasion->transmissie) }}" placeholder="Handgeschakeld / Automaat" required>
-        </label>
+<label class="input-row">
+  <span>Transmissie</span>
+  <select name="transmissie" required>
+    <option value="">-- Kies transmissie --</option>
+    <option value="Handgeschakeld" {{ old('transmissie', $occasion->transmissie) == 'Handgeschakeld' ? 'selected' : '' }}>Handgeschakeld</option>
+    <option value="Automaat" {{ old('transmissie', $occasion->transmissie) == 'Automaat' ? 'selected' : '' }}>Automaat</option>
+    <option value="Semi-automaat" {{ old('transmissie', $occasion->transmissie) == 'Semi-automaat' ? 'selected' : '' }}>Semi-automaat</option>
+  </select>
+</label>
 
-        <label class="input-row">
-          <span>Brandstof</span>
-          <input name="brandstof" value="{{ old('brandstof',$occasion->brandstof) }}" required>
-        </label>
+<label class="input-row">
+  <span>Brandstof</span>
+  <select name="brandstof" required>
+    <option value="">-- Kies brandstof --</option>
+    <option value="Benzine" {{ old('brandstof', $occasion->brandstof) == 'Benzine' ? 'selected' : '' }}>Benzine</option>
+    <option value="Diesel" {{ old('brandstof', $occasion->brandstof) == 'Diesel' ? 'selected' : '' }}>Diesel</option>
+    <option value="Elektrisch" {{ old('brandstof', $occasion->brandstof) == 'Elektrisch' ? 'selected' : '' }}>Elektrisch</option>
+    <option value="Hybride" {{ old('brandstof', $occasion->brandstof) == 'Hybride' ? 'selected' : '' }}>Hybride</option>
+    <option value="LPG" {{ old('brandstof', $occasion->brandstof) == 'LPG' ? 'selected' : '' }}>LPG</option>
+  </select>
+</label>
 
         <label class="input-row">
           <span>Bouwjaar</span>
@@ -100,10 +112,13 @@
           <input name="interieurkleur" value="{{ old('interieurkleur',$occasion->interieurkleur) }}">
         </label>
 
-        <label class="input-row">
-          <span>BTW/MARGE</span>
-          <input name="btw_marge" value="{{ old('btw_marge',$occasion->btw_marge) }}">
-        </label>
+<label class="input-row">
+  <span>BTW/MARGE</span>
+  <select name="btw_marge">
+    <option value="BTW" {{ old('btw_marge', $occasion->btw_marge) == 'BTW' ? 'selected' : '' }}>BTW</option>
+    <option value="Marge" {{ old('btw_marge', $occasion->btw_marge) == 'Marge' ? 'selected' : '' }}>Marge</option>
+  </select>
+</label>
 
         <label class="input-row">
           <span>Cilinderinhoud (cc)</span>
