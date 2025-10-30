@@ -28,7 +28,7 @@
 
     <div class="icons">
       <!-- Telefoon (alleen mobiel zichtbaar via CSS) -->
-      <a href="tel:+31649951874" class="phone-btn" aria-label="Bel ons">
+      <a href="tel:+31638257987" class="phone-btn" aria-label="Bel ons">
         <img src="{{ asset('images/phone-call.svg') }}" alt="" class="phone-icon">
       </a>
 

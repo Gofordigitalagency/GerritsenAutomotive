@@ -222,17 +222,23 @@
 
                     <div class="location">
                         <img src="{{ asset('images/location.svg') }}" alt="home">
-                        <p>Handelstraat 10, 6851 EH Huissen</p>
+                        <p>Gelderse Rooslaan 14 A, 6841 BE Arnhem</p>
                     </div> 
 
                     <div class="phone">
                         <img src="{{ asset('images/telephone.svg') }}" alt="home">
-                        <p>+ 31 6 49951874</p>
+                        <p>+ 31 6 38257987 (Verkoop)</p>
+
+                    </div>
+
+                    <div class="phone">
+                        <img src="{{ asset('images/telephone.svg') }}" alt="home">
+                        <p>+ 31 6 49951874 (Werkplaats)</p>
                     </div>
                     
                     <div class="email">
                         <img src="{{ asset('images/mail.svg') }}" alt="home">
-                        <p>Info@gerritsenautomotive.nl</p>
+                        <p>Handelsonderneming@mgerritsen.nl</p>
                     </div>                     
                 </div>
 

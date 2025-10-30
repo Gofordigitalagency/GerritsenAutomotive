@@ -207,6 +207,14 @@
             <a href="mailto:info@gerritsenautomotive.nl">info@gerritsenautomotive.nl</a>
           </div>
         </div>
+
+               <div class="ocd-seller">
+          <div class="ocd-seller-info">
+            <div class="name">Shania Jung (Verkoop)</div>
+            <a href="tel:+31649951874">+31 6 38257987</a>
+            <a href="mailto:info@gerritsenautomotive.nl">info@gerritsenautomotive.nl</a>
+          </div>
+        </div>
       </aside>
     </div>
 
@@ -345,10 +353,11 @@
 <section class="openingstijden-section">
     <div class="container">
         <div class="openingstijden-section-inner">
-            <div class="openingstijden-content">
-                <h1>Openingstijden & afhalen op afspraak</h1>
-                <p>Door de week ben je welkom voor advies, verhuur en onderhoud. Op zaterdag kun je snel ophalen/inleveren. Buiten deze tijden plannen we op verzoek een afhaal-/inleverslot (ochtend/avond).</p>
-                <p>Openingstijden: Ma–Vr 08:30–17:30, Za 09:00–16:00, Zo: gesloten.</p>
+             <div class="openingstijden-content">
+                <h1>Openingstijden</h1>
+                <p>Je bent van harte welkom tijdens onze vaste openingstijden. Of je nu komt voor verhuur, een reservering wilt ophalen of iets wilt inleveren: wij staan klaar om je snel en prettig te helpen. We denken graag met je mee, zorgen dat alles vlot geregeld is en laten je niet onnodig wachten. Zo weet je precies waar je aan toe bent en kun je snel weer op weg.</p>
+                <p><strong>Ma–Vr:</strong> 08:30–17:30 · <strong>Za:</strong> 09:00–16:00 · <strong>Zo:</strong> gesloten</p>
+                <p>U bent welkom tijdens onze reguliere openingstijden. Wilt u langskomen buiten deze tijden? <br> Dat kan! Neem gerust contact met ons op om een afspraak te maken.</p>
                 <div class="btn-aanbod"><a href="#footer" class="btn btn-primary">Maak Afspraak</a></div>
             </div>
             <div class="openingstijden-image">
@@ -372,18 +381,24 @@
 
                     <div class="location">
                         <img src="{{ asset('images/location.svg') }}" alt="home">
-                        <p>Handelstraat 10, 6851 EH Huissen</p>
+                        <p>Gelderse Rooslaan 14 A, 6841 BE Arnhem</p>
                     </div> 
 
                     <div class="phone">
                         <img src="{{ asset('images/telephone.svg') }}" alt="home">
-                        <p>+ 31 6 49951874</p>
+                        <p>+ 31 6 38257987 (Verkoop)</p>
+
+                    </div>
+
+                    <div class="phone">
+                        <img src="{{ asset('images/telephone.svg') }}" alt="home">
+                        <p>+ 31 6 49951874 (Werkplaats)</p>
                     </div>
                     
                     <div class="email">
                         <img src="{{ asset('images/mail.svg') }}" alt="home">
-                        <p>Info@gerritsenautomotive.nl</p>
-                    </div>                     
+                        <p>Handelsonderneming@mgerritsen.nl</p>
+                    </div>                    
                 </div>
 
                 <img src="{{ asset('images/Garage-footer.png') }}" alt="keuringen">
