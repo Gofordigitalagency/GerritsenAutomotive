@@ -386,13 +386,13 @@
 
                     <div class="phone">
                         <img src="{{ asset('images/telephone.svg') }}" alt="home">
-                        <p>+ 31 6 38257987 (Verkoop)</p>
+                        <p>+ 31 6 38257987 (Verkoop, Shania)</p>
 
                     </div>
 
                     <div class="phone">
                         <img src="{{ asset('images/telephone.svg') }}" alt="home">
-                        <p>+ 31 6 49951874 (Werkplaats)</p>
+                        <p>+ 31 6 49951874 (Werkplaats, Mick)</p>
                     </div>
                     
                     <div class="email">

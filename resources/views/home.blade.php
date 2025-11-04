@@ -208,6 +208,187 @@
     </div>
 </section>
 
+
+
+<section class="openingstijden-section">
+    <div class="container">
+        <div class="openingstijden-section-inner">
+            <div class="openingstijden-image">
+                <img src="{{ asset('images/car-sale.jpg') }}" alt="Handdruk">
+            </div>
+            <div class="openingstijden-content">
+                <h1>Uw auto snel en betrouwbaar verkopen</h1>
+                <p>Wilt u uw auto verkopen zonder gedoe met online platforms of handelaren?</p>
+                <p>Vul hieronder uw gegevens in en ontvang binnen korte tijd een vrijblijvend bod van Gerritsen Automotive.</p>
+
+
+                @if(session('success'))
+  <div class="alert success" style="margin:10px 0;background:#e8fff0;border:1px solid #b6f0c5;padding:10px;border-radius:8px;">
+    {{ session('success') }}
+  </div>
+@endif
+@if ($errors->any())
+  <div class="alert error" style="margin:10px 0;background:#fff3f3;border:1px solid #f5b5b5;padding:10px;border-radius:8px;">
+    <ul style="margin:0;padding-left:18px;">@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul>
+  </div>
+@endif
+                <button class="btn-sell-open" type="button" onclick="SellCar.open()">Auto verkopen</button>
+                <div id="sellcar-overlay" class="sc-overlay" aria-hidden="true" onclick="SellCar.close(event)">
+  <div class="sc-modal" role="dialog" aria-modal="true" aria-labelledby="sellcar-title" onclick="event.stopPropagation()">
+    <button class="sc-close" aria-label="Sluiten" onclick="SellCar.close()">×</button>
+    <h2 id="sellcar-title" class="sc-title">Auto verkopen</h2>
+
+    <form id="sellcar-form" class="sc-form" action="{{ route('sellcar.store') }}" method="POST" enctype="multipart/form-data" novalidate>
+      @csrf
+
+      <h3 class="sc-subtitle">Gegevens van uw auto</h3>
+      <div class="sc-grid">
+        <label class="sc-input">
+          <span>Merk</span>
+          <input name="brand" type="text" placeholder="Merk">
+        </label>
+        <label class="sc-input">
+          <span>Model</span>
+          <input name="model" type="text" placeholder="Model">
+        </label>
+        <label class="sc-input">
+          <span>Kenteken <b>*</b></span>
+          <input name="license_plate" type="text" placeholder="XX-999-X" required>
+        </label>
+        <label class="sc-input">
+          <span>Kilometerstand <b>*</b></span>
+          <input name="mileage" type="number" min="0" step="1" placeholder="bijv. 123456" required>
+        </label>
+      </div>
+
+      <div class="sc-field">
+        <span class="sc-label">Opties</span>
+        <div class="sc-options">
+          @php
+            $opts = [
+              'Airco','Climate control','Cruise control','Elektrische ramen voor','Elektrische ramen achter','Schuifdak',
+              'Panoramadak','Lichtmetalen velgen','Navigatie','Multifunctioneel stuur','Xenon verlichting','Lederen bekleding',
+              'Stoelverwarming','Parkeersensoren','Elektrische stoelverstelling','Metallic lak','Elektrische spiegels'
+            ];
+          @endphp
+          @foreach($opts as $o)
+          <label class="sc-check"><input type="checkbox" name="options[]" value="{{ $o }}"> <span>{{ $o }}</span></label>
+          @endforeach
+        </div>
+      </div>
+
+      <div class="sc-field">
+        <span class="sc-label">Foto's</span>
+        <div id="sc-drop" class="sc-drop" aria-label="Foto upload">
+          <strong>Drag &amp; Drop Files Here</strong>
+          <span>ofwel</span>
+          <label class="sc-browse">Blader door de bestanden
+            <input id="photos" name="photos[]" type="file" accept="image/*" multiple hidden>
+          </label>
+          <div class="sc-count"><span id="sc-count">0</span> van 20</div>
+        </div>
+        <div id="sc-preview" class="sc-preview"></div>
+      </div>
+
+      <label class="sc-input">
+        <span>Overige bijzonderheden, zoals eventuele schade, staat van onderhoud en speciale opties</span>
+        <textarea name="remarks" rows="4" placeholder="Vertel iets over de staat van de auto..."></textarea>
+      </label>
+
+      <h3 class="sc-subtitle">Uw gegevens</h3>
+      <label class="sc-input">
+        <span>Uw naam <b>*</b></span>
+        <input name="name" type="text" required>
+      </label>
+      <label class="sc-input">
+        <span>Telefoonnummer <b>*</b></span>
+        <input name="phone" type="tel" required>
+      </label>
+      <label class="sc-input">
+        <span>E-mailadres <b>*</b></span>
+        <input name="email" type="email" required>
+      </label>
+      <label class="sc-input">
+        <span>Vraag en/of opmerking</span>
+        <textarea name="message" rows="3" placeholder="(optioneel)"></textarea>
+      </label>
+
+      <label class="sc-privacy">
+        <input id="privacy" name="privacy" type="checkbox" required>
+        <span>Door dit formulier te gebruiken gaat u akkoord met onze <a href="/privacy" target="_blank" rel="noopener">privacyverklaring</a></span>
+      </label>
+
+      <button class="sc-submit" type="submit">Verzenden</button>
+    </form>
+  </div>
+</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+
+<!-- Trigger knop (zet waar je wilt) -->
+
+
+<!-- Modal -->
+
+
+<style>
+/* --- basic button trigger --- */
+.btn-sell-open{padding: 10px 20px;;border:none;background:#747474;color:#fff;  font-family: 'Play', sans-serif; font-size:16px; font-weight: bold;}
+
+/* --- modal --- */
+.sc-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:16px;z-index:9999}
+.sc-overlay.is-open{display:flex}
+.sc-modal{width:min(860px,100%);background:#fff;border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,.25);position:relative;max-height:90vh;overflow:auto}
+.sc-title{margin:0;padding:18px 22px;background:#747474;color:#fff;border-radius:16px 16px 0 0;font-size:24px;letter-spacing:.2px}
+.sc-close{position:absolute;right:12px;top:10px;width:38px;height:38px;border:none;border-radius:999px;background:#747474;color:#fff;font-size:24px;cursor:pointer}
+.sc-form{padding:18px 22px 24px 22px}
+.sc-subtitle{margin:8px 0 14px 0;font-size:20px}
+.sc-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:640px){.sc-grid{grid-template-columns:1fr}}
+
+.sc-input{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.sc-input > span{font-weight:600}
+.sc-input input,.sc-input textarea{
+  width:100%;padding:12px 14px;border:1px solid #747474;border-radius:10px;font-size:16px;outline:none;
+}
+.sc-input input:focus,.sc-input textarea:focus{border-color:#d0011c;box-shadow:0 0 0 3px rgba(208,1,28,.1)}
+
+.sc-field{margin:12px 0}
+.sc-label{display:block;font-weight:700;margin-bottom:8px}
+.sc-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+@media (max-width:640px){.sc-options{grid-template-columns:1fr}}
+.sc-check{display:flex;align-items:center;gap:8px}
+.sc-check input{width:18px;height:18px}
+
+.sc-drop{
+  border:2px dashed #747474;border-radius:12px;padding:22px;text-align:center;display:flex;flex-direction:column;gap:6px;position:relative
+}
+.sc-drop.dragover{background:#f9fafb;border-color:#747474}
+.sc-browse{color:#d0011c;cursor:pointer;font-weight:700}
+.sc-count{position:absolute;right:12px;bottom:8px;font-size:12px;color:#6b7280}
+
+.sc-preview{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+@media (max-width:640px){.sc-preview{grid-template-columns:repeat(3,1fr)}}
+.sc-thumb{position:relative;border:1px solid #eee;border-radius:8px;overflow:hidden}
+.sc-thumb img{width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:1/1}
+.sc-thumb button{position:absolute;top:4px;right:4px;border:none;background:#0009;color:#fff;width:24px;height:24px;border-radius:6px;cursor:pointer}
+
+.sc-privacy{display:flex;gap:10px;align-items:flex-start;margin:12px 0}
+.sc-privacy a{color:#d0011c}
+
+.sc-submit{
+  display:inline-block;width:100%;margin-top:4px;border:none;border-radius:10px;background:#747474;color:#fff;
+  font-weight:800;padding:14px 16px;font-size:16px;cursor:pointer
+}
+</style>
+
+
+
 <section id="footer" class="footer-section">
     <div class="container">
         <div class="footer-section-inner">
@@ -227,13 +408,13 @@
 
                     <div class="phone">
                         <img src="{{ asset('images/telephone.svg') }}" alt="home">
-                        <p>+ 31 6 38257987 (Verkoop)</p>
+                        <p>+ 31 6 38257987 (Verkoop, Shania)</p>
 
                     </div>
 
                     <div class="phone">
                         <img src="{{ asset('images/telephone.svg') }}" alt="home">
-                        <p>+ 31 6 49951874 (Werkplaats)</p>
+                        <p>+ 31 6 49951874 (Werkplaats, Mick)</p>
                     </div>
                     
                     <div class="email">
@@ -334,22 +515,98 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+  // (optioneel) bestaand contactModal gedrag — veilig gemaakt
   var modal = document.getElementById('contactModal');
-  if (!modal) return;
-  function closeModal(){ modal.remove(); }
-  modal.querySelectorAll('[data-close-modal]').forEach(function(btn){
-    btn.addEventListener('click', closeModal);
-  });
-  // klik buiten de box sluit ook
-  modal.addEventListener('click', function(e){
-    if(e.target === modal){ closeModal(); }
-  });
-  // ESC sluit
-  document.addEventListener('keydown', function(e){
-    if(e.key === 'Escape'){ closeModal(); }
-  });
+  if (modal) {
+    function closeModal(){ modal.remove(); }
+    modal.querySelectorAll('[data-close-modal]').forEach(function(btn){
+      btn.addEventListener('click', closeModal);
+    });
+    modal.addEventListener('click', function(e){ if(e.target === modal){ closeModal(); } });
+    document.addEventListener('keydown', function(e){ if(e.key === 'Escape'){ closeModal(); } });
+  }
+
+  // ✅ Maak SellCar GLOBAAL (op window), geen dubbele DOMContentLoaded binnenin
+  window.SellCar = (function () {
+    const overlay   = () => document.getElementById('sellcar-overlay');
+    const drop      = () => document.getElementById('sc-drop');
+    const fileInput = () => document.getElementById('photos');
+    const preview   = () => document.getElementById('sc-preview');
+    const counter   = () => document.getElementById('sc-count');
+    const MAX_FILES = 20;
+
+    let files = [];
+
+    function open(){ overlay().classList.add('is-open'); overlay().setAttribute('aria-hidden','false'); }
+    function close(){ overlay().classList.remove('is-open'); overlay().setAttribute('aria-hidden','true'); }
+
+    function updateCounter(){ if(counter()) counter().textContent = files.length; }
+    function renderPreviews(){
+      if (!preview()) return;
+      preview().innerHTML = '';
+      files.forEach((f, idx) => {
+        const url = URL.createObjectURL(f);
+        const card = document.createElement('div');
+        card.className = 'sc-thumb';
+        card.innerHTML = `<img src="${url}" alt="">
+                          <button type="button" aria-label="Verwijderen" data-i="${idx}">×</button>`;
+        preview().appendChild(card);
+      });
+    }
+    function syncInput(){
+      if (!fileInput()) return;
+      const dt = new DataTransfer();
+      files.forEach(f => dt.items.add(f));
+      fileInput().files = dt.files;
+    }
+    function addFiles(list){
+      for (const f of list){
+        if (files.length >= MAX_FILES) break;
+        if (!f.type || !f.type.startsWith('image/')) continue;
+        files.push(f);
+      }
+      updateCounter(); renderPreviews(); syncInput();
+    }
+
+    function bind(){
+      // browse
+      if (fileInput()) fileInput().addEventListener('change', e => addFiles(e.target.files));
+
+      // drag & drop
+      if (drop()){
+        ['dragenter','dragover'].forEach(ev => {
+          drop().addEventListener(ev, e => { e.preventDefault(); drop().classList.add('dragover'); });
+        });
+        ['dragleave','drop'].forEach(ev => {
+          drop().addEventListener(ev, e => { e.preventDefault(); drop().classList.remove('dragover'); });
+        });
+        drop().addEventListener('drop', e => addFiles(e.dataTransfer.files));
+      }
+
+      // verwijderen
+      if (preview()) preview().addEventListener('click', e => {
+        const btn = e.target.closest('button[data-i]');
+        if (!btn) return;
+        files.splice(+btn.dataset.i, 1);
+        updateCounter(); renderPreviews(); syncInput();
+      });
+
+      // submit-validatie
+      const form = document.getElementById('sellcar-form');
+      if (form) form.addEventListener('submit', e => {
+        if (!form.checkValidity()){
+          e.preventDefault();
+          form.reportValidity();
+        }
+      });
+    }
+
+    bind();
+    return { open, close };
+  })();
 });
 </script>
+
 
 </form>
 

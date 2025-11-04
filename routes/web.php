@@ -7,6 +7,8 @@ use App\Http\Controllers\PublicOccasionController;
 use App\Http\Controllers\admin\OccasionController as AdminOccasionController;
 use App\Http\Controllers\admin\ReservationController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\SellCarController;
+
 
 // --- Publiek ---
 Route::get('/', [PublicOccasionController::class, 'home'])->name('home');
@@ -21,6 +23,10 @@ Route::post('/contact', [ContactController::class, 'store'])->name('contact.stor
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+
+Route::post('/sell-car', [SellCarController::class, 'store'])
+    ->name('sellcar.store');   // ⬅️ deze naam gebruikt je form
 
 // Reserveren (publiek)
 Route::get('/reserveren', [BookingController::class, 'show'])->name('booking.show');          // ?type=aanhanger|stofzuiger|koplampen
@@ -65,4 +71,6 @@ Route::middleware('auth')->prefix('admin')->as('admin.')->group(function () {
 
     // Agenda
     Route::get('/agenda', [ReservationController::class, 'calendar'])->name('agenda.index');
+
+
 });
