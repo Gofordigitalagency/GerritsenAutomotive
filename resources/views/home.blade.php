@@ -232,7 +232,7 @@
     <ul style="margin:0;padding-left:18px;">@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul>
   </div>
 @endif
-                <button class="btn-sell-open" type="button" onclick="SellCar.open()">Auto verkopen</button>
+                <button href="#verkopen" class="btn-sell-open" type="button" onclick="SellCar.open()">Auto verkopen</button>
                 <div id="sellcar-overlay" class="sc-overlay" aria-hidden="true" onclick="SellCar.close(event)">
   <div class="sc-modal" role="dialog" aria-modal="true" aria-labelledby="sellcar-title" onclick="event.stopPropagation()">
     <button class="sc-close" aria-label="Sluiten" onclick="SellCar.close()">×</button>
@@ -526,7 +526,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.addEventListener('keydown', function(e){ if(e.key === 'Escape'){ closeModal(); } });
   }
 
-  // ✅ Maak SellCar GLOBAAL (op window), geen dubbele DOMContentLoaded binnenin
+  // ✅ SellCar module
   window.SellCar = (function () {
     const overlay   = () => document.getElementById('sellcar-overlay');
     const drop      = () => document.getElementById('sc-drop');
@@ -537,8 +537,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let files = [];
 
-    function open(){ overlay().classList.add('is-open'); overlay().setAttribute('aria-hidden','false'); }
-    function close(){ overlay().classList.remove('is-open'); overlay().setAttribute('aria-hidden','true'); }
+    function open(){
+      if (overlay()) {
+        overlay().classList.add('is-open');
+        overlay().setAttribute('aria-hidden','false');
+      }
+    }
+    function close(){
+      if (overlay()) {
+        overlay().classList.remove('is-open');
+        overlay().setAttribute('aria-hidden','true');
+      }
+    }
 
     function updateCounter(){ if(counter()) counter().textContent = files.length; }
     function renderPreviews(){
@@ -599,13 +609,58 @@ document.addEventListener('DOMContentLoaded', function () {
           form.reportValidity();
         }
       });
+
+      // Buttons die de popup moeten openen (graceful: mogen ook een href hebben)
+      document.querySelectorAll('[data-sellcar-open]').forEach(el => {
+        el.addEventListener('click', function(ev){
+          // Als het een <a href="#verkopen"> is, laat de hash werken, maar open ook popup
+          open();
+        });
+      });
     }
 
     bind();
     return { open, close };
   })();
+
+  // ✳️ Kleine helper: highlight effect voor fallback sectie
+  (function ensureHighlightStyle(){
+    if (document.getElementById('sc-highlight-style')) return;
+    const css = `
+      .sc-highlight { outline: 3px solid rgba(246, 199, 118, .9); box-shadow: 0 0 0 6px rgba(246,199,118,.25); transition: outline-color .6s ease, box-shadow .6s ease; }
+    `;
+    const style = document.createElement('style');
+    style.id = 'sc-highlight-style';
+    style.textContent = css;
+    document.head.appendChild(style);
+  })();
+
+  // 🔗 Deep-link handler: opent popup bij #verkopen, of scrolt/markeert sectie als fallback
+  function handleDeepLink(){
+    if (location.hash === '#verkopen') {
+      // Probeer popup te openen
+      if (window.SellCar && typeof window.SellCar.open === 'function') {
+        window.SellCar.open();
+      }
+      // Fallback: scroll + highlight naar sectie (alleen als geen overlay bestaat)
+      const overlayEl = document.getElementById('sellcar-overlay');
+      if (!overlayEl) {
+        const section = document.getElementById('sellcar-section') || document.querySelector('[data-sellcar-section]');
+        if (section) {
+          section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          section.classList.add('sc-highlight');
+          setTimeout(() => section.classList.remove('sc-highlight'), 2000);
+        }
+      }
+    }
+  }
+
+  // Run nu en op hash-wijziging
+  handleDeepLink();
+  window.addEventListener('hashchange', handleDeepLink);
 });
 </script>
+
 
 
 </form>
