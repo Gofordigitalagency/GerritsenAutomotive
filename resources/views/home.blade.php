@@ -26,7 +26,7 @@
 
             <div class="info-content">
                 <h1>Gerritsen Automotive</h1>
-                <p>Gerritsen Automotive is jouw vertrouwde adres in Huissen voor advies, verkoop van geselecteerde occasions en praktische verhuur.</p>
+                <p>Gerritsen Automotive is jouw vertrouwde adres in Arnhem voor advies, verkoop van geselecteerde occasions en praktische verhuur.</p>
                 <p>We houden het persoonlijk en helder: duidelijke prijzen, transparante informatie en snel schakelen. Of je nu vandaag wil proefrijden of iets wilt huren, we regelen het vlot en zonder gedoe. Klaar om te rijden? We denken met je mee.</p>
                <div class="btn-aanbod">
                 <a href="#aanbod" class="btn btn-primary">Bekijk Onze Aanbod</a>
