@@ -72,5 +72,7 @@ Route::middleware('auth')->prefix('admin')->as('admin.')->group(function () {
     // Agenda
     Route::get('/agenda', [ReservationController::class, 'calendar'])->name('agenda.index');
 
+    Route::post('occasions/{occasion}/gallery/reorder', [AdminOccasionController::class, 'galleryReorder'])
+        ->name('occasions.gallery.reorder');
 
 });

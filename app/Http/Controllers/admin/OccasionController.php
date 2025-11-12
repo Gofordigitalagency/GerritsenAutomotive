@@ -52,10 +52,17 @@ class OccasionController extends Controller
             $data['hoofdfoto_path'] = $request->file('hoofdfoto')->store('occasions', 'public');
         }
 
-        // Galerij (meerdere foto's)
+        // Galerij (meerdere foto's) — respecteer sleepvolgorde via gallery_new_order (JSON)
         $galleryPaths = [];
-        if ($request->hasFile('gallery')) {
-            foreach ($request->file('gallery') as $file) {
+        $files = $request->file('gallery', []);
+        if (!empty($files)) {
+            $order = json_decode($request->input('gallery_new_order', '[]'), true);
+            if (is_array($order) && count($order)) {
+                // Bouw nieuwe volgorde op basis van "oude indices"
+                $files = collect($order)->map(fn($i) => $files[$i] ?? null)->filter()->values()->all();
+            }
+
+            foreach ($files as $file) {
                 if ($file && $file->isValid()) {
                     $galleryPaths[] = $file->store('occasions', 'public');
                 }
@@ -97,10 +104,17 @@ class OccasionController extends Controller
             $data['hoofdfoto_path'] = $request->file('hoofdfoto')->store('occasions', 'public');
         }
 
-        // Galerij: voeg nieuwe toe aan bestaande
+        // Galerij: voeg nieuwe toe, maar respecteer sleepvolgorde van de NIEUWE uploads
         $gallery = $occasion->galerij ?? [];
-        if ($request->hasFile('gallery')) {
-            foreach ($request->file('gallery') as $file) {
+
+        $newFiles = $request->file('gallery', []);
+        if (!empty($newFiles)) {
+            $order = json_decode($request->input('gallery_new_order', '[]'), true);
+            if (is_array($order) && count($order)) {
+                $newFiles = collect($order)->map(fn($i) => $newFiles[$i] ?? null)->filter()->values()->all();
+            }
+
+            foreach ($newFiles as $file) {
                 if ($file && $file->isValid()) {
                     $gallery[] = $file->store('occasions', 'public');
                 }
@@ -142,7 +156,14 @@ class OccasionController extends Controller
 
         $gallery = $occasion->galerij ?? [];
 
-        foreach ($request->file('gallery') as $file) {
+        $files = $request->file('gallery', []);
+        // (optioneel) respecteer ook hier een gallery_new_order uit een losse upload-sectie
+        $order = json_decode($request->input('gallery_new_order', '[]'), true);
+        if (is_array($order) && count($order)) {
+            $files = collect($order)->map(fn($i) => $files[$i] ?? null)->filter()->values()->all();
+        }
+
+        foreach ($files as $file) {
             if ($file && $file->isValid()) {
                 $gallery[] = $file->store('occasions', 'public');
             }
@@ -189,6 +210,34 @@ class OccasionController extends Controller
         $occasion->save();
 
         return back()->with('ok', 'Hoofdfoto ingesteld.');
+    }
+
+    // ✅ NIEUW: volgorde van bestaande galerij opslaan
+    public function galleryReorder(Occasion $occasion, Request $request)
+    {
+        $order = $request->input('order'); // array met oude indices in nieuwe volgorde
+        $gallery = $occasion->galerij ?? [];
+        $count = count($gallery);
+
+        if (!is_array($order) || $count === 0) {
+            return back()->withErrors(['order' => 'Ongeldige volgorde.']);
+        }
+
+        // Veiligheid & normalisatie
+        $order = array_values(array_filter(array_map('intval', $order), fn($i) => $i >= 0 && $i < $count));
+        if (count($order) !== $count) {
+            return back()->withErrors(['order' => 'Volgorde-lengte klopt niet.']);
+        }
+
+        $new = [];
+        foreach ($order as $oldIndex) {
+            $new[] = $gallery[$oldIndex];
+        }
+
+        $occasion->galerij = $new;
+        $occasion->save();
+
+        return back()->with('ok', 'Volgorde opgeslagen.');
     }
 
     /* ===== Helpers ===== */

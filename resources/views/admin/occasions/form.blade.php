@@ -49,27 +49,27 @@
           <input name="type" value="{{ old('type',$occasion->type) }}">
         </label>
 
-<label class="input-row">
-  <span>Transmissie</span>
-  <select name="transmissie" required>
-    <option value="">-- Kies transmissie --</option>
-    <option value="Handgeschakeld" {{ old('transmissie', $occasion->transmissie) == 'Handgeschakeld' ? 'selected' : '' }}>Handgeschakeld</option>
-    <option value="Automaat" {{ old('transmissie', $occasion->transmissie) == 'Automaat' ? 'selected' : '' }}>Automaat</option>
-    <option value="Semi-automaat" {{ old('transmissie', $occasion->transmissie) == 'Semi-automaat' ? 'selected' : '' }}>Semi-automaat</option>
-  </select>
-</label>
+        <label class="input-row">
+          <span>Transmissie</span>
+          <select name="transmissie" required>
+            <option value="">-- Kies transmissie --</option>
+            <option value="Handgeschakeld" {{ old('transmissie', $occasion->transmissie) == 'Handgeschakeld' ? 'selected' : '' }}>Handgeschakeld</option>
+            <option value="Automaat" {{ old('transmissie', $occasion->transmissie) == 'Automaat' ? 'selected' : '' }}>Automaat</option>
+            <option value="Semi-automaat" {{ old('transmissie', $occasion->transmissie) == 'Semi-automaat' ? 'selected' : '' }}>Semi-automaat</option>
+          </select>
+        </label>
 
-<label class="input-row">
-  <span>Brandstof</span>
-  <select name="brandstof" required>
-    <option value="">-- Kies brandstof --</option>
-    <option value="Benzine" {{ old('brandstof', $occasion->brandstof) == 'Benzine' ? 'selected' : '' }}>Benzine</option>
-    <option value="Diesel" {{ old('brandstof', $occasion->brandstof) == 'Diesel' ? 'selected' : '' }}>Diesel</option>
-    <option value="Elektrisch" {{ old('brandstof', $occasion->brandstof) == 'Elektrisch' ? 'selected' : '' }}>Elektrisch</option>
-    <option value="Hybride" {{ old('brandstof', $occasion->brandstof) == 'Hybride' ? 'selected' : '' }}>Hybride</option>
-    <option value="LPG" {{ old('brandstof', $occasion->brandstof) == 'LPG' ? 'selected' : '' }}>LPG</option>
-  </select>
-</label>
+        <label class="input-row">
+          <span>Brandstof</span>
+          <select name="brandstof" required>
+            <option value="">-- Kies brandstof --</option>
+            <option value="Benzine" {{ old('brandstof', $occasion->brandstof) == 'Benzine' ? 'selected' : '' }}>Benzine</option>
+            <option value="Diesel" {{ old('brandstof', $occasion->brandstof) == 'Diesel' ? 'selected' : '' }}>Diesel</option>
+            <option value="Elektrisch" {{ old('brandstof', $occasion->brandstof) == 'Elektrisch' ? 'selected' : '' }}>Elektrisch</option>
+            <option value="Hybride" {{ old('brandstof', $occasion->brandstof) == 'Hybride' ? 'selected' : '' }}>Hybride</option>
+            <option value="LPG" {{ old('brandstof', $occasion->brandstof) == 'LPG' ? 'selected' : '' }}>LPG</option>
+          </select>
+        </label>
 
         <label class="input-row">
           <span>Bouwjaar</span>
@@ -78,8 +78,9 @@
 
         <label class="input-row">
           <span>Exterieur kleur</span>
-          <input id="kleur" type="text" name="kleur" value="{{ old('kleur', $occasion->kleur ?? '') }}"placeholder="Bijv. Zwart metallic">
+          <input id="kleur" type="text" name="kleur" value="{{ old('kleur', $occasion->kleur ?? '') }}" placeholder="Bijv. Zwart metallic">
         </label>
+
         <label class="input-row">
           <span>Tellerstand (km)</span>
           <input type="number" name="tellerstand" value="{{ old('tellerstand',$occasion->tellerstand) }}" id="tellerInput">
@@ -112,13 +113,13 @@
           <input name="interieurkleur" value="{{ old('interieurkleur',$occasion->interieurkleur) }}">
         </label>
 
-<label class="input-row">
-  <span>BTW/MARGE</span>
-  <select name="btw_marge">
-    <option value="BTW" {{ old('btw_marge', $occasion->btw_marge) == 'BTW' ? 'selected' : '' }}>BTW</option>
-    <option value="Marge" {{ old('btw_marge', $occasion->btw_marge) == 'Marge' ? 'selected' : '' }}>Marge</option>
-  </select>
-</label>
+        <label class="input-row">
+          <span>BTW/MARGE</span>
+          <select name="btw_marge">
+            <option value="BTW" {{ old('btw_marge', $occasion->btw_marge) == 'BTW' ? 'selected' : '' }}>BTW</option>
+            <option value="Marge" {{ old('btw_marge', $occasion->btw_marge) == 'Marge' ? 'selected' : '' }}>Marge</option>
+          </select>
+        </label>
 
         <label class="input-row">
           <span>Cilinderinhoud (cc)</span>
@@ -185,13 +186,12 @@
           <div class="with-addon">
             <span class="addon">€</span>
             <input type="number" name="bijtelling" id="bijtellingInput"
-                  step="1" min="0"
-                  value="{{ old('bijtelling',$occasion->bijtelling) }}"
-                  placeholder="bijv. 150">
+                   step="1" min="0"
+                   value="{{ old('bijtelling',$occasion->bijtelling) }}"
+                   placeholder="bijv. 150">
           </div>
           <small class="hint" id="bijtellingPreview"></small>
         </label>
-
 
         <label class="input-row">
           <span>Gemiddeld verbruik</span>
@@ -266,11 +266,14 @@ echo old('overige_options_text', collect($occasion->overige_options ?? [])->impl
         <h4 class="subhead">Meerdere foto’s</h4>
         <label class="input-row">
           <input type="file" name="gallery[]" id="galleryInput" accept="image/*" multiple>
-          <small class="hint">Bestanden worden toegevoegd bij <b>Opslaan</b>. (Alleen bestandsnamen zichtbaar)</small>
+          <small class="hint">Bestanden worden toegevoegd bij <b>Opslaan</b>. Sleep om de volgorde te wijzigen.</small>
         </label>
 
-        {{-- Lijst met bestandsnamen (geen grote previews) --}}
-        <div id="galleryNewPreview" style="display:none;"></div>
+        {{-- ✅ verborgen volgorde voor NIEUWE uploads (oude indices in nieuwe DOM-volgorde) --}}
+        <input type="hidden" name="gallery_new_order" id="galleryNewOrder" value="[]">
+
+        {{-- ✅ Sleepbare lijst met bestandsnamen (create & edit) --}}
+        <div id="galleryNewPreview" class="sortable-list" style="display:none;"></div>
       </div>
     </div>
 
@@ -279,22 +282,24 @@ echo old('overige_options_text', collect($occasion->overige_options ?? [])->impl
       <a href="{{ route('admin.occasions.index') }}" class="btn">Annuleren</a>
       <div class="spacer"></div>
       <button class="btn primary" type="submit" name="save" value="1">
-  <span>{{ $occasion->exists ? 'Opslaan' : 'Aanmaken' }}</span>
-</button>
+        <span>{{ $occasion->exists ? 'Opslaan' : 'Aanmaken' }}</span>
+      </button>
     </div>
   </form>
   {{-- ===== HOOFDFORMULIER SLUIT ===== --}}
 
-  {{-- Bestaande galerij beheren (los van hoofdformulier, voorkomt nested forms) --}}
+  {{-- Bestaande galerij beheren (los van hoofdformulier) --}}
   @php $gallery = $occasion->galerij ?? []; @endphp
   @if($occasion->exists)
     <div class="form-card">
       <div class="form-card-head"><h3>Bestaande galerij</h3></div>
       <div class="form-card-body">
         @if(count($gallery))
-          <div class="gallery-grid">
+          {{-- Sleepbare grid (géén formulier hier, om nested forms te voorkomen) --}}
+          <div id="existingGallery" class="gallery-grid sortable-existing">
             @foreach($gallery as $i => $path)
-              <div class="g-item">
+              <div class="g-item sortable-item" data-oldindex="{{ $i }}" draggable="true">
+                <span class="drag-handle" aria-hidden="true" title="Sleep om te sorteren">⋮⋮</span>
                 <img src="{{ asset('storage/'.$path) }}" alt="galerij">
                 <div class="g-actions">
                   @if($occasion->hoofdfoto_path === $path)
@@ -305,7 +310,6 @@ echo old('overige_options_text', collect($occasion->overige_options ?? [])->impl
                       <button type="submit" class="btn sm">Maak hoofdfoto</button>
                     </form>
                   @endif
-
                   <form action="{{ route('admin.occasions.gallery.remove', [$occasion,$i]) }}" method="post" onsubmit="return confirm('Verwijderen?')">
                     @csrf @method('DELETE')
                     <button type="submit" class="btn sm danger">Verwijderen</button>
@@ -314,6 +318,16 @@ echo old('overige_options_text', collect($occasion->overige_options ?? [])->impl
               </div>
             @endforeach
           </div>
+
+          {{-- Reorder formulier (alleen hidden fields + knop) --}}
+          <form action="{{ route('admin.occasions.gallery.reorder', $occasion) }}" method="post" id="galleryReorderForm" style="margin-top:12px;">
+            @csrf
+            <div id="existingOrderFields"></div>
+            <div class="page-actions" style="margin-top:8px;">
+              <div class="spacer"></div>
+              <button type="submit" class="btn primary">Volgorde opslaan</button>
+            </div>
+          </form>
         @else
           <p class="muted">Nog geen galerijfoto’s.</p>
         @endif
@@ -322,7 +336,9 @@ echo old('overige_options_text', collect($occasion->overige_options ?? [])->impl
   @endif
 
   <script>
-    // ---------- Helpers ----------
+    /* ---------------------------
+       Helpers voor previews/format
+    --------------------------- */
     function formatIntNL(n){
       const x = Number(String(n ?? '').replace(/[^\d]/g,''));
       if (Number.isNaN(x) || x === 0) return '';
@@ -335,7 +351,6 @@ echo old('overige_options_text', collect($occasion->overige_options ?? [])->impl
       return new Intl.NumberFormat('nl-NL').format(n) + ',-';
     }
 
-    // ---------- Chips preview ----------
     function wireChips(textareaId, chipsId){
       const ta = document.getElementById(textareaId);
       const wrap = document.getElementById(chipsId);
@@ -357,17 +372,14 @@ echo old('overige_options_text', collect($occasion->overige_options ?? [])->impl
     wireChips('veiligheidTA','veiligheidChips');
     wireChips('overigeTA','overigeChips');
 
-    // ---------- Kenteken auto-uppercase ----------
     const kenteken = document.getElementById('kentekenInput');
     if (kenteken) kenteken.addEventListener('input', e => e.target.value = e.target.value.toUpperCase());
 
-    // ---------- Prijs preview ----------
     const prijsInput = document.getElementById('prijsInput');
     const prijsPreview = document.getElementById('prijsPreview');
     function updatePrijsPreview(){ prijsPreview.textContent = prijsInput?.value ? 'Voorbeeld: € ' + formatEuro(prijsInput.value) : ''; }
     if (prijsInput){ updatePrijsPreview(); prijsInput.addEventListener('input', updatePrijsPreview); }
 
-    // ---------- Tellerstand preview "123.456 km" ----------
     const tellerInput = document.getElementById('tellerInput');
     const tellerPreview = document.getElementById('tellerPreview');
     function updateTellerPreview(){
@@ -377,8 +389,6 @@ echo old('overige_options_text', collect($occasion->overige_options ?? [])->impl
     }
     if (tellerInput){ updateTellerPreview(); tellerInput.addEventListener('input', updateTellerPreview); }
 
-    // ---------- Bijtelling preview "10%" ----------
-    // Bijtelling preview "€ 150,-"
     const bijInput = document.getElementById('bijtellingInput');
     const bijPreview = document.getElementById('bijtellingPreview');
     function updateBijPreview(){
@@ -387,25 +397,153 @@ echo old('overige_options_text', collect($occasion->overige_options ?? [])->impl
     }
     if (bijInput){ updateBijPreview(); bijInput.addEventListener('input', updateBijPreview); }
 
+    /* -----------------------------------------
+       Drag & Drop - Bestaande galerij (edit)
+    ----------------------------------------- */
+    function makeSortable(container, onUpdate) {
+      container.addEventListener('dragstart', (e) => {
+        const item = e.target.closest('.sortable-item');
+        if (!item) return;
+        item.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', 'drag');
+      });
 
-    // ---------- Nieuwe galerij-bestanden: bestandsnamenlijst ----------
+      container.addEventListener('dragend', (e) => {
+        const item = e.target.closest('.sortable-item');
+        if (!item) return;
+        item.classList.remove('dragging');
+        onUpdate && onUpdate();
+      });
+
+      container.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        const after = getAfterElement(container, e.clientY);
+        const cur = container.querySelector('.dragging');
+        if (!cur) return;
+        if (!after) container.appendChild(cur);
+        else container.insertBefore(cur, after);
+      });
+
+      function getAfterElement(container, y) {
+        const items = [...container.querySelectorAll('.sortable-item:not(.dragging)')];
+        return items.reduce((closest, child) => {
+          const box = child.getBoundingClientRect();
+          const offset = y - box.top - box.height / 2;
+          if (offset < 0 && offset > closest.offset) {
+            return { offset, element: child };
+          } else {
+            return closest;
+          }
+        }, { offset: Number.NEGATIVE_INFINITY }).element;
+      }
+    }
+
+    function writeExistingOrder() {
+      const grid = document.getElementById('existingGallery');
+      const wrap = document.getElementById('existingOrderFields');
+      if (!grid || !wrap) return;
+      wrap.innerHTML = '';
+      [...grid.querySelectorAll('.sortable-item')].forEach((el) => {
+        const inp = document.createElement('input');
+        inp.type  = 'hidden';
+        inp.name  = 'order[]';
+        inp.value = el.dataset.oldindex; // oude index
+        wrap.appendChild(inp);
+      });
+    }
+
+    const existingGrid = document.getElementById('existingGallery');
+    if (existingGrid) {
+      makeSortable(existingGrid, writeExistingOrder);
+      writeExistingOrder();
+    }
+
+    /* ------------------------------------------------
+       Drag & Drop - Nieuwe uploads (create & edit)
+    ------------------------------------------------ */
+    function makeSortableNew(container, onUpdate) {
+      container.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        const after = getAfter(container, e.clientY);
+        const cur = container.querySelector('.dragging');
+        if (!cur) return;
+        if (!after) container.appendChild(cur);
+        else container.insertBefore(cur, after);
+      });
+      container.addEventListener('dragstart', (e) => {
+        const it = e.target.closest('.nu-item');
+        if (!it) return;
+        it.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain','drag');
+      });
+      container.addEventListener('dragend', (e) => {
+        const it = e.target.closest('.nu-item');
+        if (!it) return;
+        it.classList.remove('dragging');
+        onUpdate && onUpdate();
+      });
+
+      function getAfter(container, y) {
+        const els = [...container.querySelectorAll('.nu-item:not(.dragging)')];
+        return els.reduce((closest, child) => {
+          const box = child.getBoundingClientRect();
+          const offset = y - box.top - (box.height/2);
+          if (offset < 0 && offset > closest.offset) return { offset, element: child };
+          return closest;
+        }, { offset: Number.NEGATIVE_INFINITY }).element;
+      }
+    }
+
     const gi = document.getElementById('galleryInput');
     const gp = document.getElementById('galleryNewPreview');
+    const orderField = document.getElementById('galleryNewOrder');
+
+    function writeNewOrder() {
+      const order = [...gp.querySelectorAll('.nu-item')].map(el => parseInt(el.dataset.oldindex, 10));
+      orderField.value = JSON.stringify(order);
+    }
+
     if (gi) {
+      makeSortableNew(gp, writeNewOrder);
+
       gi.addEventListener('change', () => {
         gp.innerHTML = '';
-        if (!gi.files || gi.files.length === 0) { gp.style.display='none'; return; }
-        gp.style.display = 'flex';
-        [...gi.files].forEach(file => {
+        const files = gi.files ? [...gi.files] : [];
+        if (!files.length) { gp.style.display='none'; orderField.value='[]'; return; }
+
+        gp.style.display = 'block';
+
+        files.forEach((file, oldIndex) => {
           const row = document.createElement('div');
-          row.className = 'file-row';
+          row.className = 'nu-item';
+          row.draggable = true;
+          row.dataset.oldindex = String(oldIndex);
           row.innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 4v16m8-8H4"/></svg>
-            <span>${file.name}</span>
+            <span class="nu-handle" aria-hidden="true">⋮⋮</span>
+            <span class="nu-name">${file.name}</span>
           `;
           gp.appendChild(row);
         });
+
+        writeNewOrder();
       });
     }
+
+    /* ---- Kleine styles voor de sorteerbare lijsten ---- */
+    const s = document.createElement('style');
+    s.textContent = `
+      .sortable-list { display:flex; flex-direction:column; gap:8px; }
+      .nu-item { display:flex; align-items:center; gap:10px; padding:10px 12px; border:1px solid #e5e7eb; border-radius:8px; background:#f8fafc; }
+      .nu-item.dragging { opacity:.6; }
+      .nu-handle { cursor:grab; user-select:none; font-weight:bold; }
+      .nu-name { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+      .sortable-existing .g-item { display:grid; grid-template-columns: 24px 180px 1fr; gap:10px; align-items:center; border:1px solid #e5e7eb; border-radius:10px; padding:8px; background:#f8fafc; }
+      .sortable-existing .g-item.dragging { opacity:.7; }
+      .sortable-existing .drag-handle { cursor:grab; user-select:none; font-weight:700; }
+      .sortable-existing img { width: 180px; height: auto; border-radius: 8px; }
+    `;
+    document.head.appendChild(s);
   </script>
 @endsection
