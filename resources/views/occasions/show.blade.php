@@ -204,7 +204,7 @@
           <div class="ocd-seller-info">
             <div class="name">Mick Gerritsen</div>
             <a href="tel:+31649951874">+31 6 49951874</a>
-            <a href="mailto:info@gerritsenautomotive.nl">info@gerritsenautomotive.nl</a>
+            <a href="mailto:info@gerritsenautomotive.nl">handelsonderneming@mgerritsen.nl</a>
           </div>
         </div>
 
@@ -212,7 +212,7 @@
           <div class="ocd-seller-info">
             <div class="name">Shania Jung (Verkoop)</div>
             <a href="tel:+31649951874">+31 6 38257987</a>
-            <a href="mailto:info@gerritsenautomotive.nl">info@gerritsenautomotive.nl</a>
+            <a href="mailto:info@gerritsenautomotive.nl">handelsonderneming@mgerritsen.nl</a>
           </div>
         </div>
       </aside>
