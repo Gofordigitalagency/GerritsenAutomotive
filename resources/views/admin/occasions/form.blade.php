@@ -263,19 +263,28 @@ echo old('overige_options_text', collect($occasion->overige_options ?? [])->impl
           @endif
         </label>
 
-        <h4 class="subhead">Meerdere foto’s</h4>
-        <label class="input-row">
-          <input type="file" name="gallery[]" id="galleryInput" accept="image/*" multiple>
-          <small class="hint">Bestanden worden toegevoegd bij <b>Opslaan</b>. Sleep om de volgorde te wijzigen.</small>
-        </label>
+<h4 class="subhead">Meerdere foto’s</h4>
 
-        {{-- ✅ verborgen volgorde voor NIEUWE uploads (oude indices in nieuwe DOM-volgorde) --}}
-        <input type="hidden" name="gallery_new_order" id="galleryNewOrder" value="[]">
+{{-- Dropzone + knop --}}
+<div id="nu-dropzone" class="nu-drop">
+  <div class="nu-drop-inner">
+    <strong>Sleep bestanden hierheen</strong>
+    <span>of</span>
+    <button type="button" class="btn sm" id="nu-browse">Kies bestanden</button>
+    <small class="muted" style="display:block;margin-top:6px;">
+      Sleep om de volgorde te wijzigen. Verwijderen kan per kaart.
+    </small>
+  </div>
+  <input type="file" name="gallery[]" id="galleryInput" accept="image/*" multiple hidden>
+</div>
 
-        {{-- ✅ Sleepbare lijst met bestandsnamen (create & edit) --}}
-        <div id="galleryNewPreview" class="sortable-list" style="display:none;"></div>
-      </div>
-    </div>
+{{-- Volgorde JSON (oude indices in nieuwe volgorde) --}}
+<input type="hidden" name="gallery_new_order" id="galleryNewOrder" value="[]">
+
+{{-- Kaart-grid met thumbnails (nieuw te uploaden) --}}
+<div id="nu-grid-wrap" style="display:none;">
+  <div id="nu-grid" class="nu-grid"></div>
+</div>
 
     {{-- Bottom actions (in-form) --}}
     <div class="page-actions" style="margin-top:14px;">
@@ -335,6 +344,7 @@ echo old('overige_options_text', collect($occasion->overige_options ?? [])->impl
     </div>
   @endif
 
+  
   <script>
     /* ---------------------------
        Helpers voor previews/format
@@ -546,4 +556,159 @@ echo old('overige_options_text', collect($occasion->overige_options ?? [])->impl
     `;
     document.head.appendChild(s);
   </script>
+
+
+{{-- SortableJS (CDN) --}}
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+
+<script>
+(function(){
+  // Elements
+  const input   = document.getElementById('galleryInput');
+  const browse  = document.getElementById('nu-browse');
+  const dz      = document.getElementById('nu-dropzone');
+  const gridWrap= document.getElementById('nu-grid-wrap');
+  const grid    = document.getElementById('nu-grid');
+  const orderEl = document.getElementById('galleryNewOrder');
+
+  // We houden onze set files zelf bij
+  /** @type {File[]} */
+  let files = [];
+  /** objectURLs om later te revoken */
+  let urls  = [];
+
+  function showGrid(){
+    gridWrap.style.display = files.length ? 'block' : 'none';
+  }
+
+  function uniqKey(f){ return [f.name, f.size, f.lastModified].join('::'); }
+
+  function addFiles(list){
+    const existing = new Set(files.map(uniqKey));
+    [...list].forEach(f=>{
+      const key = uniqKey(f);
+      if (!existing.has(key)) { files.push(f); existing.add(key); }
+    });
+    render();
+  }
+
+  function removeAt(idx){
+    files.splice(idx,1);
+    render();
+  }
+
+  function clearURLs(){
+    urls.forEach(u => URL.revokeObjectURL(u));
+    urls = [];
+  }
+
+  function render(){
+    clearURLs();
+    grid.innerHTML = '';
+    files.forEach((f, idx)=>{
+      const url = URL.createObjectURL(f);
+      urls.push(url);
+      const card = document.createElement('div');
+      card.className = 'nu-item';
+      card.dataset.idx = String(idx);
+      card.innerHTML = `
+        <div class="nu-toolbar">
+          <button type="button" class="nu-del" title="Verwijderen">&times;</button>
+          <span class="nu-handle" title="Sleep om te sorteren">⋮⋮</span>
+        </div>
+        <div class="nu-thumb"><img src="${url}" alt="${f.name}"></div>
+        <div class="nu-meta" title="${f.name}">${f.name}</div>
+      `;
+      grid.appendChild(card);
+    });
+
+    // update hidden order (oude indices = huidige volgorde)
+    orderEl.value = JSON.stringify(files.map((_,i)=>i));
+    showGrid();
+    rebuildInputFileList();
+  }
+
+  // Zet de FileList van het <input> in de huidige volgorde
+  function rebuildInputFileList(){
+    const dt = new DataTransfer();
+    files.forEach(f => dt.items.add(f));
+    input.files = dt.files;
+  }
+
+  // Sortable op grid
+  new Sortable(grid, {
+    animation: 150,
+    handle: '.nu-handle',
+    ghostClass: 'nu-ghost',
+    onEnd: function(evt){
+      if (evt.oldIndex === evt.newIndex) return;
+      const moved = files.splice(evt.oldIndex,1)[0];
+      files.splice(evt.newIndex,0,moved);
+      // update order + input
+      orderEl.value = JSON.stringify(files.map((_,i)=>i));
+      rebuildInputFileList();
+      // indexes in DOM opnieuw zetten (voor remove handlers)
+      [...grid.children].forEach((el,i)=> el.dataset.idx = String(i));
+    }
+  });
+
+  // Klik op verwijderen
+  grid.addEventListener('click', (e)=>{
+    const btn = e.target.closest('.nu-del');
+    if (!btn) return;
+    const card = btn.closest('.nu-item');
+    const idx = parseInt(card.dataset.idx,10);
+    removeAt(idx);
+    // reset dataset idx
+    [...grid.children].forEach((el,i)=> el.dataset.idx = String(i));
+  });
+
+  // Browse knop
+  browse.addEventListener('click', ()=> input.click());
+
+  // Input change (toevoegen, niet vervangen)
+  input.addEventListener('change', ()=> addFiles(input.files));
+
+  // Drag & drop op de dropzone
+  ;['dragenter','dragover'].forEach(ev=>{
+    dz.addEventListener(ev, (e)=>{ e.preventDefault(); dz.classList.add('nu-dragging'); });
+  });
+  ;['dragleave','drop'].forEach(ev=>{
+    dz.addEventListener(ev, (e)=>{ e.preventDefault(); dz.classList.remove('nu-dragging'); });
+  });
+  dz.addEventListener('drop', (e)=>{
+    if (e.dataTransfer && e.dataTransfer.files) addFiles(e.dataTransfer.files);
+  });
+
+  // Op form-submit: opruimen object URLs
+  input.form?.addEventListener('submit', ()=>{
+    clearURLs();
+  });
+
+})();
+</script>
+
+<style>
+  .nu-drop {
+    border: 2px dashed #d1d5db; border-radius: 12px; padding: 16px; background:#fafafa;
+    margin-bottom: 12px; transition: .15s border-color ease;
+  }
+  .nu-drop.nu-dragging { border-color:#60a5fa; background:#f3f8ff; }
+  .nu-drop-inner { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .nu-grid {
+    display:grid; gap:16px;
+    grid-template-columns: repeat(auto-fill, minmax(220px,1fr));
+  }
+  .nu-item {
+    position:relative; background:#f8fafc; border:1px solid #e5e7eb; border-radius:14px;
+    padding:10px; display:flex; flex-direction:column; gap:8px;
+  }
+  .nu-toolbar { display:flex; justify-content:space-between; align-items:center; }
+  .nu-handle { cursor:grab; user-select:none; font-weight:700; color:#64748b; }
+  .nu-del { background:transparent; border:0; font-size:20px; line-height:20px; cursor:pointer; color:#ef4444; }
+  .nu-thumb { display:flex; align-items:center; justify-content:center; background:#fff; border:1px solid #e5e7eb; border-radius:10px; min-height:140px; padding:8px; }
+  .nu-thumb img { max-width:100%; max-height:180px; border-radius:8px; display:block; }
+  .nu-meta { font-size:.9rem; color:#475569; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding:0 2px; }
+  @media (max-width:640px){ .nu-grid{ grid-template-columns:1fr 1fr; } }
+</style>
 @endsection

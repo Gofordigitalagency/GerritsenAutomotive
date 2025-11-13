@@ -391,3 +391,4 @@ input,select,textarea{width:100%;padding:10px 12px;border:1px solid #e5e7eb;bord
 }
 .btn.primary:active{ transform:translateY(1px); }
 .btn{ display:inline-flex; align-items:center; justify-content:center; }
+
