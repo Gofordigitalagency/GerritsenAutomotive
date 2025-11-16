@@ -605,3 +605,7 @@ html.dark .opt-col h4{ border-bottom-color:#2a2a2a; }
 html.dark .ocd-lightbox-inner{ background:#111; }
 
 /* Belangrijk: buttons NIET veranderen in dark mode */
+
+.ocd-share-row {
+  margin-top: 2rem;
+}
