@@ -26,29 +26,38 @@
       <img src="{{ asset('images/logo.png') }}" alt="Gerritsen Automotive">
     </a>
 
-    <div class="icons">
-      <!-- Telefoon (alleen mobiel zichtbaar via CSS) -->
-      <a href="tel:+31638257987" class="phone-btn" aria-label="Bel ons">
-        <img src="{{ asset('images/phone-call.svg') }}" alt="" class="phone-icon">
-      </a>
-
-      <!-- Menu toggle: één knop met morphende SVG -->
-      <button
-        id="menuToggle"
-        class="menu-toggle"
-        aria-label="Menu openen"
-        aria-controls="mainNav"
-        aria-expanded="false"
+   <div class="icons">
+  <!-- Dark mode toggle (MOBIEL – naast telefoon) -->
+<button id="themeToggleMobile"
+        class="theme-toggle theme-toggle--icon"
         type="button"
-      >
-        <svg class="hamburger-svg" viewBox="0 0 24 24" width="40" height="40" aria-hidden="true">
-          <line class="line top"    x1="4" y1="7"  x2="20" y2="7"  />
-          <line class="line middle" x1="4" y1="12" x2="20" y2="12" />
-          <line class="line bottom" x1="4" y1="17" x2="20" y2="17" />
-        </svg>
-        <span class="sr-only">Menu</span>
-      </button>
-    </div>
+        aria-label="Dark mode wisselen"
+        aria-pressed="false">
+  <img src="{{ asset('images/moon.svg') }}" alt="" class="icon">
+</button>
+
+  <!-- Telefoon (mobiel zichtbaar via CSS) -->
+  <a href="tel:+31638257987" class="phone-btn" aria-label="Bel ons">
+    <img src="{{ asset('images/phone-call.svg') }}" alt="" class="phone-icon">
+  </a>
+
+  <!-- Menu toggle: één knop met morphende SVG -->
+  <button
+    id="menuToggle"
+    class="menu-toggle"
+    aria-label="Menu openen"
+    aria-controls="mainNav"
+    aria-expanded="false"
+    type="button"
+  >
+    <svg class="hamburger-svg" viewBox="0 0 24 24" width="40" height="40" aria-hidden="true">
+      <line class="line top"    x1="4" y1="7"  x2="20" y2="7"  />
+      <line class="line middle" x1="4" y1="12" x2="20" y2="12" />
+      <line class="line bottom" x1="4" y1="17" x2="20" y2="17" />
+    </svg>
+    <span class="sr-only">Menu</span>
+  </button>
+</div>
 
     <!-- Desktop menu -->
     <nav id="mainNav" class="nav-desktop" aria-label="Hoofdmenu">
@@ -88,16 +97,6 @@
         <a href="#aanbod">AANBOD</a>
         <a href="#footer">CONTACT</a>
       </nav>
-
-      <!-- Dark mode toggle (MOBIEL – in hamburger menu) -->
-      <button id="themeToggleMobile"
-              class="panel-theme-toggle"
-              type="button"
-              aria-label="Dark mode wisselen"
-              aria-pressed="false">
-        <img src="{{ asset('images/moon.svg') }}" alt="" width="22" height="22">
-        <span>Dark mode</span>
-      </button>
 
       <a href="tel:+31649951874" class="panel-call">
         <img src="{{ asset('images/phone-call.svg') }}" alt="" class="phone-icon"> Bel ons

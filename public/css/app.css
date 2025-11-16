@@ -505,3 +505,40 @@ html.dark .ocd-lightbox-inner{ background:#111; }
 .theme-toggle img {
     filter: brightness(0) invert(1);
 }
+
+
+/* Zorg dat alle icons gelijk zijn */
+.icons img.icon,
+.phone-icon {
+    width: 26px;   /* zelfde grootte als phone icon */
+    height: 26px;
+    display: inline-block;
+    object-fit: contain;
+}
+
+/* Zorg dat de buttons dezelfde hitbox hebben */
+.theme-toggle--icon,
+.phone-btn,
+.menu-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;     /* zelfde clickable area */
+    height: 40px;
+}
+
+/* Mobile-first: icons zichtbaar */
+.icons {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* Desktop: verberg mobiele icons (moon, telefoon, hamburger) */
+@media (min-width: 1024px) {
+    #themeToggleMobile,
+    .phone-btn,
+    .menu-toggle {
+        display: none;
+    }
+}
