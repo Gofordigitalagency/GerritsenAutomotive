@@ -269,12 +269,18 @@
           </div>
         </div>
 
-               <div class="ocd-seller">
+          <div class="ocd-seller">
           <div class="ocd-seller-info">
             <div class="name">Shania Jung (Verkoop)</div>
             <a href="tel:+31649951874">+31 6 38257987</a>
             <a href="mailto:info@gerritsenautomotive.nl">handelsonderneming@mgerritsen.nl</a>
           </div>
+        </div>
+
+                <div class="ocd-share-row">
+          <button type="button" class="ocd-btn ocd-btn-primary ocd-share-btn">
+            DELEN
+          </button>
         </div>
       </aside>
     </div>
@@ -659,6 +665,39 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 })();
 
+  /* ===== DELEN-KNOP ===== */
+  const shareBtn = document.querySelector('.ocd-share-btn');
+  if (shareBtn) {
+    shareBtn.addEventListener('click', async () => {
+      const shareUrl = window.location.href;
+      const shareTitle = document.title;
+
+      if (navigator.share) {
+        // Native share (WhatsApp, SMS, etc. in mobiele browsers)
+        try {
+          await navigator.share({
+            title: shareTitle,
+            url: shareUrl,
+          });
+        } catch (e) {
+          // gebruiker annuleert -> niks doen
+        }
+      } else if (navigator.clipboard) {
+        // Fallback: kopieer link naar klembord
+        try {
+          await navigator.clipboard.writeText(shareUrl);
+          alert('De link naar deze auto is gekopieerd. Je kunt hem nu plakken in WhatsApp of een bericht.');
+        } catch (e) {
+          alert('Kopiëren is niet gelukt. Je kunt de link bovenaan je browser kopiëren.');
+        }
+      } else {
+        // Oudere browsers: simpele alert
+        alert('Kopieer deze link om te delen:\n\n' + shareUrl);
+      }
+    });
+  }
+
+
 /* ===== OCCASION GALLERY (4 thumbs + prev/next) ===== */
 (function(){
   const stage   = document.querySelector('.ocd-stage');
@@ -706,6 +745,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Prev/Next
   prevBtn?.addEventListener('click', () => show(current - 1));
   nextBtn?.addEventListener('click', () => show(current + 1));
+
+  
 })();
 </script>
 
