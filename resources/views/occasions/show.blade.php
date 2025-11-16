@@ -1,9 +1,39 @@
+@php
+    // Titel van de auto
+    $pageTitle = trim(($occasion->merk ?? '').' '.($occasion->model ?? '')) ?: $occasion->titel;
+
+    // Hoofdafbeelding (eerste foto / hoofdfoto)
+    $ogImage = $occasion->hoofdfoto_path
+        ? asset('storage/'.$occasion->hoofdfoto_path)
+        : asset('images/placeholder-car.jpg');
+
+    // Korte beschrijving voor bij delen
+    $ogDescription = !empty($occasion->omschrijving)
+        ? \Illuminate\Support\Str::limit(strip_tags($occasion->omschrijving), 150)
+        : 'Bekijk deze ' . $pageTitle . ' bij Gerritsen Automotive in Arnhem.';
+@endphp
+
 <!DOCTYPE html>
 <html lang="nl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{{ trim(($occasion->merk ?? '').' '.($occasion->model ?? '')) ?: $occasion->titel }} – Gerritsen Automotive</title>
+  <title>{{ $pageTitle }} – Gerritsen Automotive</title>
+
+  {{-- Open Graph voor WhatsApp / Facebook / Insta DM --}}
+  <meta property="og:title" content="{{ $pageTitle }} – Gerritsen Automotive">
+  <meta property="og:description" content="{{ $ogDescription }}">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{{ url()->current() }}">
+  <meta property="og:site_name" content="Gerritsen Automotive">
+  <meta property="og:image" content="{{ $ogImage }}">
+  <meta property="og:image:alt" content="{{ $pageTitle }}">
+
+  {{-- Twitter / X (sommige apps pakken deze ook) --}}
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ $pageTitle }} – Gerritsen Automotive">
+  <meta name="twitter:description" content="{{ $ogDescription }}">
+  <meta name="twitter:image" content="{{ $ogImage }}">
 
   <!-- Fonts & Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Play:wght@400;700&display=swap" rel="stylesheet">
@@ -12,6 +42,7 @@
   <!-- Globale styles + occasion styles -->
   <link rel="stylesheet" href="{{ asset('css/occasions.css') }}?v={{ filemtime(public_path('css/occasions.css')) }}">
 </head>
+
 <body class="is-oc">
 <header class="navbar" x-data>
   <div class="container">
