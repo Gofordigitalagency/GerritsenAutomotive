@@ -542,3 +542,39 @@ html.dark .ocd-lightbox-inner{ background:#111; }
         display: none;
     }
 }
+
+@media (max-width: 1023px) {
+/* Container voor de drie iconen rechts */
+.icons {
+    display: flex;
+    align-items: center;
+    gap: 10px;            /* afstand tussen de iconen */
+}
+
+/* Maak alle drie knoppen even groot en gecentreerd */
+.theme-toggle--icon,
+.phone-btn,
+.menu-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;          /* klik-oppervlak */
+    height: 40px;
+    padding: 0;
+    border: none;
+    background: transparent;
+}
+
+/* Zorg dat de <a> eruitziet als een icon button */
+.phone-btn {
+    text-decoration: none;
+}
+
+/* Alle iconen (img + svg) dezelfde grootte en gecentreerd */
+.icons img,
+.icons svg {
+    width: 24px;
+    height: 24px;
+    display: block;
+}}
+

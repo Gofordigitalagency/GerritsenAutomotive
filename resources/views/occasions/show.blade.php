@@ -7,10 +7,40 @@
         ? asset('storage/'.$occasion->hoofdfoto_path)
         : asset('images/placeholder-car.jpg');
 
-    // Korte beschrijving voor bij delen
-    $ogDescription = !empty($occasion->omschrijving)
-        ? \Illuminate\Support\Str::limit(strip_tags($occasion->omschrijving), 150)
-        : 'Bekijk deze ' . $pageTitle . ' bij Gerritsen Automotive in Arnhem.';
+    // Beschrijving voor bij delen (zoals Marktplaats)
+    $parts = [];
+
+    if (!empty($occasion->bouwjaar)) {
+        $parts[] = $occasion->bouwjaar;
+    }
+
+    if (!empty($occasion->tellerstand)) {
+        $parts[] = number_format($occasion->tellerstand, 0, ',', '.') . ' km';
+    }
+
+    if (!empty($occasion->brandstof)) {
+        $parts[] = ucfirst($occasion->brandstof);
+    }
+
+    if (!empty($occasion->transmissie)) {
+        $parts[] = ucfirst($occasion->transmissie);
+    }
+
+    if (!empty($occasion->prijs)) {
+        $parts[] = '€ ' . number_format($occasion->prijs, 0, ',', '.') . ',-';
+    }
+
+    // Join alles met bolletjes
+    $ogDescription = implode(' • ', $parts);
+
+    // Fallbacks als er weinig data is
+    if ($ogDescription === '') {
+        if (!empty($occasion->omschrijving)) {
+            $ogDescription = \Illuminate\Support\Str::limit(strip_tags($occasion->omschrijving), 150);
+        } else {
+            $ogDescription = 'Bekijk deze ' . $pageTitle . ' bij Gerritsen Automotive in Arnhem.';
+        }
+    }
 @endphp
 
 <!DOCTYPE html>
