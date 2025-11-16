@@ -254,12 +254,19 @@
           </div>
           <div class="ocd-kv"><span class="k">Bouwjaar</span><span class="v">{{ $occasion->bouwjaar ?? '—' }}</span></div>
         </div>
+<div class="ocd-cta-row">
+  <div class="cta-left">
+    <a href="#footer" class="ocd-btn ocd-btn-primary">IK BEN GEÏNTERESSEERD</a>
 
-        <div class="ocd-cta-row">
-          <a href="#footer" class="ocd-btn ocd-btn-primary">IK BEN GEÏNTERESSEERD</a>
-          <a href="#footer" class="ocd-btn ocd-btn-success">AUTO INRUILEN?</a>
+    <button type="button" class="ocd-btn ocd-btn-share ocd-share-btn">
+      DELEN
+    </button>
+  </div>
 
-        </div>
+  <div class="cta-right">
+    <a href="#footer" class="ocd-btn ocd-btn-success">AUTO INRUILEN?</a>
+  </div>
+</div>
 
         <div class="ocd-seller">
           <div class="ocd-seller-info">
@@ -277,11 +284,7 @@
           </div>
         </div>
 
-                <div class="ocd-share-row">
-          <button type="button" class="ocd-btn ocd-btn-primary ocd-share-btn">
-            DELEN
-          </button>
-        </div>
+            
       </aside>
     </div>
 
