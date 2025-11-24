@@ -9,13 +9,13 @@ class PublicOccasionController extends Controller
 {
     public function home()
     {
-        $nieuw = Occasion::latest()->take(12)->get();
+        $nieuw = Occasion::latest()->get();
         return view('home', compact('nieuw'));
     }
 
     public function index(Request $request)
     {
-        $occasions = Occasion::latest()->paginate(12);
+        $occasions = Occasion::latest()->get();
         return view('occasions.index', compact('occasions'));
     }
 

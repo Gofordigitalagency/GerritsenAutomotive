@@ -175,6 +175,26 @@ class OccasionController extends Controller
         return back()->with('ok', 'Foto’s toegevoegd.');
     }
 
+public function toggleStatus(Occasion $occasion)
+{
+    // MODEL-veld gebruiken voor VERKOCHT-tag
+    $model = $occasion->model ?? '';
+
+    // Staat er al VERKOCHT?
+    if (str_contains($model, '(VERKOCHT)')) {
+        // VERKOCHT verwijderen
+        $model = trim(str_replace('(VERKOCHT)', '', $model));
+    } else {
+        // VERKOCHT toevoegen
+        $model = trim($model . ' (VERKOCHT)');
+    }
+
+    $occasion->model = $model;
+    $occasion->save();
+
+    return back()->with('ok', 'Status aangepast');
+}
+
     // Bestaande galerij-foto verwijderen (index i)
     public function removeGallery(Occasion $occasion, int $i)
     {

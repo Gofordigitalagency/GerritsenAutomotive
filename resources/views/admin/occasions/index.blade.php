@@ -39,13 +39,36 @@
               <li><span class="k">Bouwjaar</span><span class="v">{{ $o->bouwjaar }}</span></li>
             </ul>
 
-            <div class="car-actions">
-              <a href="{{ route('admin.occasions.edit', $o) }}" class="btn sm">Bewerken</a>
-              <form action="{{ route('admin.occasions.destroy', $o) }}" method="post" onsubmit="return confirm('Verwijderen?')">
-                @csrf @method('DELETE')
-                <button class="btn sm danger" type="submit">Verwijderen</button>
-              </form>
-            </div>
+        <div class="car-actions">
+
+  <a href="{{ route('admin.occasions.edit', $o) }}" class="btn sm">Bewerken</a>
+
+  {{-- VERKOCHT / BESCHIKBAAR --}}
+  <form action="{{ route('admin.occasions.toggleStatus', $o) }}" method="post" style="display:inline;">
+    @csrf
+    @php
+      $isVerkocht = str_contains($o->titel, '(VERKOCHT)');
+    @endphp
+
+    @if($isVerkocht)
+      <button type="submit" class="btn sm" style="background:#ccc;color:#333;">
+        Beschikbaar
+      </button>
+    @else
+      <button type="submit" class="btn sm" style="background:#1DA1F2;color:white;">
+        Verkocht
+      </button>
+    @endif
+  </form>
+
+  {{-- Verwijderen --}}
+  <form action="{{ route('admin.occasions.destroy', $o) }}" method="post" onsubmit="return confirm('Verwijderen?')" style="display:inline;">
+    @csrf @method('DELETE')
+    <button class="btn sm danger" type="submit">Verwijderen</button>
+  </form>
+
+</div>
+
           </div>
         </div>
       @endforeach

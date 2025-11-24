@@ -75,4 +75,9 @@ Route::middleware('auth')->prefix('admin')->as('admin.')->group(function () {
     Route::post('occasions/{occasion}/gallery/reorder', [AdminOccasionController::class, 'galleryReorder'])
         ->name('occasions.gallery.reorder');
 
+Route::post('occasions/{occasion}/toggle-status', [
+    App\Http\Controllers\admin\OccasionController::class,
+    'toggleStatus'
+])->name('occasions.toggleStatus');
+
 });

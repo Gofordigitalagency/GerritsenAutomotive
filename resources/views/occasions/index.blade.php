@@ -111,9 +111,7 @@
         @endforeach
       </div>
 
-      <div style="margin-top:20px;">
-        {{ $occasions->links() }}
-      </div>
+    
     </div>
   </section>
 </main>
