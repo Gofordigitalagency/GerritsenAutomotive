@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Mail;
 
 class ContactController extends Controller
 {
-   public function store(Request $request)
+ public function store(Request $request)
 {
     // honeypot
     if ($request->filled('website')) {
@@ -35,9 +35,11 @@ class ContactController extends Controller
     ];
 
     try {
-        \Mail::send(new \App\Mail\ContactSubmitted($data));
+        Mail::to(env('CONTACT_TO_EMAIL'))->send(
+            new \App\Mail\ContactSubmitted($data)
+        );
     } catch (\Throwable $e) {
-        \Log::error('Contact mail failed: '.$e->getMessage(), ['exception' => $e]);
+        Log::error('Contact mail failed: '.$e->getMessage(), ['exception' => $e]);
         return back()->withErrors(['mail' => 'Verzenden mislukt. Probeer het later nog eens.']);
     }
 

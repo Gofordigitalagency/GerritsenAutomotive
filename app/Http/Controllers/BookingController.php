@@ -133,34 +133,38 @@ class BookingController extends Controller
         ]);
 
         // Mail naar admin + klant
-        try {
-            $label = self::LABELS[$type] ?? ucfirst($type);
+try {
+    $label = self::LABELS[$type] ?? ucfirst($type);
 
-            // Admin
-            Mail::send(new BookingSubmitted([
-                'type'       => $type,
-                'type_label' => $label,
-                'start_at'   => $start->format('Y-m-d H:i'),
-                'end_at'     => $end->format('Y-m-d H:i'),
-                'name'       => $data['name'],
-                'phone'      => $data['phone'] ?? null,
-                'email'      => $data['email'],
-            ]));
+    // ----------- ADMIN MAIL -----------
+    Mail::to(env('BOOKING_ADMIN_EMAIL'))->send(
+        new BookingSubmitted([
+            'type'       => $type,
+            'type_label' => $label,
+            'start_at'   => $start->format('Y-m-d H:i'),
+            'end_at'     => $end->format('Y-m-d H:i'),
+            'name'       => $data['name'],
+            'phone'      => $data['phone'] ?? null,
+            'email'      => $data['email'],
+        ])
+    );
 
-            // Klant
-            Mail::send(new BookingConfirmation([
-                'type'       => $type,
-                'type_label' => $label,
-                'start_at'   => $start->format('Y-m-d H:i'),
-                'end_at'     => $end->format('Y-m-d H:i'),
-                'name'       => $data['name'],
-                'phone'      => $data['phone'] ?? null,
-                'email'      => $data['email'],
-            ]));
+    // ----------- KLANT MAIL -----------
+    Mail::to($data['email'])->send(
+        new BookingConfirmation([
+            'type'       => $type,
+            'type_label' => $label,
+            'start_at'   => $start->format('Y-m-d H:i'),
+            'end_at'     => $end->format('Y-m-d H:i'),
+            'name'       => $data['name'],
+            'phone'      => $data['phone'] ?? null,
+            'email'      => $data['email'],
+        ])
+    );
 
-        } catch (\Throwable $e) {
-            Log::error('Booking mail failed: '.$e->getMessage(), ['exception' => $e]);
-        }
+} catch (\Throwable $e) {
+    Log::error('Booking mail failed: '.$e->getMessage(), ['exception' => $e]);
+}
 
         return redirect()
             ->route('booking.show', ['type' => $type])
