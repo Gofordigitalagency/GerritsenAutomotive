@@ -132,7 +132,7 @@
             <div class="openingstijden-content">
                 <h1>Huur vandaag nog een aanhanger</h1>
                 <p> Afmetingen laadbak: ca. 130x 250 cm <br>
-                    €35 per dag,
+                    €25 per dag,
                     €15 voor 4 uur,
                     €50 voor een weekend. 
                     </p>
