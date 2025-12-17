@@ -29,176 +29,183 @@
     @if($occasion->exists) @method('PUT') @endif
 
     {{-- BASIS --}}
-    <div class="form-card">
-      <div class="form-card-head"><h3>Basis</h3></div>
-      <div class="form-card-body grid-2">
-        <label class="input-row">
-          <span>Merk</span>
-          <input name="merk" value="{{ old('merk',$occasion->merk) }}" required>
-          @error('merk')<small class="field-error">{{ $message }}</small>@enderror
-        </label>
+<div class="form-card">
+  <div class="form-card-head"><h3>Basis</h3></div>
+  <div class="form-card-body grid-2">
+    <label class="input-row">
+      <span>Merk</span>
+      <input id="merkInput" name="merk" value="{{ old('merk',$occasion->merk) }}" required>
+      @error('merk')<small class="field-error">{{ $message }}</small>@enderror
+    </label>
 
-        <label class="input-row">
-          <span>Model</span>
-          <input name="model" value="{{ old('model',$occasion->model) }}" required>
-          @error('model')<small class="field-error">{{ $message }}</small>@enderror
-        </label>
+    <label class="input-row">
+      <span>Model</span>
+      <input id="modelInput" name="model" value="{{ old('model',$occasion->model) }}" required>
+      @error('model')<small class="field-error">{{ $message }}</small>@enderror
+    </label>
 
-        <label class="input-row">
-          <span>Type</span>
-          <input name="type" value="{{ old('type',$occasion->type) }}">
-        </label>
+    <label class="input-row">
+      <span>Type</span>
+      <input id="typeInput" name="type" value="{{ old('type',$occasion->type) }}">
+    </label>
 
-        <label class="input-row">
-          <span>Transmissie</span>
-          <select name="transmissie" required>
-            <option value="">-- Kies transmissie --</option>
-            <option value="Handgeschakeld" {{ old('transmissie', $occasion->transmissie) == 'Handgeschakeld' ? 'selected' : '' }}>Handgeschakeld</option>
-            <option value="Automaat" {{ old('transmissie', $occasion->transmissie) == 'Automaat' ? 'selected' : '' }}>Automaat</option>
-            <option value="Semi-automaat" {{ old('transmissie', $occasion->transmissie) == 'Semi-automaat' ? 'selected' : '' }}>Semi-automaat</option>
-          </select>
-        </label>
+    <label class="input-row">
+      <span>Transmissie</span>
+      <select id="transmissieSelect" name="transmissie" required>
+        <option value="">-- Kies transmissie --</option>
+        <option value="Handgeschakeld" {{ old('transmissie', $occasion->transmissie) == 'Handgeschakeld' ? 'selected' : '' }}>Handgeschakeld</option>
+        <option value="Automaat" {{ old('transmissie', $occasion->transmissie) == 'Automaat' ? 'selected' : '' }}>Automaat</option>
+        <option value="Semi-automaat" {{ old('transmissie', $occasion->transmissie) == 'Semi-automaat' ? 'selected' : '' }}>Semi-automaat</option>
+      </select>
+    </label>
 
-        <label class="input-row">
-          <span>Brandstof</span>
-          <select name="brandstof" required>
-            <option value="">-- Kies brandstof --</option>
-            <option value="Benzine" {{ old('brandstof', $occasion->brandstof) == 'Benzine' ? 'selected' : '' }}>Benzine</option>
-            <option value="Diesel" {{ old('brandstof', $occasion->brandstof) == 'Diesel' ? 'selected' : '' }}>Diesel</option>
-            <option value="Elektrisch" {{ old('brandstof', $occasion->brandstof) == 'Elektrisch' ? 'selected' : '' }}>Elektrisch</option>
-            <option value="Hybride" {{ old('brandstof', $occasion->brandstof) == 'Hybride' ? 'selected' : '' }}>Hybride</option>
-            <option value="LPG" {{ old('brandstof', $occasion->brandstof) == 'LPG' ? 'selected' : '' }}>LPG</option>
-          </select>
-        </label>
+    <label class="input-row">
+      <span>Brandstof</span>
+      <select id="brandstofSelect" name="brandstof" required>
+        <option value="">-- Kies brandstof --</option>
+        <option value="Benzine" {{ old('brandstof', $occasion->brandstof) == 'Benzine' ? 'selected' : '' }}>Benzine</option>
+        <option value="Diesel" {{ old('brandstof', $occasion->brandstof) == 'Diesel' ? 'selected' : '' }}>Diesel</option>
+        <option value="Elektrisch" {{ old('brandstof', $occasion->brandstof) == 'Elektrisch' ? 'selected' : '' }}>Elektrisch</option>
+        <option value="Hybride" {{ old('brandstof', $occasion->brandstof) == 'Hybride' ? 'selected' : '' }}>Hybride</option>
+        <option value="LPG" {{ old('brandstof', $occasion->brandstof) == 'LPG' ? 'selected' : '' }}>LPG</option>
+      </select>
+    </label>
 
-        <label class="input-row">
-          <span>Bouwjaar</span>
-          <input type="number" name="bouwjaar" value="{{ old('bouwjaar',$occasion->bouwjaar) }}">
-        </label>
+    <label class="input-row">
+      <span>Bouwjaar</span>
+      <input id="bouwjaarInput" type="number" name="bouwjaar" value="{{ old('bouwjaar',$occasion->bouwjaar) }}">
+    </label>
 
-        <label class="input-row">
-          <span>Exterieur kleur</span>
-          <input id="kleur" type="text" name="kleur" value="{{ old('kleur', $occasion->kleur ?? '') }}" placeholder="Bijv. Zwart metallic">
-        </label>
+    <label class="input-row">
+      <span>Exterieur kleur</span>
+      <input id="kleur" type="text" name="kleur" value="{{ old('kleur', $occasion->kleur ?? '') }}" placeholder="Bijv. Zwart metallic">
+    </label>
 
-        <label class="input-row">
-          <span>Tellerstand (km)</span>
-          <input type="number" name="tellerstand" value="{{ old('tellerstand',$occasion->tellerstand) }}" id="tellerInput">
-          <small class="hint" id="tellerPreview"></small>
-        </label>
+    <label class="input-row">
+      <span>Tellerstand (km)</span>
+      <input id="tellerInput" type="number" name="tellerstand" value="{{ old('tellerstand',$occasion->tellerstand) }}">
+      <small class="hint" id="tellerPreview"></small>
+    </label>
 
-        <label class="input-row">
-          <span>Prijs (€)</span>
-          <div class="with-addon">
-            <span class="addon">€</span>
-            <input type="number" name="prijs" step="1" min="0" value="{{ old('prijs',$occasion->prijs) }}" id="prijsInput">
-          </div>
-          <small class="hint" id="prijsPreview"></small>
-        </label>
-
-        <label class="input-row">
-          <span>Kenteken</span>
-          <input name="kenteken" value="{{ old('kenteken',$occasion->kenteken) }}" id="kentekenInput" placeholder="XX-999-X">
-          <small class="hint">Wordt automatisch in hoofdletters gezet.</small>
-        </label>
+    <label class="input-row">
+      <span>Prijs (€)</span>
+      <div class="with-addon">
+        <span class="addon">€</span>
+        <input id="prijsInput" type="number" name="prijs" step="1" min="0" value="{{ old('prijs',$occasion->prijs) }}">
       </div>
-    </div>
+      <small class="hint" id="prijsPreview"></small>
+    </label>
 
-    {{-- SPECIFICATIES --}}
-    <div class="form-card">
-      <div class="form-card-head"><h3>Specificaties</h3></div>
-      <div class="form-card-body grid-3">
-        <label class="input-row">
-          <span>Interieurkleur</span>
-          <input name="interieurkleur" value="{{ old('interieurkleur',$occasion->interieurkleur) }}">
-        </label>
+      <label class="input-row" style="grid-column: 1 / -1;">
+        <span>Kenteken</span>
 
-        <label class="input-row">
-          <span>BTW/MARGE</span>
-          <select name="btw_marge">
-            <option value="BTW" {{ old('btw_marge', $occasion->btw_marge) == 'BTW' ? 'selected' : '' }}>BTW</option>
-            <option value="Marge" {{ old('btw_marge', $occasion->btw_marge) == 'Marge' ? 'selected' : '' }}>Marge</option>
-          </select>
-        </label>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <input name="kenteken"
+                value="{{ old('kenteken',$occasion->kenteken) }}"
+                id="kentekenInput"
+                placeholder="XX-999-X"
+                style="flex:1;">
+          <button type="button" class="btn sm" id="rdwBtn">Haal RDW info op</button>
+        </div>
 
-        <label class="input-row">
-          <span>Cilinderinhoud (cc)</span>
-          <input type="number" name="cilinderinhoud" value="{{ old('cilinderinhoud',$occasion->cilinderinhoud) }}">
-        </label>
+        <small class="hint">Wordt automatisch in hoofdletters gezet.</small>
+        <small class="hint" id="rdwStatus"></small>
+      </label>
+  </div>
+</div>
 
-        <label class="input-row">
-          <span>Carrosserie</span>
-          <input name="carrosserie" value="{{ old('carrosserie',$occasion->carrosserie) }}">
-        </label>
+{{-- SPECIFICATIES --}}
+<div class="form-card">
+  <div class="form-card-head"><h3>Specificaties</h3></div>
+  <div class="form-card-body grid-3">
+    <label class="input-row">
+      <span>Interieurkleur</span>
+      <input id="interieurkleurInput" name="interieurkleur" value="{{ old('interieurkleur',$occasion->interieurkleur) }}">
+    </label>
 
-        <label class="input-row">
-          <span>Max. trekgewicht (kg)</span>
-          <input type="number" name="max_trekgewicht" value="{{ old('max_trekgewicht',$occasion->max_trekgewicht) }}">
-        </label>
+    <label class="input-row">
+      <span>BTW/MARGE</span>
+      <select id="btwMargeSelect" name="btw_marge">
+        <option value="BTW" {{ old('btw_marge', $occasion->btw_marge) == 'BTW' ? 'selected' : '' }}>BTW</option>
+        <option value="Marge" {{ old('btw_marge', $occasion->btw_marge) == 'Marge' ? 'selected' : '' }}>Marge</option>
+      </select>
+    </label>
 
-        <label class="input-row">
-          <span>APK tot</span>
-          <input type="date" name="apk_tot" value="{{ old('apk_tot', optional($occasion->apk_tot)->format('Y-m-d')) }}">
-        </label>
+    <label class="input-row">
+      <span>Cilinderinhoud (cc)</span>
+      <input id="cilinderinhoudInput" type="number" name="cilinderinhoud" value="{{ old('cilinderinhoud',$occasion->cilinderinhoud) }}">
+    </label>
 
-        <label class="input-row">
-          <span>Energielabel</span>
-          <input name="energielabel" value="{{ old('energielabel',$occasion->energielabel) }}">
-        </label>
+    <label class="input-row">
+      <span>Carrosserie</span>
+      <input id="carrosserieInput" name="carrosserie" value="{{ old('carrosserie',$occasion->carrosserie) }}">
+    </label>
 
-        <label class="input-row">
-          <span>Wegenbelasting min</span>
-          <input name="wegenbelasting_min" value="{{ old('wegenbelasting_min',$occasion->wegenbelasting_min) }}">
-        </label>
 
-        <label class="input-row">
-          <span>Aantal deuren</span>
-          <input type="number" name="aantal_deuren" value="{{ old('aantal_deuren',$occasion->aantal_deuren) }}">
-        </label>
+    <label class="input-row">
+      <span>APK tot</span>
+      <input id="apkTotInput" type="date" name="apk_tot" value="{{ old('apk_tot', optional($occasion->apk_tot)->format('Y-m-d')) }}">
+    </label>
 
-        <label class="input-row">
-          <span>Bekleding</span>
-          <input name="bekleding" value="{{ old('bekleding',$occasion->bekleding) }}">
-        </label>
+    <label class="input-row">
+      <span>Energielabel</span>
+      <input id="energielabelInput" name="energielabel" value="{{ old('energielabel',$occasion->energielabel) }}">
+    </label>
 
-        <label class="input-row">
-          <span>Aantal cilinders</span>
-          <input type="number" name="aantal_cilinders" value="{{ old('aantal_cilinders',$occasion->aantal_cilinders) }}">
-        </label>
+    <label class="input-row">
+      <span>Wegenbelasting min</span>
+      <input id="wegenbelastingMinInput" name="wegenbelasting_min" value="{{ old('wegenbelasting_min',$occasion->wegenbelasting_min) }}">
+    </label>
 
-        <label class="input-row">
-          <span>Topsnelheid (km/u)</span>
-          <input type="number" name="topsnelheid" value="{{ old('topsnelheid',$occasion->topsnelheid) }}">
-        </label>
+    <label class="input-row">
+      <span>Aantal deuren</span>
+      <input id="aantalDeurenInput" type="number" name="aantal_deuren" value="{{ old('aantal_deuren',$occasion->aantal_deuren) }}">
+    </label>
 
-        <label class="input-row">
-          <span>Gewicht (kg)</span>
-          <input type="number" name="gewicht" value="{{ old('gewicht',$occasion->gewicht) }}">
-        </label>
+    <label class="input-row">
+      <span>Bekleding</span>
+      <input id="bekledingInput" name="bekleding" value="{{ old('bekleding',$occasion->bekleding) }}">
+    </label>
 
-        <label class="input-row">
-          <span>Laadvermogen (kg)</span>
-          <input type="number" name="laadvermogen" value="{{ old('laadvermogen',$occasion->laadvermogen) }}">
-        </label>
+    <label class="input-row">
+      <span>Aantal cilinders</span>
+      <input id="aantalCilindersInput" type="number" name="aantal_cilinders" value="{{ old('aantal_cilinders',$occasion->aantal_cilinders) }}">
+    </label>
 
-        <label class="input-row">
-          <span>Bijtelling (€)</span>
-          <div class="with-addon">
-            <span class="addon">€</span>
-            <input type="number" name="bijtelling" id="bijtellingInput"
-                   step="1" min="0"
-                   value="{{ old('bijtelling',$occasion->bijtelling) }}"
-                   placeholder="bijv. 150">
-          </div>
-          <small class="hint" id="bijtellingPreview"></small>
-        </label>
+    <label class="input-row">
+      <span>Topsnelheid (km/u)</span>
+      <input id="topsnelheidInput" type="number" name="topsnelheid" value="{{ old('topsnelheid',$occasion->topsnelheid) }}">
+    </label>
 
-        <label class="input-row">
-          <span>Gemiddeld verbruik</span>
-          <input name="gemiddeld_verbruik" value="{{ old('gemiddeld_verbruik',$occasion->gemiddeld_verbruik) }}">
-        </label>
+    <label class="input-row">
+      <span>Gewicht (kg)</span>
+      <input id="gewichtInput" type="number" name="gewicht" value="{{ old('gewicht',$occasion->gewicht) }}">
+    </label>
+
+    <label class="input-row">
+      <span>Laadvermogen (kg)</span>
+      <input id="laadvermogenInput" type="number" name="laadvermogen" value="{{ old('laadvermogen',$occasion->laadvermogen) }}">
+    </label>
+
+    <label class="input-row">
+      <span>Bijtelling (€)</span>
+      <div class="with-addon">
+        <span class="addon">€</span>
+        <input id="bijtellingInput" type="number" name="bijtelling"
+               step="1" min="0"
+               value="{{ old('bijtelling',$occasion->bijtelling) }}"
+               placeholder="bijv. 150">
       </div>
-    </div>
+      <small class="hint" id="bijtellingPreview"></small>
+    </label>
+
+    <label class="input-row">
+      <span>Gemiddeld verbruik</span>
+      <input id="gemiddeldVerbruikInput" name="gemiddeld_verbruik" value="{{ old('gemiddeld_verbruik',$occasion->gemiddeld_verbruik) }}">
+    </label>
+  </div>
+</div>
+
 
     {{-- OPTIES & OMSCHRIJVING --}}
     <div class="form-card">
@@ -346,6 +353,71 @@ echo old('overige_options_text', collect($occasion->overige_options ?? [])->impl
 
   
   <script>
+
+     const rdwBtn = document.getElementById('rdwBtn');
+  const rdwStatus = document.getElementById('rdwStatus');
+
+  rdwBtn?.addEventListener('click', async () => {
+    const raw = document.getElementById('kentekenInput')?.value || '';
+    const kenteken = raw.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    
+
+    if (!kenteken) {
+      rdwStatus.textContent = 'Vul eerst een kenteken in.';
+      return;
+    }
+
+    rdwStatus.textContent = 'RDW data ophalen...';
+
+    try {
+      const url = `{{ route('admin.occasions.rdw', 'KENTEKEN') }}`.replace('KENTEKEN', kenteken);
+      const res = await fetch(url);
+      const data = await res.json();
+
+        console.log('RDW response:', data);
+
+
+      if (!res.ok) {
+        rdwStatus.textContent = data.message || 'Er ging iets mis.';
+        return;
+      }
+
+      if (data.merk) document.getElementById('merkInput').value = data.merk;
+      if (data.model) document.getElementById('modelInput').value = data.model;
+      if (data.type) document.getElementById('typeInput').value = data.type;
+      if (data.bouwjaar) document.getElementById('bouwjaarInput').value = data.bouwjaar;
+      if (data.kleur) document.getElementById('kleur').value = data.kleur;
+      if (data.cilinderinhoud) document.getElementById('cilinderinhoudInput').value = data.cilinderinhoud;
+if (data.aantal_cilinders) document.getElementById('aantalCilindersInput').value = data.aantal_cilinders;
+if (data.aantal_deuren) document.getElementById('aantalDeurenInput').value = data.aantal_deuren;
+
+if (data.apk_tot) document.getElementById('apkTotInput').value = data.apk_tot;
+if (data.energielabel) document.getElementById('energielabelInput').value = data.energielabel;
+
+if (data.gewicht) document.getElementById('gewichtInput').value = data.gewicht;
+if (data.laadvermogen) document.getElementById('laadvermogenInput').value = data.laadvermogen;
+if (data.max_trekgewicht) document.getElementById('maxTrekgewichtInput').value = data.max_trekgewicht;
+
+if (data.gemiddeld_verbruik) document.getElementById('gemiddeldVerbruikInput').value = data.gemiddeld_verbruik;
+
+// Selects
+if (data.brandstof) document.getElementById('brandstofSelect').value = data.brandstof;
+
+// transmissie is meestal niet beschikbaar → alleen invullen als je later een mapping hebt:
+if (data.transmissie) document.getElementById('transmissieSelect').value = data.transmissie;
+
+if (data.carrosserie) document.getElementById('carrosserieInput').value = data.carrosserie;
+if (data.max_trekgewicht) document.getElementById('maxTrekgewichtInput').value = data.max_trekgewicht;
+if (data.topsnelheid) document.getElementById('topsnelheidInput').value = data.topsnelheid;
+if (data.energielabel) document.getElementById('energielabelInput').value = data.energielabel;
+if (data.carrosserie) document.getElementById('carrosserieInput').value = data.carrosserie;
+
+
+      rdwStatus.textContent = '✅ RDW gegevens ingevuld.';
+    } catch (e) {
+      rdwStatus.textContent = '❌ RDW ophalen mislukt.';
+    }
+  });
     /* ---------------------------
        Helpers voor previews/format
     --------------------------- */

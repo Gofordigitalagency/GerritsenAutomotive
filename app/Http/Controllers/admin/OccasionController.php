@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\admin;
-
+use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\Controller;
 use App\Models\Occasion;
 use App\Http\Requests\StoreOccasionRequest;
@@ -259,6 +259,110 @@ public function toggleStatus(Occasion $occasion)
 
         return back()->with('ok', 'Volgorde opgeslagen.');
     }
+
+
+public function rdwLookup(string $kenteken)
+{
+    $kenteken = strtoupper(preg_replace('/[^A-Z0-9]/', '', $kenteken));
+
+    $mainRes = Http::get('https://opendata.rdw.nl/resource/m9d7-ebf2.json', [
+        'kenteken' => $kenteken,
+        '$limit'   => 1,
+    ]);
+
+    if ($mainRes->failed()) {
+        return response()->json(['message' => 'RDW niet bereikbaar'], 502);
+    }
+
+    $v = $mainRes->json()[0] ?? null;
+    if (!$v) {
+        return response()->json(['message' => 'Kenteken niet gevonden'], 404);
+    }
+
+    // Brandstof + verbruik (aparte dataset)
+    $fuelRes = Http::get('https://opendata.rdw.nl/resource/8ys7-d773.json', [
+        'kenteken' => $kenteken,
+        '$limit'   => 5,
+        '$order'   => 'brandstof_volgnummer ASC',
+    ]);
+
+    $fuelRows = $fuelRes->ok() ? $fuelRes->json() : [];
+    $fuel0 = $fuelRows[0] ?? [];
+
+    // Helpers
+    $toDate = function ($yyyymmdd) {
+        if (!$yyyymmdd) return null;
+        $s = (string) $yyyymmdd;
+        if (strlen($s) !== 8) return null;
+        return substr($s, 0, 4) . '-' . substr($s, 4, 2) . '-' . substr($s, 6, 2);
+    };
+
+    $bouwjaar = null;
+    if (!empty($v['datum_eerste_toelating']) && strlen($v['datum_eerste_toelating']) >= 4) {
+        $bouwjaar = (int) substr($v['datum_eerste_toelating'], 0, 4);
+    }
+
+    // Gewichten
+    $massaLedig = isset($v['massa_ledig_voertuig']) ? (int) $v['massa_ledig_voertuig'] : null;
+    $toegestaanMax = isset($v['toegestane_maximum_massa_voertuig']) ? (int) $v['toegestane_maximum_massa_voertuig'] : null;
+
+    // RDW heeft soms laadvermogen direct. Zo niet: berekenen.
+    $laadvermogen = isset($v['laadvermogen']) ? (int) $v['laadvermogen'] : null;
+    if (!$laadvermogen && $massaLedig && $toegestaanMax) {
+        $laadvermogen = max(0, $toegestaanMax - $massaLedig);
+    }
+
+    // Brandstof mappen naar jouw select (Benzine/Diesel/Elektrisch/Hybride/LPG)
+    $brandstofTekst = strtolower($fuel0['brandstof_omschrijving'] ?? '');
+    $brandstof = null;
+    if (str_contains($brandstofTekst, 'benzine')) $brandstof = 'Benzine';
+    elseif (str_contains($brandstofTekst, 'diesel')) $brandstof = 'Diesel';
+    elseif (str_contains($brandstofTekst, 'elektr')) $brandstof = 'Elektrisch';
+    elseif (str_contains($brandstofTekst, 'hybr')) $brandstof = 'Hybride';
+    elseif (str_contains($brandstofTekst, 'lpg')) $brandstof = 'LPG';
+
+    return response()->json([
+        // basis
+        'kenteken' => $kenteken,
+        'merk'     => $v['merk'] ?? null,
+        'model'    => $v['handelsbenaming'] ?? null,
+        'type'     => null,
+        'kleur'    => $v['eerste_kleur'] ?? null,
+        'bouwjaar' => $bouwjaar,
+
+        // extra velden
+        'cilinderinhoud'   => $v['cilinderinhoud'] ?? null,
+        'aantal_cilinders' => $v['aantal_cilinders'] ?? null,
+        'aantal_deuren'    => $v['aantal_deuren'] ?? null,
+        'apk_tot'          => $toDate($v['vervaldatum_apk'] ?? null),
+        'energielabel' => $v['zuinigheidsclassificatie'] ?? null,
+
+
+
+        // ✅ carrosserie / trekgewicht / topsnelheid (juiste veldnamen)
+        'carrosserie'  => $v['inrichting'] ?? null,        
+        'max_trekgewicht' => $v['maximum_trekken_massa_geremd'] ?? null,
+        'topsnelheid'   => $v['maximale_constructiesnelheid'] ?? null,
+
+        // gewicht & laadvermogen
+        'gewicht'      => $massaLedig,
+        'laadvermogen' => $laadvermogen,
+
+        // brandstof + verbruik
+        'brandstof'          => $brandstof,
+        'gemiddeld_verbruik' => $fuel0['brandstofverbruik_gecombineerd'] ?? null,
+
+        // Niet in RDW open data
+        'transmissie'     => null,
+        'interieurkleur'  => null,
+        'bekleding'       => null,
+        'btw_marge'       => null,
+        'wegenbelasting_min' => null,
+    ]);
+}
+
+
+
 
     /* ===== Helpers ===== */
 

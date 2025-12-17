@@ -39,6 +39,8 @@ Route::middleware('auth')->prefix('admin')->as('admin.')->group(function () {
 
     // Occasions CRUD
     Route::resource('occasions', AdminOccasionController::class);
+Route::get('occasions/rdw/{kenteken}', [AdminOccasionController::class, 'rdwLookup'])
+    ->name('occasions.rdw');
 
     // Galerij acties
     Route::post('occasions/{occasion}/gallery',           [AdminOccasionController::class,'addGallery'])->name('occasions.gallery.add');
