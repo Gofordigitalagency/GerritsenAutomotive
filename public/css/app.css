@@ -161,7 +161,7 @@ body.menu-open { overflow: hidden; }
 =========================== */
 /* Basis: desktop exact centreren over volledige viewport (header overlapt visueel bovenrand) */
 .hero {
-  background: linear-gradient(rgba(0,0,0,.5), rgba(0,0,0,.5)), url('/images/980672.jpg') no-repeat center/cover;
+  background: linear-gradient(rgba(0,0,0,.5), rgba(0,0,0,.5)), url('/images/backgroundhome.jpg') no-repeat center/cover;
   min-height: 100dvh;            /* dynamic vh → beter bij browser UI */
   width: 100%;
   padding-top: 0;
