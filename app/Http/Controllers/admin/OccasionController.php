@@ -13,11 +13,32 @@ use Illuminate\Support\Facades\Storage;
 class OccasionController extends Controller
 {
     /* ===== Overzicht ===== */
-    public function index()
-    {
-        $items = Occasion::latest()->paginate(20);
-        return view('admin.occasions.index', compact('items'));
-    }
+ public function index(Request $request)
+{
+    $status = $request->get('status', 'available'); // default: beschikbaar
+
+    $q = Occasion::query();
+
+    // Filter
+    if ($status === 'sold') {
+        $q->where('model', 'LIKE', '%(VERKOCHT)%');
+    } elseif ($status === 'available') {
+        $q->where('model', 'NOT LIKE', '%(VERKOCHT)%');
+    } // else: all -> geen filter
+
+    // Sortering: beschikbaar bovenaan, verkocht onderaan (voor als je "all" kiest)
+    $q->orderByRaw("CASE WHEN model LIKE '%(VERKOCHT)%' THEN 1 ELSE 0 END ASC")
+      ->orderBy('created_at', 'desc');
+
+    $items = $q->paginate(20)->withQueryString();
+
+    // (optioneel) counters voor tabs
+    $countSold = Occasion::where('model', 'LIKE', '%(VERKOCHT)%')->count();
+    $countAvailable = Occasion::where('model', 'NOT LIKE', '%(VERKOCHT)%')->count();
+
+    return view('admin.occasions.index', compact('items', 'status', 'countSold', 'countAvailable'));
+}
+
 
     /* ===== Create / Edit ===== */
     public function create()

@@ -13,6 +13,28 @@
     </div>
   </div>
 
+  @php
+  $status = $status ?? request('status', 'available');
+@endphp
+
+<div class="oc-filters" style="display:flex; gap:10px; margin: 10px 0 20px;">
+  <a href="{{ route('admin.occasions.index', ['status' => 'available']) }}"
+     class="btn sm {{ $status === 'available' ? 'primary' : '' }}">
+    Beschikbaar ({{ $countAvailable ?? 0 }})
+  </a>
+
+  <a href="{{ route('admin.occasions.index', ['status' => 'sold']) }}"
+     class="btn sm {{ $status === 'sold' ? 'primary' : '' }}">
+    Verkocht ({{ $countSold ?? 0 }})
+  </a>
+
+  <a href="{{ route('admin.occasions.index', ['status' => 'all']) }}"
+     class="btn sm {{ $status === 'all' ? 'primary' : '' }}">
+    Alles
+  </a>
+</div>
+
+
   @if($items->count() === 0)
     <div class="empty-state">
       <h3>Nog geen occasions</h3>
