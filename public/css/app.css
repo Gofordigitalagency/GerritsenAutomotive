@@ -180,6 +180,8 @@ body.menu-open { overflow: hidden; }
   }
 }
 
+
+
 .hero-content { max-width: 600px; text-align: left; }
 .hero-content h1 { font-size: 58px; margin: 0; font-weight: 700; line-height: 1.05; }
 .hero-content p { margin-top: 10px; font-size: 16px; line-height: 1.4; }
@@ -273,6 +275,49 @@ a.btn { text-decoration: none; }
   display: inline-block; justify-self: start; width: auto; max-width: max-content;
   margin-top: 6px; background: #747474; color: #fff; padding: 10px 14px; font-weight: 700; letter-spacing: .2px;
 }
+
+
+
+
+
+.occasions-topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  flex-wrap:wrap;
+  margin-bottom: 1rem;
+}
+
+.oc-sort{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.oc-sort select{
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid rgba(0,0,0,.15);
+}
+
+.cta-center{
+  display:flex;
+  justify-content:center;
+  margin-top:18px;
+}
+
+.car-card.is-hidden{
+  display:none;
+}
+
+
+
+
+
+
+
+
 
 /* CTA onder grid */
 .nieuw-binnen .cta-center { display: flex; justify-content: center; margin-top: 24px; }
@@ -550,6 +595,8 @@ html.dark .ocd-lightbox-inner{ background:#111; }
     align-items: center;
     gap: 10px;            /* afstand tussen de iconen */
 }
+
+.car-card.is-hidden { display: none; }
 
 /* Maak alle drie knoppen even groot en gecentreerd */
 .theme-toggle--icon,

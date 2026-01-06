@@ -13,7 +13,10 @@ use App\Http\Controllers\SellCarController;
 // --- Publiek ---
 Route::get('/', [PublicOccasionController::class, 'home'])->name('home');
 Route::get('/occasions', [PublicOccasionController::class, 'index'])->name('occasions.index');
+Route::get('/occasions/cards', [PublicOccasionController::class, 'cards'])->name('occasions.cards');
+
 Route::get('/occasions/{slug}', [PublicOccasionController::class, 'show'])->name('occasions.show');
+
 
 // Contact
 Route::post('contact', [ContactController::class, 'send'])->name('contact.send');

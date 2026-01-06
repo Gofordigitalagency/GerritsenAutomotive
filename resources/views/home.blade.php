@@ -39,64 +39,41 @@
 
 <section id="aanbod" class="nieuw-binnen">
   <div class="container">
-    <h2 class="sectie-titel">Nieuw bij ons binnen</h2>
 
-    <div id="nieuwGrid" class="cards-grid">
-      @foreach($nieuw as $i => $car)
-        <a class="car-card {{ $i > 2 ? 'is-hidden' : '' }}" href="{{ route('occasions.show', $car->slug) }}">
-          <div class="car-photo">
-            <img src="{{ $car->hoofdfoto_path ? asset('storage/'.$car->hoofdfoto_path) : asset('images/placeholder-car.jpg') }}" alt="{{ $car->titel }}">
-          </div>
+    <div class="occasions-topbar" style="display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+      <h2 class="sectie-titel" style="margin:0 0 1rem 0;">Alle Occasions</h2>
 
-          <div class="car-info">
-            @php
-              // Bouw "Merk + Model"
-              $merkModel = trim(($car->merk ?? '').' '.($car->model ?? ''));
+      <div class="oc-sort" style="display:flex; align-items:center; gap:10px;">
+        <label for="sort" style="font-weight:600; font-size:14px;">Sorteren:</label>
 
-              // Type (optioneel)
-              $type = $car->type ?? '';
-
-              // Fallback: als merk+model leeg is, probeer het uit de titel te halen
-              if ($merkModel === '' && !empty($car->titel)) {
-                  $titel = trim($car->titel);
-                  // Als we een type hebben, strip het aan het eind van de titel
-                  if ($type) {
-                      $merkModel = trim(preg_replace('/\s*' . preg_quote($type, '/') . '\s*$/i', '', $titel));
-                  } else {
-                      $merkModel = $titel;
-                  }
-              }
-              if ($merkModel === '') { $merkModel = $car->titel; } // ultieme fallback
-            @endphp
-
-            {{-- Alleen merk + model als titel --}}
-            <h3 class="car-title">{{ $merkModel }}</h3>
-
-            {{-- Type eronder, kleiner --}}
-            @if(!empty($type))
-              <div class="car-type">{{ $type }}</div>
-            @endif
-
-            <div class="car-meta">
-              <span>{{ ucfirst($car->transmissie) }}</span>
-              <span>{{ $car->bouwjaar ?? '—' }}</span>
-              <span>{{ ucfirst($car->brandstof) }}</span>
-              <span>{{ number_format($car->tellerstand ?? 0, 0, ',', '.') }} km</span>
-            </div>
-
-            <div class="car-price">€ {{ number_format($car->prijs ?? 0, 0, ',', '.') }},-</div>
-          </div>
-        </a>
-      @endforeach
+        <select id="sort" style="padding:10px 12px; border-radius:10px; border:1px solid rgba(0,0,0,.15);">
+          <option value="best">Beste resultaten</option>
+          <option value="price_asc">Prijs oplopend</option>
+          <option value="price_desc">Prijs aflopend</option>
+          <option value="newest">Nieuwste aanbod eerst</option>
+          <option value="km_asc">Kilometerstand oplopend</option>
+          <option value="km_desc">Kilometerstand aflopend</option>
+          <option value="year_asc">Bouwjaar oplopend</option>
+          <option value="year_desc">Bouwjaar aflopend</option>
+        </select>
+      </div>
     </div>
 
-    @if(($nieuw ?? collect())->count() > 3)
-      <div class="cta-center">
-        <button id="btnBekijkAanbod" class="btn btn-primary" type="button">Bekijk Het Aanbod</button>
-      </div>
-    @endif
+    {{-- GRID (partial) --}}
+    <div id="nieuwGrid" class="cards-grid">
+      @include('occasions.partials.home_cards', ['nieuw' => $nieuw])
+    </div>
+
+    {{-- CTA altijd laten staan, JS regelt tonen/verbergen --}}
+    <div class="cta-center" id="aanbodCta" style="display:none;">
+      <button id="btnBekijkAanbod" class="btn btn-primary" type="button">
+        Bekijk Het Aanbod
+      </button>
+    </div>
+
   </div>
 </section>
+
 
 
 <!-- <section class="openingstijden-section">
@@ -622,6 +599,87 @@ document.addEventListener('DOMContentLoaded', function () {
     bind();
     return { open, close };
   })();
+
+(function () {
+  // run meteen (script staat onderaan page)
+  const select = document.getElementById('sort');
+  const grid   = document.getElementById('nieuwGrid');
+  const cta    = document.getElementById('aanbodCta');
+  const btn    = document.getElementById('btnBekijkAanbod');
+
+  console.log('FOUND:', { select: !!select, grid: !!grid, cta: !!cta, btn: !!btn });
+
+  if (!select || !grid) return;
+
+  let expanded = false;
+
+  function applyUI() {
+    const cards = Array.from(grid.querySelectorAll('.car-card'));
+    const hasMore = cards.length > 3;
+
+    if (cta) cta.style.display = hasMore ? '' : 'none';
+
+    // als geen knop bestaat, alleen hide logic doen
+    if (!btn) {
+      cards.forEach((c, i) => c.classList.toggle('is-hidden', i > 2));
+      return;
+    }
+
+    if (!expanded) {
+      cards.forEach((c, i) => c.classList.toggle('is-hidden', i > 2));
+      btn.textContent = 'Bekijk Het Aanbod';
+    } else {
+      cards.forEach(c => c.classList.remove('is-hidden'));
+      btn.textContent = 'Toon minder';
+    }
+  }
+
+  // init
+  applyUI();
+
+  // toggle
+  if (btn) {
+    btn.addEventListener('click', () => {
+      expanded = !expanded;
+      applyUI();
+    });
+  }
+
+  // sort
+  select.addEventListener('change', async () => {
+    const sort = select.value;
+    expanded = false;
+
+    const url = `{{ route('occasions.cards') }}?sort=${encodeURIComponent(sort)}`;
+    console.log('FETCH:', url);
+
+    try {
+      const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+      console.log('RES:', res.status);
+
+      if (!res.ok) {
+        console.error('Fetch failed', res.status, res.statusText);
+        return;
+      }
+
+      const html = await res.text();
+      grid.innerHTML = html;
+
+      applyUI();
+
+      history.replaceState(null, '', `/?sort=${encodeURIComponent(sort)}#aanbod`);
+    } catch (e) {
+      console.error('Fetch error:', e);
+    }
+  });
+})();
+
+
+
+
+
+
+
 
   // ✳️ Kleine helper: highlight effect voor fallback sectie
   (function ensureHighlightStyle(){
