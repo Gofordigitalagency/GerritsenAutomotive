@@ -392,6 +392,26 @@ body.menu-open { overflow: hidden; }
 /* ===========================
    FOOTER (alleen deze sectie)
 =========================== */
+
+.footer-content-left-info a {
+  color: white !important;
+  text-decoration: none;
+}
+
+.footer-content-left-info a:visited,
+.footer-content-left-info a:hover,
+.footer-content-left-info a:active {
+  color: white !important;
+}
+
+/* iOS/Safari fix: soms gebruikt hij text-fill-color */
+.footer-content-left-info a {
+  font-size: 18px;
+}
+
+
+
+
 .footer-section {
   padding: 120px 0;
   background: linear-gradient(rgba(0,0,0,.5), rgba(0,0,0,.5)),
@@ -407,7 +427,7 @@ body.menu-open { overflow: hidden; }
 .footer-content-left-info { display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px; }
 .footer-content-left-info > div { display: flex; align-items: center; gap: 5px; }
 .footer-content-left-info img { width: 18px; height: 18px; }
-.footer-content-left-info p { margin: 0; color: #fff; font-size: 18px; }
+.footer-content-left-info p { margin: 0; font-size: 18px; }
 
 /* Rechter kolom: formulier */
 .footer-content-right { color: #fff; width: 50%; max-width: 50%; }
@@ -619,6 +639,11 @@ html.dark .ocd-lightbox-inner{ background:#111; }
     flex-direction: column;
     gap: 10px; /* afstand tussen de twee knoppen links */
 }
+
+
+
+
+
 
 .cta-right {
     display: flex;
