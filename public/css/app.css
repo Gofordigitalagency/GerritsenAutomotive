@@ -365,16 +365,7 @@ a.btn { text-decoration: none; }
    FOOTER
 =========================== */
 
-.footer-content-left-info a {
-  color: red !important;
-  text-decoration: none;
-}
 
-.footer-content-left-info a:visited,
-.footer-content-left-info a:hover,
-.footer-content-left-info a:active {
-  color: red !important;
-}
 
 /* iOS/Safari fix: soms gebruikt hij text-fill-color */
 .footer-content-left-info a {
@@ -399,7 +390,7 @@ a.btn { text-decoration: none; }
 .footer-content-left-info { display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px; }
 .footer-content-left-info > div { display: flex; align-items: center; gap: 5px; }
 .footer-content-left-info img { width: 18px; height: 18px; }
-.footer-content-left-info p { margin: 0; font-size: 18px; }
+.footer-content-left-info p { margin: 0; color: white; font-size: 18px; }
 
 .footer-content-right { color: #fff; width: 50%; max-width: 50%; }
 .footer-content-right .contact-form { max-width: 100%; margin-left: auto; }
