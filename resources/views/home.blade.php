@@ -385,7 +385,7 @@
 
                    <div class="phone">
   <img src="{{ asset('images/telephone.svg') }}" alt="phone">
-  <a href="tel:+31638257987">+31 6 38257987 (Verkooop, Shania)</a>
+  <a href="tel:+31638257987">+31 6 38257987 (Verkoop, Shania)</a>
 </div>
 
 <div class="phone">
