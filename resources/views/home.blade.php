@@ -383,21 +383,20 @@
                         <p>Gelderse Rooslaan 14 A, 6841 BE Arnhem</p>
                     </div> 
 
-                    <div class="phone">
-                        <img src="{{ asset('images/telephone.svg') }}" alt="home">
-                        <p>+ 31 6 38257987 (Verkoop, Shania)</p>
+                   <div class="phone">
+  <img src="{{ asset('images/telephone.svg') }}" alt="phone">
+  <a href="tel:+31638257987">+31 6 38257987 (Verkoop, Shania)</a>
+</div>
 
-                    </div>
+<div class="phone">
+  <img src="{{ asset('images/telephone.svg') }}" alt="phone">
+  <a href="tel:+31649951874">+31 6 49951874 (Werkplaats, Mick)</a>
+</div>
 
-                    <div class="phone">
-                        <img src="{{ asset('images/telephone.svg') }}" alt="home">
-                        <p>+ 31 6 49951874 (Werkplaats, Mick)</p>
-                    </div>
-                    
-                    <div class="email">
-                        <img src="{{ asset('images/mail.svg') }}" alt="home">
-                        <p>Handelsonderneming@mgerritsen.nl</p>
-                    </div>                     
+<div class="email">
+  <img src="{{ asset('images/mail.svg') }}" alt="mail">
+  <a href="mailto:Handelsonderneming@mgerritsen.nl">Handelsonderneming@mgerritsen.nl</a>
+</div>  
                 </div>
 
                 <img src="{{ asset('images/Garage-footer.png') }}" alt="keuringen">
