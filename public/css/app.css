@@ -276,8 +276,6 @@ a.btn { text-decoration: none; }
 
 
 
-
-
 .occasions-topbar{
   display:flex;
   align-items:center;
@@ -380,7 +378,7 @@ a.btn { text-decoration: none; }
 .footer-content-left-info { display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px; }
 .footer-content-left-info > div { display: flex; align-items: center; gap: 5px; }
 .footer-content-left-info img { width: 18px; height: 18px; }
-.footer-content-left-info p { margin: 0; color: #fff; font-size: 18px; }
+.footer-content-left-info p { margin: 0; color: yellow; font-size: 18px; }
 
 .footer-content-right { color: #fff; width: 50%; max-width: 50%; }
 .footer-content-right .contact-form { max-width: 100%; margin-left: auto; }
