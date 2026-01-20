@@ -379,6 +379,7 @@ a.btn { text-decoration: none; }
 /* iOS/Safari fix: soms gebruikt hij text-fill-color */
 .footer-content-left-info a {
   -webkit-text-fill-color: yellow;
+  font-size: 18px;
 }
 
 
