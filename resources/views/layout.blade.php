@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no,email=no,address=no">
+
     <title>Gerritsen Automotive</title>
 
     <link rel="icon" type="image/png" href="{{ asset('images/FAVICON-GERRITSEN.png') }}">
