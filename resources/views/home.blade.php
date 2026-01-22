@@ -75,6 +75,285 @@
 </section>
 
 
+<div class="wa-wrap" id="wa">
+  <h1 class="wa-title">Plan gemakkelijk en snel een werkplaatsafspraak</h1>
+  <p class="wa-sub">
+    Staat uw gewenste reparatie er niet tussen? Neem dan contact op.
+  </p>
+
+  {{-- STEPPER (zonder vestiging) --}}
+  <div class="wa-stepper" role="navigation" aria-label="Stappen">
+    <div class="wa-step wa-active" data-step="1">
+      <div class="wa-step-label">AUTOGEGEVENS</div>
+      <div class="wa-dot wa-on"></div>
+    </div>
+    <div class="wa-line wa-on"></div>
+    <div class="wa-step" data-step="2">
+      <div class="wa-step-label">WERKZAAMHEDEN</div>
+      <div class="wa-dot"></div>
+    </div>
+    <div class="wa-line"></div>
+    <div class="wa-step" data-step="3">
+      <div class="wa-step-label">TIJDSTIP</div>
+      <div class="wa-dot"></div>
+    </div>
+    <div class="wa-line"></div>
+    <div class="wa-step" data-step="4">
+      <div class="wa-step-label">CONTACTGEGEVENS</div>
+      <div class="wa-dot"></div>
+    </div>
+  </div>
+
+  <div class="wa-grid">
+    {{-- LEFT CONTENT --}}
+    <div class="wa-main">
+      <form id="wa-form" method="POST" action="{{ route('workshop.finish') }}">
+        @csrf
+
+        {{-- ================= STEP 1 ================= --}}
+        <section class="wa-panel wa-show" data-panel="1">
+          <h2 class="wa-h2">UW AUTOGEGEVENS</h2>
+          <p class="wa-help">Om u van dienst te zijn hebben wij uw kenteken en kilometerstand nodig.</p>
+
+          <div class="wa-row">
+            <div class="wa-plate">
+              <div class="wa-plate-nl">NL</div>
+              <input class="wa-plate-input" name="license_plate" id="wa-license" type="text" placeholder="00-XXX-0" autocomplete="off">
+            </div>
+
+            <div class="wa-km">
+              <input class="wa-km-input" name="mileage" id="wa-mileage" type="number" min="0" step="1" placeholder="Km-stand bij benadering">
+              <div class="wa-km-suf">KM</div>
+            </div>
+          </div>
+
+          <div class="wa-actions wa-actions-right">
+            <button class="wa-btn wa-btn-primary" type="button" onclick="WA.next()">DOOR NAAR STAP 2 <span class="wa-arr">›</span></button>
+          </div>
+        </section>
+
+        {{-- ================= STEP 2 ================= --}}
+        <section class="wa-panel" data-panel="2">
+          <h2 class="wa-h2">SELECTEER UW WERKZAAMHEDEN</h2>
+          <p class="wa-help">Kies werkzaamheden die aan uw auto moeten gebeuren.</p>
+
+          <div class="wa-block-title">ONDERHOUD</div>
+
+          <div class="wa-list">
+            @php $maintenance = config('workshop_services.maintenance'); @endphp
+            @foreach($maintenance as $opt)
+              <label class="wa-item">
+                <span class="wa-radio">
+                  <input type="radio" name="maintenance_option" value="{{ $opt }}" onchange="WA.sync()">
+                  <span class="wa-radio-ui"></span>
+                </span>
+
+                <span class="wa-item-text">{{ $opt }}</span>
+
+                <span class="wa-info" title="Info">i</span>
+              </label>
+            @endforeach
+          </div>
+
+          <div class="wa-block-title wa-mt">AANVULLENDE WERKZAAMHEDEN</div>
+
+          <div class="wa-list">
+            @php $extras = config('workshop_services.extras'); @endphp
+            @foreach($extras as $ex)
+              <label class="wa-item wa-item-check">
+                <span class="wa-check">
+                  <input type="checkbox" name="extra_services[]" value="{{ $ex }}" onchange="WA.sync()">
+                  <span class="wa-check-ui"></span>
+                </span>
+
+                <span class="wa-item-text">{{ $ex }}</span>
+              </label>
+            @endforeach
+          </div>
+
+          <div class="wa-actions">
+            <button class="wa-btn wa-btn-ghost" type="button" onclick="WA.prev()">‹ VORIGE</button>
+            <button class="wa-btn wa-btn-primary" type="button" onclick="WA.next()">VOLGENDE ›</button>
+          </div>
+        </section>
+
+        {{-- ================= STEP 3 ================= --}}
+        <section class="wa-panel" data-panel="3">
+          <h2 class="wa-h2">PLAN UW TIJDSTIP</h2>
+          <p class="wa-help">Selecteer een beschikbare dag.</p>
+
+          {{-- Hidden inputs die naar controller gaan --}}
+          <input type="hidden" name="appointment_date" id="wa-date">
+          <input type="hidden" name="appointment_time" id="wa-time">
+
+          <div class="wa-cal">
+            <div class="wa-cal-head">
+              <button class="wa-cal-nav" type="button" onclick="WA.calPrev()">‹</button>
+              <div class="wa-cal-month" id="wa-cal-month">—</div>
+              <button class="wa-cal-nav" type="button" onclick="WA.calNext()">›</button>
+            </div>
+
+            <div class="wa-cal-week">
+              <div>Maandag</div><div>Dinsdag</div><div>Woensdag</div><div>Donderdag</div><div>Vrijdag</div><div>Zaterdag</div><div>Zondag</div>
+            </div>
+
+            <div class="wa-cal-grid" id="wa-cal-grid"></div>
+          </div>
+
+          <div class="wa-split">
+            <div class="wa-card">
+              <div class="wa-card-title">WILT U WACHTEN TIJDENS HET ONDERHOUD OF REPARATIE?</div>
+              <label class="wa-radio-row">
+                <input type="radio" name="wait_while_service" value="1" onchange="WA.sync()"> Ja
+              </label>
+              <label class="wa-radio-row">
+                <input type="radio" name="wait_while_service" value="0" onchange="WA.sync()"> Nee
+              </label>
+            </div>
+
+            <div class="wa-card">
+              <div class="wa-card-title">HOE LAAT WILT U UW AUTO HET LIEFST BRENGEN?</div>
+              <div class="wa-times">
+                <button type="button" class="wa-time" data-time="08:00" onclick="WA.pickTime(this)">08:00</button>
+                <button type="button" class="wa-time" data-time="09:00" onclick="WA.pickTime(this)">09:00</button>
+                <button type="button" class="wa-time" data-time="09:30" onclick="WA.pickTime(this)">09:30</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- <div class="wa-card wa-mt2">
+            <div class="wa-card-title">WILT U VERVANGEND VERVOER?</div>
+            <label class="wa-radio-row"><input type="radio" name="replacement_transport" value="Ja, graag vervangend vervoer (tegen servicehuur tarief)" onchange="WA.sync()"> Ja, graag vervangend vervoer (tegen servicehuur tarief)</label>
+            <label class="wa-radio-row"><input type="radio" name="replacement_transport" value="Ja, graag vervangend vervoer, deze wordt vergoed door mijn leasemaatschappij" onchange="WA.sync()"> Ja, graag vervangend vervoer, deze wordt vergoed door mijn leasemaatschappij</label>
+            <label class="wa-radio-row"><input type="radio" name="replacement_transport" value="Ja, graag een leenfiets" onchange="WA.sync()"> Ja, graag een leenfiets.</label>
+            <label class="wa-radio-row"><input type="radio" name="replacement_transport" value="Nee, vervangend vervoer is niet nodig" onchange="WA.sync()"> Nee, vervangend vervoer is niet nodig.</label>
+          </div> -->
+
+          <div class="wa-actions">
+            <button class="wa-btn wa-btn-ghost" type="button" onclick="WA.prev()">‹ VORIGE</button>
+            <button class="wa-btn wa-btn-primary" type="button" onclick="WA.next()">VOLGENDE ›</button>
+          </div>
+        </section>
+
+        {{-- ================= STEP 4 ================= --}}
+        <section class="wa-panel" data-panel="4">
+          <h2 class="wa-h2">UW CONTACTGEGEVENS</h2>
+          <p class="wa-help">Wij hebben de volgende gegevens van u nodig om de afspraak te bevestigen.</p>
+
+          <label class="wa-field">
+            <span>Bedrijfsnaam (Optioneel)</span>
+            <input type="text" name="company_name">
+          </label>
+
+          <div class="wa-2col wa-mt2">
+            <div class="wa-field">
+              <span>Aanhef</span>
+              <div class="wa-inline">
+                <label class="wa-radio-row"><input type="radio" name="salutation" value="dhr"> Dhr.</label>
+                <label class="wa-radio-row"><input type="radio" name="salutation" value="mevr"> Mevr.</label>
+              </div>
+            </div>
+
+            <div></div>
+          </div>
+
+          <label class="wa-field"><span>Voornaam</span><input type="text" name="first_name" required></label>
+          <label class="wa-field"><span>Tussenvoegsel</span><input type="text" name="middle_name"></label>
+          <label class="wa-field"><span>Achternaam</span><input type="text" name="last_name" required></label>
+
+          <div class="wa-3col wa-mt2">
+            <label class="wa-field"><span>Straat</span><input type="text" name="street"></label>
+            <label class="wa-field"><span>Huisnummer</span><input type="text" name="house_number"></label>
+            <label class="wa-field"><span>Toevoeging</span><input type="text" name="addition"></label>
+          </div>
+
+          <div class="wa-2col wa-mt2">
+            <label class="wa-field"><span>Postcode</span><input type="text" name="postal_code"></label>
+            <label class="wa-field"><span>Woonplaats</span><input type="text" name="city"></label>
+          </div>
+
+          <label class="wa-field wa-mt2"><span>Telefoonnummer</span><input type="text" name="phone"></label>
+          <label class="wa-field"><span>E-mail</span><input type="email" name="email" required></label>
+
+          <label class="wa-field">
+            <span>Opmerkingen</span>
+            <textarea name="remarks" rows="5" placeholder="Zijn er nog andere werkzaamheden? Heeft u verder vragen of wilt u vooraf een kostenindicatie?"></textarea>
+          </label>
+
+          <label class="wa-checkline">
+            <input type="checkbox" name="terms_accepted" required>
+            <span>Ik ga akkoord met de voorwaarden</span>
+          </label>
+
+          <div class="wa-termsbox">
+            <div class="wa-terms-title">VOORWAARDEN</div>
+            <div>Ik ga ermee akkoord dat mijn gegevens worden gebruikt voor het afhandelen van mijn serviceafspraak.</div>
+          </div>
+
+          <label class="wa-checkline">
+            <input type="checkbox" name="marketing_opt_in" value="1">
+            <span>Houd mij op de hoogte van nieuws en aanbiedingen</span>
+          </label>
+
+          <div class="wa-actions">
+            <button class="wa-btn wa-btn-ghost" type="button" onclick="WA.prev()">‹ VORIGE</button>
+            <button class="wa-btn wa-btn-primary" type="submit">AFSPRAAK INPLANNEN</button>
+          </div>
+        </section>
+      </form>
+    </div>
+
+    {{-- RIGHT OVERVIEW --}}
+    <aside class="wa-side">
+      <div class="wa-side-title">OVERZICHT</div>
+
+      <div class="wa-acc">
+        <button class="wa-acc-head" type="button" onclick="WA.acc(this)">
+          <span class="wa-ic">🚗</span> AUTOGEGEVENS <span class="wa-caret">⌃</span>
+        </button>
+        <div class="wa-acc-body wa-open">
+          <div class="wa-acc-row"><b>Kenteken:</b> <span id="ov-plate">-</span></div>
+          <div class="wa-acc-row"><b>KM:</b> <span id="ov-km">-</span></div>
+        </div>
+      </div>
+
+      <div class="wa-acc">
+        <button class="wa-acc-head" type="button" onclick="WA.acc(this)">
+          <span class="wa-ic">🛠️</span> WERKZAAMHEDEN <span class="wa-caret">⌃</span>
+        </button>
+        <div class="wa-acc-body">
+          <div class="wa-acc-row"><b>Onderhoud:</b> <span id="ov-main">-</span></div>
+          <div class="wa-acc-row"><b>Aanvullend:</b> <span id="ov-extra">-</span></div>
+        </div>
+      </div>
+
+      <div class="wa-acc">
+        <button class="wa-acc-head" type="button" onclick="WA.acc(this)">
+          <span class="wa-ic">📅</span> TIJDSTIP <span class="wa-caret">⌃</span>
+        </button>
+        <div class="wa-acc-body">
+          <div class="wa-acc-row"><b>Datum:</b> <span id="ov-date">-</span></div>
+          <div class="wa-acc-row"><b>Tijd:</b> <span id="ov-time">-</span></div>
+          <div class="wa-acc-row"><b>Wachten:</b> <span id="ov-wait">-</span></div>
+        </div>
+      </div>
+
+      <div class="wa-acc">
+        <button class="wa-acc-head" type="button" onclick="WA.acc(this)">
+          <span class="wa-ic">👤</span> CONTACTGEGEVENS <span class="wa-caret">⌃</span>
+        </button>
+        <div class="wa-acc-body">
+          <div class="wa-acc-row"><b>Naam:</b> <span id="ov-name">-</span></div>
+          <div class="wa-acc-row"><b>Email:</b> <span id="ov-email">-</span></div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+
+
+
 
 <!-- <section class="openingstijden-section">
     <div class="container">
@@ -674,9 +953,277 @@ document.addEventListener('DOMContentLoaded', function () {
 })();
 
 
+/**
+ * Workshop Wizard - werkt 1-op-1 met jouw HTML
+ * Vereist: jouw bestaande CSS classes (wa-show, wa-active, wa-on, wa-open, etc.)
+ */
+window.WA = (() => {
+  let step = 1;
 
+  // kalender state
+  let calYear = new Date().getFullYear();
+  let calMonth = new Date().getMonth();
+  let selectedDate = "";
+  let selectedTime = "";
 
+  const monthsNL = [
+    "JANUARI","FEBRUARI","MAART","APRIL","MEI","JUNI",
+    "JULI","AUGUSTUS","SEPTEMBER","OKTOBER","NOVEMBER","DECEMBER"
+  ];
 
+  const qs  = (s, r=document) => r.querySelector(s);
+  const qsa = (s, r=document) => Array.from(r.querySelectorAll(s));
+
+  const pad = (n) => String(n).padStart(2,"0");
+  const ymd = (y,m,d) => `${y}-${pad(m+1)}-${pad(d)}`;
+
+  function fmtDateNL(ymdStr){
+    if(!ymdStr) return "-";
+    const [y,m,d] = ymdStr.split("-");
+    return `${d}-${m}-${y}`;
+  }
+  function normPlate(v){ return (v||"").toString().trim().toUpperCase(); }
+  function fmtKm(v){
+    if(v === "" || v === null || typeof v === "undefined") return "-";
+    const n = Number(v);
+    if(Number.isNaN(n)) return "-";
+    return n.toLocaleString("nl-NL");
+  }
+
+  // ===== step UI =====
+  function showStep(n){
+    step = n;
+
+    // panels
+    qsa(".wa-panel").forEach(p => p.classList.remove("wa-show"));
+    const panel = qs(`.wa-panel[data-panel="${n}"]`);
+    if(panel) panel.classList.add("wa-show");
+
+    // stepper
+    const steps = qsa(".wa-stepper .wa-step");
+    const lines = qsa(".wa-stepper .wa-line");
+
+    steps.forEach(s => {
+      const sNum = Number(s.getAttribute("data-step"));
+      s.classList.toggle("wa-active", sNum === n);
+      const dot = s.querySelector(".wa-dot");
+      if(dot) dot.classList.toggle("wa-on", sNum <= n);
+    });
+
+    lines.forEach((l, idx) => l.classList.toggle("wa-on", n >= (idx + 2)));
+
+    sync();
+    window.scrollTo({ top: qs("#wa")?.offsetTop - 20 || 0, behavior: "smooth" });
+  }
+
+  function next(){
+    if(!validate(step)) return;
+    if(step < 4) showStep(step + 1);
+  }
+  function prev(){
+    if(step > 1) showStep(step - 1);
+  }
+
+  // ===== accordion =====
+  function acc(btn){
+    const body = btn?.parentElement?.querySelector(".wa-acc-body");
+    if(!body) return;
+    body.classList.toggle("wa-open");
+  }
+
+  // ===== calendar =====
+  function renderCalendar(){
+    const monthEl = qs("#wa-cal-month");
+    const gridEl  = qs("#wa-cal-grid");
+    if(!monthEl || !gridEl) return;
+
+    monthEl.textContent = `${monthsNL[calMonth]} ${calYear}`;
+    gridEl.innerHTML = "";
+
+    const first = new Date(calYear, calMonth, 1);
+    let startDay = first.getDay(); // 0=zo
+    startDay = (startDay === 0) ? 7 : startDay;
+    const blanks = startDay - 1;
+
+    const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+
+    // lege vakken
+    for(let i=0;i<blanks;i++){
+      const d = document.createElement("div");
+      d.className = "wa-day wa-off";
+      gridEl.appendChild(d);
+    }
+
+    for(let day=1; day<=daysInMonth; day++){
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "wa-day";
+      const value = ymd(calYear, calMonth, day);
+      btn.textContent = day;
+
+      if(selectedDate === value) btn.classList.add("wa-picked");
+
+      btn.addEventListener("click", (e) => pickDate(value, e.currentTarget));
+      gridEl.appendChild(btn);
+    }
+  }
+
+  function calPrev(){
+    calMonth--;
+    if(calMonth < 0){ calMonth = 11; calYear--; }
+    renderCalendar();
+  }
+  function calNext(){
+    calMonth++;
+    if(calMonth > 11){ calMonth = 0; calYear++; }
+    renderCalendar();
+  }
+
+  function pickDate(value, btnEl){
+    selectedDate = value;
+    const hidden = qs("#wa-date");
+    if(hidden) hidden.value = value;
+
+    qsa("#wa-cal-grid .wa-day").forEach(b => b.classList.remove("wa-picked"));
+    if(btnEl) btnEl.classList.add("wa-picked");
+
+    sync();
+  }
+
+  // ===== time =====
+  function pickTime(btn){
+    const t = btn.getAttribute("data-time");
+    selectedTime = t;
+
+    const hidden = qs("#wa-time");
+    if(hidden) hidden.value = t;
+
+    qsa(".wa-time").forEach(b => b.classList.remove("wa-picked"));
+    btn.classList.add("wa-picked");
+
+    sync();
+  }
+
+  // ===== overview sync =====
+  function sync(){
+    const plate = normPlate(qs("#wa-license")?.value);
+    const km    = qs("#wa-mileage")?.value;
+
+    if(qs("#ov-plate")) qs("#ov-plate").textContent = plate || "-";
+    if(qs("#ov-km"))    qs("#ov-km").textContent    = km ? `${fmtKm(km)} km` : "-";
+
+    const maint = qs('input[name="maintenance_option"]:checked')?.value || "";
+    const extras = qsa('input[name="extra_services[]"]:checked').map(x => x.value);
+
+    if(qs("#ov-main"))  qs("#ov-main").textContent  = maint || "-";
+    if(qs("#ov-extra")) qs("#ov-extra").textContent = extras.length ? extras.join(", ") : "-";
+
+    const d = qs("#wa-date")?.value || selectedDate || "";
+    const t = qs("#wa-time")?.value || selectedTime || "";
+    const wait = qs('input[name="wait_while_service"]:checked')?.value;
+    // const rt = qs('input[name="replacement_transport"]:checked')?.value || "";
+
+    if(qs("#ov-date")) qs("#ov-date").textContent = d ? fmtDateNL(d) : "-";
+    if(qs("#ov-time")) qs("#ov-time").textContent = t ? `${t} uur` : "-";
+    if(qs("#ov-wait")) qs("#ov-wait").textContent = (wait === "1") ? "Ja" : (wait === "0" ? "Nee" : "-");
+    if(qs("#ov-rt"))   qs("#ov-rt").textContent   = rt || "-";
+
+    const fn = (qs('input[name="first_name"]')?.value || "").trim();
+    const mn = (qs('input[name="middle_name"]')?.value || "").trim();
+    const ln = (qs('input[name="last_name"]')?.value || "").trim();
+    const email = (qs('input[name="email"]')?.value || "").trim();
+
+    const fullName = [fn, mn, ln].filter(Boolean).join(" ");
+    if(qs("#ov-name"))  qs("#ov-name").textContent  = fullName || "-";
+    if(qs("#ov-email")) qs("#ov-email").textContent = email || "-";
+  }
+
+  // ===== validation =====
+  function error(msg){ alert(msg); }
+
+  function validate(n){
+    if(n === 1){
+      const plate = normPlate(qs("#wa-license")?.value);
+      if(!plate){ error("Vul uw kenteken in."); return false; }
+      return true;
+    }
+
+    if(n === 2){
+      const maint = qs('input[name="maintenance_option"]:checked')?.value || "";
+      const extras = qsa('input[name="extra_services[]"]:checked');
+      if(!maint && extras.length === 0){
+        error("Selecteer minimaal één werkzaamheid (onderhoud of aanvullend).");
+        return false;
+      }
+      return true;
+    }
+
+    if(n === 3){
+      const d = qs("#wa-date")?.value || selectedDate;
+      const t = qs("#wa-time")?.value || selectedTime;
+      if(!d){ error("Selecteer een datum."); return false; }
+      if(!t){ error("Selecteer een tijdstip."); return false; }
+
+      const wait = qs('input[name="wait_while_service"]:checked')?.value;
+      if(wait !== "1" && wait !== "0"){
+        error("Geef aan of u wilt wachten tijdens het onderhoud/reparatie.");
+        return false;
+      }
+
+      // const rt = qs('input[name="replacement_transport"]:checked')?.value;
+      // if(!rt){
+      //   error("Selecteer een vervangend vervoer optie.");
+      //   return false;
+      // }
+      return true;
+    }
+
+    if(n === 4){
+      const fn = (qs('input[name="first_name"]')?.value || "").trim();
+      const ln = (qs('input[name="last_name"]')?.value || "").trim();
+      const em = (qs('input[name="email"]')?.value || "").trim();
+      const terms = qs('input[name="terms_accepted"]');
+
+      if(!fn){ error("Voornaam is verplicht."); return false; }
+      if(!ln){ error("Achternaam is verplicht."); return false; }
+      if(!em){ error("E-mail is verplicht."); return false; }
+      if(terms && !terms.checked){ error("U moet akkoord gaan met de voorwaarden."); return false; }
+
+      return true;
+    }
+
+    return true;
+  }
+
+  function bind(){
+    const liveSelectors = [
+      "#wa-license","#wa-mileage",
+      'input[name="maintenance_option"]',
+      'input[name="extra_services[]"]',
+      'input[name="wait_while_service"]',
+      'input[name="replacement_transport"]',
+      'input[name="first_name"]',
+      'input[name="middle_name"]',
+      'input[name="last_name"]',
+      'input[name="email"]',
+    ];
+
+    liveSelectors.forEach(sel => {
+      qsa(sel).forEach(elm => {
+        elm.addEventListener("input", sync);
+        elm.addEventListener("change", sync);
+      });
+    });
+
+    renderCalendar();
+    sync();
+    showStep(1);
+  }
+
+  return { next, prev, acc, calPrev, calNext, pickTime, sync, init: bind };
+})();
+
+window.WA.init();
 
 
 

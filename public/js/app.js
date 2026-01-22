@@ -181,6 +181,94 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+
+const WorkshopWizard = (() => {
+  let current = 1;
+
+  function qs(sel, root=document){ return root.querySelector(sel); }
+  function qsa(sel, root=document){ return Array.from(root.querySelectorAll(sel)); }
+
+  function open(){
+    const ov = qs('#ws-overlay');
+    ov.classList.add('is-open');
+    ov.setAttribute('aria-hidden','false');
+    current = 1;
+    show(current);
+    sync();
+    document.body.style.overflow = 'hidden';
+  }
+
+  function close(e){
+    if (e && e.target && !e.target.classList.contains('ws-overlay')) {
+      // close called from button without overlay click
+    }
+    const ov = qs('#ws-overlay');
+    ov.classList.remove('is-open');
+    ov.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+  }
+
+  function show(step){
+    current = step;
+
+    // panels
+    qsa('.ws-panel').forEach(p => p.classList.remove('is-active'));
+    const panel = qs(`.ws-panel[data-panel="${step}"]`);
+    if(panel) panel.classList.add('is-active');
+
+    // stepper
+    qsa('.ws-step').forEach(s => s.classList.remove('is-active'));
+    const st = qs(`.ws-step[data-step="${step}"]`);
+    if(st) st.classList.add('is-active');
+
+    // scroll modal top a bit for UX
+    const modal = qs('.ws-modal');
+    if(modal) modal.scrollTop = 0;
+  }
+
+  function next(){
+    if(current < 4) show(current + 1);
+    sync();
+  }
+
+  function prev(){
+    if(current > 1) show(current - 1);
+    sync();
+  }
+
+  function sync(){
+    const f = qs('#ws-form');
+    if(!f) return;
+
+    const plate = (f.license_plate?.value || '').trim() || '-';
+    const mileage = (f.mileage?.value || '').trim();
+    const km = mileage ? `${Number(mileage).toLocaleString('nl-NL')} km` : '-';
+
+    const maintenance = (f.querySelector('input[name="maintenance_option"]:checked')?.value) || '-';
+
+    const extras = qsa('input[name="extra_services[]"]:checked', f).map(x => x.value);
+    const extrasTxt = extras.length ? extras.join(', ') : '-';
+
+    const date = (f.appointment_date?.value || '').trim();
+    const time = (f.appointment_time?.value || '').trim();
+    const dt = (date && time) ? `${date} ${time}` : '-';
+
+    const waitVal = (f.querySelector('input[name="wait_while_service"]:checked')?.value);
+    const waitTxt = waitVal === "1" ? "Ja" : (waitVal === "0" ? "Nee" : "-");
+
+    qs('#sum-license').textContent = plate.toUpperCase();
+    qs('#sum-mileage').textContent = km;
+    qs('#sum-maintenance').textContent = maintenance;
+    qs('#sum-extras').textContent = extrasTxt;
+    qs('#sum-datetime').textContent = dt;
+    qs('#sum-wait').textContent = waitTxt;
+  }
+
+  return { open, close, next, prev, sync };
+})();
+
+
+
   // Sync aria state bij load
   syncAria();
 });

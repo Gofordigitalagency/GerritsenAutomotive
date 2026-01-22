@@ -8,6 +8,8 @@ use App\Http\Controllers\admin\OccasionController as AdminOccasionController;
 use App\Http\Controllers\admin\ReservationController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\SellCarController;
+use App\Http\Controllers\WorkshopAppointmentController;
+
 
 
 // --- Publiek ---
@@ -16,6 +18,18 @@ Route::get('/occasions', [PublicOccasionController::class, 'index'])->name('occa
 Route::get('/occasions/cards', [PublicOccasionController::class, 'cards'])->name('occasions.cards');
 
 Route::get('/occasions/{slug}', [PublicOccasionController::class, 'show'])->name('occasions.show');
+
+Route::get('/werkplaats/afspraak', [WorkshopAppointmentController::class, 'step1'])->name('workshop.step1');
+Route::post('/werkplaats/afspraak/stap-1', [WorkshopAppointmentController::class, 'postStep1'])->name('workshop.postStep1');
+
+Route::get('/werkplaats/afspraak/werkzaamheden', [WorkshopAppointmentController::class, 'step2'])->name('workshop.step2');
+Route::post('/werkplaats/afspraak/stap-2', [WorkshopAppointmentController::class, 'postStep2'])->name('workshop.postStep2');
+
+Route::get('/werkplaats/afspraak/tijdstip', [WorkshopAppointmentController::class, 'step3'])->name('workshop.step3');
+Route::post('/werkplaats/afspraak/stap-3', [WorkshopAppointmentController::class, 'postStep3'])->name('workshop.postStep3');
+
+Route::get('/werkplaats/afspraak/contact', [WorkshopAppointmentController::class, 'step4'])->name('workshop.step4');
+Route::post('/werkplaats/afspraak/afronden', [WorkshopAppointmentController::class, 'finish'])->name('workshop.finish');
 
 
 // Contact
