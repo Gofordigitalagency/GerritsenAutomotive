@@ -20,6 +20,12 @@ class OccasionPdfController extends Controller
 
         // ✅ HOOFDFOTO: eerst hoofdfoto_path, anders eerste uit galerij
         $photo = null;
+        $photo = $this->resolvePhotoPath($occasion->hoofdfoto_path ?? null);
+
+// fallback: als hoofdfoto leeg is, pak eerste galerijfoto
+if (!$photo && !empty($occasion->galerij) && is_array($occasion->galerij)) {
+    $photo = $this->resolvePhotoPath($occasion->galerij[0] ?? null);
+}
 
         if (!empty($occasion->hoofdfoto_path) && Storage::disk('public')->exists($occasion->hoofdfoto_path)) {
             $photo = Storage::disk('public')->path($occasion->hoofdfoto_path);
@@ -153,6 +159,25 @@ class OccasionPdfController extends Controller
 
         return [];
     }
+
+    private function resolvePhotoPath(?string $raw): ?string
+{
+    if (!$raw) return null;
+
+    // 1) Windows slashes -> unix slashes
+    $p = str_replace('\\', '/', trim($raw));
+
+    // 2) strip mogelijke prefixes
+    // public/storage/... of /storage/... of storage/...
+    $p = preg_replace('#^public/storage/#', '', $p);
+    $p = preg_replace('#^/storage/#', '', $p);
+    $p = preg_replace('#^storage/#', '', $p);
+
+    // 3) als het nu bv "occasions/xxx.jpg" is: maak absolute path
+    $abs = storage_path('app/public/' . ltrim($p, '/'));
+
+    return file_exists($abs) ? $abs : null;
+}
 
     private function toAbsolutePublicPath($value): ?string
     {
