@@ -240,22 +240,9 @@ h1, h2, h3, h4, h5,
     <tr>
       <td class="leftCol">
         <div class="photoFrame">
- @if($photo && file_exists($photo))
-        <img src="{{ $photo }}" style="width:100%; height:auto;">
-    @else
-        <div style="
-            width:100%;
-            height:260px;
-            border:3px solid #999;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            color:#777;
-            font-size:14px;
-        ">
-            Geen occasion foto
-        </div>
-    @endif
+          @if(!empty($photo) && file_exists($photo))
+            <img src="{{ $photo }}" alt="Occasion foto">
+          @endif
         </div>
       </td>
 

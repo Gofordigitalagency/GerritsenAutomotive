@@ -59,8 +59,6 @@ if (!$photo && !empty($occasion->galerij) && is_array($occasion->galerij)) {
         return $pdf->stream('raamkaart-' . Str::slug($titel ?: 'occasion') . '.pdf');
     }
 
-    
-
     private function detectMainPhotoPath(Occasion $o): ?string
     {
         // 1) Probeer directe velden (pas de lijst gerust uit)
