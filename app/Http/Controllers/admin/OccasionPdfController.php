@@ -10,60 +10,63 @@ use Illuminate\Support\Str;
 
 class OccasionPdfController extends Controller
 {
-       public function raamkaart(Occasion $occasion)
-    {
-        dd([
-  'hoofdfoto_path_db' => $occasion->hoofdfoto_path,
-  'photo_abs' => $photo,
-  'exists' => $photo ? file_exists($photo) : false,
-  'readable' => $photo ? is_readable($photo) : false,
-]);
-        // LOGO (zet logo in public/assets/gerritsen-logo.png)
-        $logo = public_path('assets/gerritsen-logo.png');
+public function raamkaart(Occasion $occasion)
+{
+    // LOGO
+    $logo = public_path('assets/gerritsen-logo.png');
 
-        // TITEL
-        $titel = trim(($occasion->merk ?? '') . ' ' . ($occasion->model ?? '') . ' ' . ($occasion->type ?? ''));
+    // TITEL
+    $titel = trim(($occasion->merk ?? '') . ' ' . ($occasion->model ?? '') . ' ' . ($occasion->type ?? ''));
 
-        // ✅ HOOFDFOTO: eerst hoofdfoto_path, anders eerste uit galerij
-        $photo = null;
-        $photo = $this->resolvePhotoPath($occasion->hoofdfoto_path ?? null);
+    // FOTO: eerst hoofdfoto_path, anders eerste galerij
+    $photo = $this->resolvePublicDiskImage($occasion->hoofdfoto_path ?? null);
 
-// fallback: als hoofdfoto leeg is, pak eerste galerijfoto
-if (!$photo && !empty($occasion->galerij) && is_array($occasion->galerij)) {
-    $photo = $this->resolvePhotoPath($occasion->galerij[0] ?? null);
+    if (!$photo) {
+        $galerij = $occasion->galerij ?? [];
+        if (is_string($galerij)) $galerij = json_decode($galerij, true) ?: [];
+        if (is_array($galerij) && !empty($galerij)) {
+            $photo = $this->resolvePublicDiskImage($galerij[0] ?? null);
+        }
+    }
+
+    // DEBUG (tijdelijk)
+    // dd([
+    //     'hoofdfoto_path_db' => $occasion->hoofdfoto_path,
+    //     'photo_abs' => $photo,
+    //     'exists' => $photo ? file_exists($photo) : false,
+    //     'readable' => $photo ? is_readable($photo) : false,
+    // ]);
+
+    // OPTIES
+    $opties = [];
+    foreach (['exterieur_options','interieur_options','veiligheid_options','overige_options'] as $field) {
+        $arr = $occasion->{$field} ?? [];
+        if (is_string($arr)) $arr = json_decode($arr, true) ?: [];
+        if (is_array($arr)) $opties = array_merge($opties, $arr);
+    }
+    $opties = array_values(array_filter(array_map('trim', $opties)));
+
+    $pdf = Pdf::loadView('admin.pdf.raamkaart', compact('occasion','titel','photo','logo','opties'))
+        ->setPaper('a4', 'portrait');
+
+    return $pdf->stream('raamkaart-' . Str::slug($titel ?: 'occasion') . '.pdf');
 }
 
-        if (!empty($occasion->hoofdfoto_path) && Storage::disk('public')->exists($occasion->hoofdfoto_path)) {
-            $photo = Storage::disk('public')->path($occasion->hoofdfoto_path);
-        } else {
-            $galerij = $occasion->galerij ?? [];
-            if (is_string($galerij)) $galerij = json_decode($galerij, true) ?: [];
+private function resolvePublicDiskImage(?string $raw): ?string
+{
+    if (!$raw) return null;
 
-            $first = $galerij[0] ?? null;
-            if ($first && Storage::disk('public')->exists($first)) {
-                $photo = Storage::disk('public')->path($first);
-            }
-        }
+    $p = str_replace('\\', '/', trim($raw));
 
-        // ✅ OPTIES: combineer alle 4 lijsten tot 1 lijst
-        $opties = [];
-        foreach (['exterieur_options','interieur_options','veiligheid_options','overige_options'] as $field) {
-            $arr = $occasion->{$field} ?? [];
-            if (is_string($arr)) $arr = json_decode($arr, true) ?: [];
-            if (is_array($arr)) $opties = array_merge($opties, $arr);
-        }
-        $opties = array_values(array_filter(array_map('trim', $opties)));
+    // strip verkeerde prefixes (als dit in DB zit)
+    $p = preg_replace('#^public/storage/#', '', $p);
+    $p = preg_replace('#^/storage/#', '', $p);
+    $p = preg_replace('#^storage/#', '', $p);
 
-        $pdf = Pdf::loadView('admin.pdf.raamkaart', [
-            'occasion' => $occasion,
-            'titel'    => $titel,
-            'photo'    => $photo, // filesystem path
-            'logo'     => $logo,  // filesystem path
-            'opties'   => $opties,
-        ])->setPaper('a4', 'portrait');
+    if (!Storage::disk('public')->exists($p)) return null;
 
-        return $pdf->stream('raamkaart-' . Str::slug($titel ?: 'occasion') . '.pdf');
-    }
+    return Storage::disk('public')->path($p);
+}
 
     private function detectMainPhotoPath(Occasion $o): ?string
     {
