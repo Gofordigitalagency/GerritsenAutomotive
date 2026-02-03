@@ -61,7 +61,7 @@ Route::get('occasions/rdw/{kenteken}', [AdminOccasionController::class, 'rdwLook
     ->name('occasions.rdw');
 
     
-    Route::get('/occasions/{occasion}/raamkaart', [\App\Http\Controllers\Admin\OccasionPdfController::class, 'raamkaart'])
+    Route::get('/occasions/{occasion}/raamkaart', [\App\Http\Controllers\admin\OccasionPdfController::class, 'raamkaart'])
         ->name('occasions.raamkaart');
 
     // Galerij acties
