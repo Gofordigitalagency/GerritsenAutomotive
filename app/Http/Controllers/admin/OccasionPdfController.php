@@ -7,6 +7,8 @@ use App\Models\Occasion;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
+
 
 class OccasionPdfController extends Controller
 {
@@ -28,6 +30,17 @@ if (!$photo) {
         $photo = $this->resolvePublicDiskImage($galerij[0] ?? null);
     }
 }
+
+Log::info('RAAMKAART FOTO DEBUG', [
+    'hoofdfoto_path_db' => $occasion->hoofdfoto_path,
+    'galerij_db'        => $occasion->galerij,
+    'resolved_photo'   => $photo,
+    'file_exists'      => $photo ? file_exists($photo) : false,
+    'is_readable'      => $photo ? is_readable($photo) : false,
+    'storage_public_path' => storage_path('app/public'),
+    'public_storage_path' => public_path('storage'),
+]);
+
 
 
         // ✅ OPTIES: combineer alle 4 lijsten tot 1 lijst
