@@ -240,8 +240,8 @@ h1, h2, h3, h4, h5,
     <tr>
       <td class="leftCol">
         <div class="photoFrame">
-@if(!empty($photo) && file_exists($photo))
-  <img src="file://{{ $photo }}" alt="Occasion foto">
+@if(!empty($photoDataUri))
+  <img src="{{ $photoDataUri }}" alt="Occasion foto">
 @endif
         </div>
       </td>

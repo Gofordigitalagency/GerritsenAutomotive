@@ -31,6 +31,13 @@ if (!$photo) {
     }
 }
 
+$photoDataUri = null;
+
+if (!empty($photo) && file_exists($photo) && is_readable($photo)) {
+    $mime = mime_content_type($photo) ?: 'image/jpeg';
+    $photoDataUri = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($photo));
+}
+
 Log::info('RAAMKAART FOTO DEBUG', [
     'hoofdfoto_path_db' => $occasion->hoofdfoto_path,
     'galerij_db'        => $occasion->galerij,
@@ -52,13 +59,15 @@ Log::info('RAAMKAART FOTO DEBUG', [
         }
         $opties = array_values(array_filter(array_map('trim', $opties)));
 
-        $pdf = Pdf::loadView('admin.pdf.raamkaart', [
-            'occasion' => $occasion,
-            'titel'    => $titel,
-            'photo'    => $photo, // filesystem path
-            'logo'     => $logo,  // filesystem path
-            'opties'   => $opties,
-        ])->setPaper('a4', 'portrait');
+       $pdf = Pdf::loadView('admin.pdf.raamkaart', [
+    'occasion' => $occasion,
+    'titel'    => $titel,
+    'photo'    => $photo,              // mag blijven
+    'photoDataUri' => $photoDataUri,   // ✅ nieuw
+    'logo'     => $logo,
+    'opties'   => $opties,
+])->setPaper('a4', 'portrait');
+
 
         return $pdf->stream('raamkaart-' . Str::slug($titel ?: 'occasion') . '.pdf');
     }
