@@ -5,12 +5,13 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Models\Occasion;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class OccasionPdfController extends Controller
 {
-       public function raamkaart(Occasion $occasion)
+    public function raamkaart(Occasion $occasion)
     {
         // LOGO (zet logo in public/assets/gerritsen-logo.png)
         $logo = public_path('assets/gerritsen-logo.png');
@@ -18,30 +19,20 @@ class OccasionPdfController extends Controller
         // TITEL
         $titel = trim(($occasion->merk ?? '') . ' ' . ($occasion->model ?? '') . ' ' . ($occasion->type ?? ''));
 
-        // ✅ HOOFDFOTO: eerst hoofdfoto_path, anders eerste uit galerij
-        $photo = null;
+        // ✅ FOTO: hoofdfoto, anders eerste galerij
         $photo = $this->resolvePhotoPath($occasion->hoofdfoto_path ?? null);
 
-// fallback: als hoofdfoto leeg is, pak eerste galerijfoto
-if (!$photo && !empty($occasion->galerij) && is_array($occasion->galerij)) {
-    $photo = $this->resolvePhotoPath($occasion->galerij[0] ?? null);
-}
-
-        if (!empty($occasion->hoofdfoto_path) && Storage::disk('public')->exists($occasion->hoofdfoto_path)) {
-            $photo = Storage::disk('public')->path($occasion->hoofdfoto_path);
-        } else {
+        if (!$photo) {
             $galerij = $occasion->galerij ?? [];
             if (is_string($galerij)) $galerij = json_decode($galerij, true) ?: [];
-
-            $first = $galerij[0] ?? null;
-            if ($first && Storage::disk('public')->exists($first)) {
-                $photo = Storage::disk('public')->path($first);
+            if (is_array($galerij) && !empty($galerij)) {
+                $photo = $this->resolvePhotoPath($galerij[0] ?? null);
             }
         }
 
         // ✅ OPTIES: combineer alle 4 lijsten tot 1 lijst
         $opties = [];
-        foreach (['exterieur_options','interieur_options','veiligheid_options','overige_options'] as $field) {
+        foreach (['exterieur_options', 'interieur_options', 'veiligheid_options', 'overige_options'] as $field) {
             $arr = $occasion->{$field} ?? [];
             if (is_string($arr)) $arr = json_decode($arr, true) ?: [];
             if (is_array($arr)) $opties = array_merge($opties, $arr);
@@ -51,155 +42,46 @@ if (!$photo && !empty($occasion->galerij) && is_array($occasion->galerij)) {
         $pdf = Pdf::loadView('admin.pdf.raamkaart', [
             'occasion' => $occasion,
             'titel'    => $titel,
-            'photo'    => $photo, // filesystem path
-            'logo'     => $logo,  // filesystem path
+            'photo'    => $photo, // absolute filesystem path (DomPDF safe)
+            'logo'     => $logo,  // absolute filesystem path (DomPDF safe)
             'opties'   => $opties,
         ])->setPaper('a4', 'portrait');
 
         return $pdf->stream('raamkaart-' . Str::slug($titel ?: 'occasion') . '.pdf');
     }
 
-    private function detectMainPhotoPath(Occasion $o): ?string
-    {
-        // 1) Probeer directe velden (pas de lijst gerust uit)
-        $candidates = [
-            $o->hoofdfoto ?? null,
-            $o->hoofd_foto ?? null,
-            $o->cover ?? null,
-            $o->cover_image ?? null,
-            $o->main_photo ?? null,
-            $o->main_photo_path ?? null,
-            $o->foto ?? null,
-            $o->image ?? null,
-            $o->afbeelding ?? null,
-            $o->thumbnail ?? null,
-        ];
-
-        foreach ($candidates as $path) {
-            $abs = $this->toAbsolutePublicPath($path);
-            if ($abs && file_exists($abs)) return $abs;
-        }
-
-        // 2) Probeer gallery velden (array of json)
-        $galleryCandidates = [
-            $o->gallery ?? null,
-            $o->fotos ?? null,
-            $o->images ?? null,
-            $o->afbeeldingen ?? null,
-        ];
-
-        foreach ($galleryCandidates as $gallery) {
-            $arr = $this->toArray($gallery);
-
-            // Pak cover als die bestaat, anders eerste
-            $coverIndex = is_numeric($o->cover_index ?? null) ? (int)$o->cover_index : null;
-
-            $first = null;
-            if (is_array($arr) && count($arr)) {
-                if ($coverIndex !== null && isset($arr[$coverIndex])) {
-                    $first = $arr[$coverIndex];
-                } else {
-                    $first = $arr[0];
-                }
-            }
-
-            // sommige structures: [{path:"/storage/..."}]
-            if (is_array($first)) {
-                $first = $first['path'] ?? $first['url'] ?? $first['src'] ?? null;
-            }
-
-            $abs = $this->toAbsolutePublicPath($first);
-            if ($abs && file_exists($abs)) return $abs;
-        }
-
-        return null;
-    }
-
-    private function detectOptions(Occasion $o): array
-    {
-        // 1) Als je een relatie hebt: $occasion->options (collection)
-        if (method_exists($o, 'options')) {
-            try {
-                $rel = $o->options()->pluck('name')->toArray();
-                if (!empty($rel)) return $rel;
-            } catch (\Throwable $e) {}
-        }
-
-        // 2) Probeer mogelijke velden (string / json)
-        $raw = $o->opties
-            ?? $o->options
-            ?? $o->uitrusting
-            ?? $o->kenmerken
-            ?? $o->features
-            ?? $o->highlights
-            ?? null;
-
-        // 3) json array? newline? comma?
-        $arr = $this->toArray($raw);
-
-        if (is_array($arr) && count($arr)) {
-            // flatten en trim
-            $flat = [];
-            foreach ($arr as $item) {
-                if (is_array($item)) {
-                    $item = $item['name'] ?? $item['title'] ?? $item['label'] ?? null;
-                }
-                if (is_string($item)) $flat[] = trim($item);
-            }
-            return array_values(array_filter($flat));
-        }
-
-        if (is_string($raw) && strlen(trim($raw))) {
-            // newline first, else comma
-            $raw = str_replace("\r\n", "\n", $raw);
-            $parts = str_contains($raw, "\n") ? explode("\n", $raw) : explode(',', $raw);
-            $parts = array_map('trim', $parts);
-            return array_values(array_filter($parts));
-        }
-
-        return [];
-    }
-
+    /**
+     * Zet DB waarde om naar een absolute filesystem path in storage/app/public/...
+     * Werkt ook als DB "public\storage\occasions\xxx.jpg" bevat.
+     */
     private function resolvePhotoPath(?string $raw): ?string
-{
-    if (!$raw) return null;
-
-    // 1) Windows slashes -> unix slashes
-    $p = str_replace('\\', '/', trim($raw));
-
-    // 2) strip mogelijke prefixes
-    // public/storage/... of /storage/... of storage/...
-    $p = preg_replace('#^public/storage/#', '', $p);
-    $p = preg_replace('#^/storage/#', '', $p);
-    $p = preg_replace('#^storage/#', '', $p);
-
-    // 3) als het nu bv "occasions/xxx.jpg" is: maak absolute path
-    $abs = storage_path('app/public/' . ltrim($p, '/'));
-
-    return file_exists($abs) ? $abs : null;
-}
-
-    private function toAbsolutePublicPath($value): ?string
     {
-        if (!is_string($value) || trim($value) === '') return null;
+        if (!$raw) return null;
 
-        $value = trim($value);
+        // 1) Windows slashes -> unix slashes
+        $p = str_replace('\\', '/', trim($raw));
 
-        // Als het al een absolute pad is
-        if (Str::startsWith($value, [public_path(), base_path()])) {
-            return $value;
-        }
+        // 2) strip mogelijke prefixes
+        // public/storage/... of /storage/... of storage/...
+        $p = preg_replace('#^public/storage/#', '', $p);
+        $p = preg_replace('#^/storage/#', '', $p);
+        $p = preg_replace('#^storage/#', '', $p);
 
-        // Als het een URL is (dompdf vindt dit vaak lastig), we skippen dit
-        if (Str::startsWith($value, ['http://', 'https://'])) {
-            return null;
-        }
+        // 3) Als de DB per ongeluk "public/..." heeft: strip "public/"
+        $p = preg_replace('#^public/#', '', $p);
 
-        // Normale paden zoals /storage/... of storage/...
-        $value = ltrim($value, '/');
-        return public_path($value);
+        // 4) Normaliseer: occasions/xxx.jpg
+        $p = ltrim($p, '/');
+
+        // 5) Absolute path in echte storage (DomPDF kan dit altijd lezen)
+        $abs = storage_path('app/public/' . $p);
+
+        return file_exists($abs) ? $abs : null;
     }
 
+    /**
+     * Voor als je ooit nog andere velden wilt detecten (optioneel).
+     */
     private function toArray($value): ?array
     {
         if (is_array($value)) return $value;
@@ -211,8 +93,9 @@ if (!$photo && !empty($occasion->galerij) && is_array($occasion->galerij)) {
             // JSON?
             if (Str::startsWith($value, ['[', '{'])) {
                 $decoded = json_decode($value, true);
+
                 if (json_last_error() === JSON_ERROR_NONE) {
-                    // als object met key 'items' of 'data'
+                    // object met items/data/images
                     if (is_array($decoded) && Arr::isAssoc($decoded)) {
                         return $decoded['items'] ?? $decoded['data'] ?? $decoded['images'] ?? null;
                     }
