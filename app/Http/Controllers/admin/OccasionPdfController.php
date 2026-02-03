@@ -18,21 +18,17 @@ class OccasionPdfController extends Controller
         // TITEL
         $titel = trim(($occasion->merk ?? '') . ' ' . ($occasion->model ?? '') . ' ' . ($occasion->type ?? ''));
 
-        // ✅ HOOFDFOTO: eerst hoofdfoto_path, anders eerste uit galerij
-        $photo = null;
-        
+// ✅ HOOFDFOTO: eerst hoofdfoto_path, anders eerste uit galerij
+$photo = $this->resolvePublicDiskImage($occasion->hoofdfoto_path ?? null);
 
-        if (!empty($occasion->hoofdfoto_path) && Storage::disk('public')->exists($occasion->hoofdfoto_path)) {
-            $photo = Storage::disk('public')->path($occasion->hoofdfoto_path);
-        } else {
-            $galerij = $occasion->galerij ?? [];
-            if (is_string($galerij)) $galerij = json_decode($galerij, true) ?: [];
+if (!$photo) {
+    $galerij = $occasion->galerij ?? [];
+    if (is_string($galerij)) $galerij = json_decode($galerij, true) ?: [];
+    if (is_array($galerij) && !empty($galerij)) {
+        $photo = $this->resolvePublicDiskImage($galerij[0] ?? null);
+    }
+}
 
-            $first = $galerij[0] ?? null;
-            if ($first && Storage::disk('public')->exists($first)) {
-                $photo = Storage::disk('public')->path($first);
-            }
-        }
 
         // ✅ OPTIES: combineer alle 4 lijsten tot 1 lijst
         $opties = [];
@@ -155,21 +151,29 @@ class OccasionPdfController extends Controller
         return [];
     }
 
-   private function resolvePublicDiskImage(?string $raw): ?string
+  private function resolvePublicDiskImage(?string $raw): ?string
 {
     if (!$raw) return null;
 
+    // 1) windows slashes fixen
     $p = str_replace('\\', '/', trim($raw));
 
-    // strip verkeerde prefixes als ze in je DB zitten
+    // 2) haal rommel-prefixen weg
     $p = preg_replace('#^public/storage/#', '', $p);
-    $p = preg_replace('#^/storage/#', '', $p);
+    $p = preg_replace('#^/public/storage/#', '', $p);
     $p = preg_replace('#^storage/#', '', $p);
+    $p = preg_replace('#^/storage/#', '', $p);
 
-    if (!Storage::disk('public')->exists($p)) return null;
+    // nu moet het bv: occasions/xxx.jpg zijn
+    $p = ltrim($p, '/');
 
-    return Storage::disk('public')->path($p);
+    if (!Storage::disk('public')->exists($p)) {
+        return null;
+    }
+
+    return Storage::disk('public')->path($p); // absolute filesystem path
 }
+
 
     private function toAbsolutePublicPath($value): ?string
     {
