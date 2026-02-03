@@ -65,6 +65,12 @@
 
   <a href="{{ route('admin.occasions.edit', $o) }}" class="btn sm">Bewerken</a>
 
+<a class="btn btn-secondary btn sm"
+   href="{{ route('admin.occasions.raamkaart', $o) }}"
+   target="_blank">
+   Raamkaart (PDF)
+</a>
+
   {{-- VERKOCHT / BESCHIKBAAR --}}
   <form action="{{ route('admin.occasions.toggleStatus', $o) }}" method="post" style="display:inline;">
     @csrf

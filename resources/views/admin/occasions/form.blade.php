@@ -88,6 +88,13 @@
     </label>
 
     <label class="input-row">
+  <span>Vermogen (PK)</span>
+  <input id="vermogenPkInput" type="number" name="vermogen_pk"
+         value="{{ old('vermogen_pk', $occasion->vermogen_pk ?? '') }}"
+         placeholder="bijv. 510">
+</label>
+
+    <label class="input-row">
       <span>Prijs (€)</span>
       <div class="with-addon">
         <span class="addon">€</span>

@@ -316,6 +316,16 @@
           <li><span class="k">Kleur</span><span class="v">{{ $occasion->kleur ?? $occasion->exterieurkleur ?? '—' }}</span></li>
           <li><span class="k">Prijs</span><span class="v">{{ !empty($occasion->prijs) ? '€ '.number_format($occasion->prijs,0,',','.').',-' : '—' }}</span></li>
           <li><span class="k">Aantal cilinders</span><span class="v">{{ $occasion->aantal_cilinders ?? '—' }}</span></li>
+          <li>
+  <span class="k">Vermogen</span>
+  <span class="v">
+    @php
+      $vermogen = $occasion->vermogen_pk ?? $occasion->pk ?? $occasion->vermogen ?? null;
+    @endphp
+
+    {{ !empty($vermogen) ? $vermogen.' PK' : '—' }}
+  </span>
+</li>
           <li><span class="k">Topsnelheid</span><span class="v">{{ !empty($occasion->topsnelheid) ? $occasion->topsnelheid.' km/u' : '—' }}</span></li>
           <li><span class="k">Gewicht</span><span class="v">{{ !empty($occasion->gewicht) ? $occasion->gewicht.' kg' : '—' }}</span></li>
           <li><span class="k">Gemiddeld verbruik</span><span class="v">{{ $occasion->gemiddeld_verbruik ?? '—' }} / 100 KM</span></li>

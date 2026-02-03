@@ -12,6 +12,7 @@ class Occasion extends Model
     'cilinderinhoud','carrosserie','max_trekgewicht','apk_tot','energielabel','wegenbelasting_min',
     'aantal_deuren','tellerstand','bouwjaar','prijs','bekleding','aantal_cilinders','topsnelheid',
     'gewicht','laadvermogen','bijtelling','gemiddeld_verbruik','hoofdfoto_path','galerij','slug',
+    'vermogen_pk',
     // nieuw:
     'exterieur_options','interieur_options','veiligheid_options','overige_options','omschrijving',
 ];

@@ -9,6 +9,7 @@ use App\Http\Controllers\admin\ReservationController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\SellCarController;
 use App\Http\Controllers\WorkshopAppointmentController;
+use App\Http\Controllers\OccasionPdfController;
 
 
 
@@ -58,6 +59,10 @@ Route::middleware('auth')->prefix('admin')->as('admin.')->group(function () {
     Route::resource('occasions', AdminOccasionController::class);
 Route::get('occasions/rdw/{kenteken}', [AdminOccasionController::class, 'rdwLookup'])
     ->name('occasions.rdw');
+
+    
+    Route::get('/occasions/{occasion}/raamkaart', [\App\Http\Controllers\Admin\OccasionPdfController::class, 'raamkaart'])
+        ->name('occasions.raamkaart');
 
     // Galerij acties
     Route::post('occasions/{occasion}/gallery',           [AdminOccasionController::class,'addGallery'])->name('occasions.gallery.add');

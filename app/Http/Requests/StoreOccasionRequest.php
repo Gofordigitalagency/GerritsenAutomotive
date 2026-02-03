@@ -41,6 +41,8 @@ class StoreOccasionRequest extends FormRequest
             'laadvermogen' => 'nullable|integer',
             'bijtelling' => 'nullable|string|max:50',
             'gemiddeld_verbruik' => 'nullable|numeric',
+            'vermogen_pk' => ['nullable','integer','min:0'],
+
 
             // bestanden
             'hoofdfoto'  => ['nullable','file','image','mimes:jpg,jpeg,png,webp','max:4096'], // 4MB
