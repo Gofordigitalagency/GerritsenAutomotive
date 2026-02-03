@@ -12,6 +12,12 @@ class OccasionPdfController extends Controller
 {
        public function raamkaart(Occasion $occasion)
     {
+        dd([
+  'hoofdfoto_path_db' => $occasion->hoofdfoto_path,
+  'photo_abs' => $photo,
+  'exists' => $photo ? file_exists($photo) : false,
+  'readable' => $photo ? is_readable($photo) : false,
+]);
         // LOGO (zet logo in public/assets/gerritsen-logo.png)
         $logo = public_path('assets/gerritsen-logo.png');
 
