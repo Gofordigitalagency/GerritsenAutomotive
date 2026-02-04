@@ -73,8 +73,100 @@ input,select,textarea{width:100%;padding:10px 12px;border:1px solid #e5e7eb;bord
 }
 
 
+/* Section wrapper */
+.opt-section{
+  border:1px solid #e5e7eb;
+  border-radius:14px;
+  padding:14px;
+  background:#fff;
+  margin-top:14px;
+}
 
+/* Header */
+.opt-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:12px;
+}
 
+.opt-title{
+  margin:0;
+  font-size:15px;
+  font-weight:800;
+  color:#111827;
+}
+
+.opt-actions{
+  display:flex;
+  gap:8px;
+}
+
+.opt-btn{
+  border:1px solid #e5e7eb;
+  background:#f8fafc;
+  color:#334155;
+  padding:7px 10px;
+  border-radius:10px;
+  cursor:pointer;
+  font-size:12px;
+  font-weight:700;
+}
+.opt-btn:hover{ background:#eef2f7; }
+
+/* Grid */
+.opt-grid{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap:10px;
+}
+@media (min-width: 1100px){
+  .opt-grid{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* Card */
+.opt-card{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 12px;
+  border:1px solid #e5e7eb;
+  border-radius:12px;
+  background:#f9fafb;
+  cursor:pointer;
+  user-select:none;
+  transition: .12s ease;
+  min-height:44px;
+}
+
+.opt-card:hover{
+  background:#f3f4f6;
+  border-color:#d1d5db;
+  transform: translateY(-1px);
+}
+
+/* Checkbox nice */
+.opt-check{
+  width:18px;
+  height:18px;
+  accent-color:#111827; /* als je je admin kleur hebt, zet hier jouw kleur */
+  flex:0 0 auto;
+}
+
+/* Text */
+.opt-text{
+  font-size:13px;
+  font-weight:700;
+  color:#1f2937;
+  line-height:1.2;
+}
+
+/* Selected state (pure CSS) */
+.opt-card:has(.opt-check:checked){
+  background:#11182710;          /* subtiele highlight */
+  border-color:#11182740;
+}
 
 
 /* ===== Occasions grid ===== */

@@ -61,7 +61,7 @@ h1, h2, h3, h4, h5,
   text-transform: uppercase;
   letter-spacing: .2px;
   line-height: 1.15;
-  font-size: 20px;
+  font-size: 40px;
 }
 
 /* ===== FOTO + INFO ===== */

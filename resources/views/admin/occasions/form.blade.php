@@ -218,42 +218,46 @@
     <div class="form-card">
       <div class="form-card-head"><h3>Opties & Omschrijving</h3></div>
       <div class="form-card-body grid-2">
-        <label class="input-row">
-          <span>Exterieur (1 per regel)</span>
-          <textarea name="exterieur_options_text" rows="6" id="exterieurTA"
-            placeholder="Metallic lak&#10;Lichtmetalen velgen&#10;LED dagrijverlichting">@php
-echo old('exterieur_options_text', collect($occasion->exterieur_options ?? [])->implode("\n"));
-@endphp</textarea>
-          <small class="hint">Tip: één optie per regel. Hieronder zie je een preview.</small>
-          <div class="chips" id="exterieurChips"></div>
-        </label>
+@php
+  $selectedExterieur  = old('exterieur_options',  $occasion->exterieur_options  ?? []);
+  $selectedInterieur  = old('interieur_options',  $occasion->interieur_options  ?? []);
+  $selectedVeiligheid = old('veiligheid_options', $occasion->veiligheid_options ?? []);
+  $selectedOverige    = old('overige_options',    $occasion->overige_options    ?? []);
 
-        <label class="input-row">
-          <span>Interieur (1 per regel)</span>
-          <textarea name="interieur_options_text" rows="6" id="interieurTA"
-            placeholder="Airco&#10;Cruise control&#10;Stoelverwarming">@php
-echo old('interieur_options_text', collect($occasion->interieur_options ?? [])->implode("\n"));
-@endphp</textarea>
-          <div class="chips" id="interieurChips"></div>
-        </label>
+  $labels = [
+    'exterieur' => ['title' => 'Exterieur',  'selected' => $selectedExterieur],
+    'interieur' => ['title' => 'Interieur',  'selected' => $selectedInterieur],
+    'veiligheid'=> ['title' => 'Veiligheid', 'selected' => $selectedVeiligheid],
+    'overige'   => ['title' => 'Overige',    'selected' => $selectedOverige],
+  ];
+@endphp
 
-        <label class="input-row">
-          <span>Veiligheid (1 per regel)</span>
-          <textarea name="veiligheid_options_text" rows="6" id="veiligheidTA"
-            placeholder="ABS&#10;ESP&#10;Achteruitrijcamera">@php
-echo old('veiligheid_options_text', collect($occasion->veiligheid_options ?? [])->implode("\n"));
-@endphp</textarea>
-          <div class="chips" id="veiligheidChips"></div>
-        </label>
+@foreach($labels as $key => $meta)
+  <div class="opt-section">
+    <div class="opt-head">
+      <h4 class="opt-title">{{ $meta['title'] }}</h4>
+      <div class="opt-actions">
+        <button type="button" class="opt-btn" data-check="{{ $key }}">Alles</button>
+        <button type="button" class="opt-btn" data-uncheck="{{ $key }}">Geen</button>
+      </div>
+    </div>
 
-        <label class="input-row">
-          <span>Overige (1 per regel)</span>
-          <textarea name="overige_options_text" rows="6" id="overigeTA"
-            placeholder="Trekhaak&#10;Bluetooth&#10;Boekjes aanwezig">@php
-echo old('overige_options_text', collect($occasion->overige_options ?? [])->implode("\n"));
-@endphp</textarea>
-          <div class="chips" id="overigeChips"></div>
+    <div class="opt-grid" data-section="{{ $key }}">
+      @foreach(($optionLists[$key] ?? []) as $opt)
+        <label class="opt-card">
+          <input
+            class="opt-check"
+            type="checkbox"
+            name="{{ $key }}_options[]"
+            value="{{ $opt }}"
+            @checked(in_array($opt, $meta['selected']))
+          >
+          <span class="opt-text">{{ $opt }}</span>
         </label>
+      @endforeach
+    </div>
+  </div>
+@endforeach
 
         <label class="input-row" style="grid-column:1/-1">
           <span>Omschrijving</span>
@@ -360,6 +364,23 @@ echo old('overige_options_text', collect($occasion->overige_options ?? [])->impl
 
   
   <script>
+
+    document.addEventListener('click', (e) => {
+  const btnCheck = e.target.closest('[data-check]');
+  const btnUncheck = e.target.closest('[data-uncheck]');
+
+  if (btnCheck) {
+    const key = btnCheck.getAttribute('data-check');
+    const section = document.querySelector(`.opt-grid[data-section="${key}"]`);
+    section?.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
+  }
+
+  if (btnUncheck) {
+    const key = btnUncheck.getAttribute('data-uncheck');
+    const section = document.querySelector(`.opt-grid[data-section="${key}"]`);
+    section?.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+  }
+});
 
      const rdwBtn = document.getElementById('rdwBtn');
   const rdwStatus = document.getElementById('rdwStatus');

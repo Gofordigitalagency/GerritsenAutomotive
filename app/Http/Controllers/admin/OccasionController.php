@@ -40,33 +40,39 @@ class OccasionController extends Controller
 }
 
 
-    /* ===== Create / Edit ===== */
-    public function create()
-    {
-        return view('admin.occasions.form', ['occasion' => new Occasion()]);
-    }
+public function create()
+{
+    $optionLists = config('occasion_options');
+    return view('admin.occasions.form', [
+        'occasion' => new Occasion(),
+        'optionLists' => $optionLists,
+    ]);
+}
 
-    public function edit(Occasion $occasion)
-    {
-        return view('admin.occasions.form', compact('occasion'));
-    }
+public function edit(Occasion $occasion)
+{
+    $optionLists = config('occasion_options');
+    return view('admin.occasions.form', compact('occasion', 'optionLists'));
+}
 
     /* ===== Store ===== */
     public function store(StoreOccasionRequest $request)
     {
         $data = $request->validated();
 
-        // Textareas -> arrays (opties)
-        $data['exterieur_options'] = $this->linesToArray($data['exterieur_options_text'] ?? null);
-        $data['interieur_options'] = $this->linesToArray($data['interieur_options_text'] ?? null);
-        $data['veiligheid_options'] = $this->linesToArray($data['veiligheid_options_text'] ?? null);
-        $data['overige_options']    = $this->linesToArray($data['overige_options_text'] ?? null);
+        $data['exterieur_options']  = array_values($request->input('exterieur_options', [])) ?: null;
+        $data['interieur_options']  = array_values($request->input('interieur_options', [])) ?: null;
+        $data['veiligheid_options'] = array_values($request->input('veiligheid_options', [])) ?: null;
+        $data['overige_options']    = array_values($request->input('overige_options', [])) ?: null;
+
+        // oude textarea fields (als ze nog in request zitten) negeren
         unset(
             $data['exterieur_options_text'],
             $data['interieur_options_text'],
             $data['veiligheid_options_text'],
             $data['overige_options_text']
         );
+
 
         // Hoofdfoto
         if ($request->hasFile('hoofdfoto')) {
@@ -105,17 +111,19 @@ class OccasionController extends Controller
     {
         $data = $request->validated();
 
-        // Textareas -> arrays (opties)
-        $data['exterieur_options'] = $this->linesToArray($data['exterieur_options_text'] ?? null);
-        $data['interieur_options'] = $this->linesToArray($data['interieur_options_text'] ?? null);
-        $data['veiligheid_options'] = $this->linesToArray($data['veiligheid_options_text'] ?? null);
-        $data['overige_options']    = $this->linesToArray($data['overige_options_text'] ?? null);
+        $data['exterieur_options']  = array_values($request->input('exterieur_options', [])) ?: null;
+        $data['interieur_options']  = array_values($request->input('interieur_options', [])) ?: null;
+        $data['veiligheid_options'] = array_values($request->input('veiligheid_options', [])) ?: null;
+        $data['overige_options']    = array_values($request->input('overige_options', [])) ?: null;
+
+        // oude textarea fields (als ze nog in request zitten) negeren
         unset(
             $data['exterieur_options_text'],
             $data['interieur_options_text'],
             $data['veiligheid_options_text'],
             $data['overige_options_text']
         );
+
 
         // Hoofdfoto
         if ($request->hasFile('hoofdfoto')) {

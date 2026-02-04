@@ -52,11 +52,19 @@ class StoreOccasionRequest extends FormRequest
             'gallery.*'  => ['nullable','file','image','mimes:jpg,jpeg,png,webp','max:6144'], // ≤ 6MB per foto
 
             // textareas
-            'exterieur_options_text' => 'nullable|string',
-            'interieur_options_text' => 'nullable|string',
-            'veiligheid_options_text'=> 'nullable|string',
-            'overige_options_text'   => 'nullable|string',
-            'omschrijving'           => 'nullable|string',
+'exterieur_options' => ['nullable','array'],
+'exterieur_options.*' => ['string','max:120'],
+
+'interieur_options' => ['nullable','array'],
+'interieur_options.*' => ['string','max:120'],
+
+'veiligheid_options' => ['nullable','array'],
+'veiligheid_options.*' => ['string','max:120'],
+
+'overige_options' => ['nullable','array'],
+'overige_options.*' => ['string','max:120'],
+'omschrijving' => ['nullable', 'string', 'max:10000'],
+
         ];
     }
 
