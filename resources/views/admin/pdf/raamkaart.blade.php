@@ -275,6 +275,18 @@ h1, h2, h3, h4, h5,
 
   <div class="sp2"></div>
 
+  $photoDataUri = null;
+
+if ($occasion->hoofdfoto_path) {
+    $abs = public_path('storage/'.$occasion->hoofdfoto_path);
+
+    if (file_exists($abs)) {
+        $type = pathinfo($abs, PATHINFO_EXTENSION);
+        $data = file_get_contents($abs);
+        $photoDataUri = 'data:image/'.$type.';base64,'.base64_encode($data);
+    }
+}
+
   {{-- OPTIES --}}
   <div class="optsTitle">Opties:</div>
 
