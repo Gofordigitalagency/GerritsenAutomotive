@@ -27,11 +27,18 @@
       <label>Kies max. 4 occasions</label>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;max-height:360px;overflow:auto;padding:8px;border:1px solid #ddd;border-radius:8px;">
         @foreach($occasions as $o)
-            @php
-            $checked = in_array($o->id, old('occasion_ids',$selected));
-            $title = trim(($o->merk ?? '').' '.($o->model ?? '').' '.($o->type ?? ''));
-            $img = $o->hoofdfoto_path ? asset('storage/'.$o->hoofdfoto_path) : null;
-            @endphp
+   @php
+  $abs = $o->hoofdfoto_path ? public_path('storage/'.$o->hoofdfoto_path) : null;
+  $hasImg = $abs && file_exists($abs);
+@endphp
+
+<div class="img">
+  @if($hasImg)
+    <img src="{{ $abs }}" alt="">
+  @else
+    <div class="noimg">Geen foto</div>
+  @endif
+</div>  
 
             <label class="occ-card">
             <input type="checkbox" name="occasion_ids[]" value="{{ $o->id }}" {{ $checked ? 'checked' : '' }}>

@@ -1,295 +1,298 @@
-{{-- resources/views/admin/reclame/pdf.blade.php --}}
 <!doctype html>
 <html lang="nl">
 <head>
   <meta charset="utf-8">
-  <title>{{ $reclame->title ?? 'WEKENAANBIEDING' }}</title>
+  <title>Reclame export</title>
 
   <style>
-    /* DomPDF: gebruik simpele fonts */
-    @page { margin: 18px 18px 18px 18px; }
-    body { font-family: DejaVu Sans, sans-serif; color:#111; margin:0; padding:0; }
+    * { font-family: DejaVu Sans, Arial, Helvetica, sans-serif !important; }
 
-    .sheet { width: 100%; }
+    @page { margin: 0; }
+    body { margin:0; padding:0; font-size: 12px; color:#111; background:#fff; }
 
-    /* Header */
+    :root{
+      --orange:#F08A00;      /* flyer-oranje */
+      --dark:#111;
+      --muted:#666;
+      --line:#e6e6e6;
+      --card:#ffffff;
+    }
+
+    .page{
+      padding: 18px 18px 16px 18px;
+    }
+
+    /* ===== HEADER (zwart + oranje) ===== */
     .header{
+      background: var(--dark);
+      color:#fff;
+      border-radius: 14px;
+      padding: 16px 16px 14px 16px;
       position: relative;
-      height: 150px;
-      border-radius: 10px;
-      overflow: hidden;
-      background: #111;
-      margin-bottom: 14px;
+      overflow:hidden;
     }
-    .header .green{
-      position:absolute;
-      right:-120px;
-      top:-120px;
-      width: 520px;
-      height: 520px;
-      border-radius: 260px;
-      background:#32CD32; /* lime green */
-    }
-    .header .brand{
-      position:absolute;
-      left:18px;
-      top:16px;
-      font-weight:800;
-      letter-spacing:1px;
-      font-size: 14px;
-      color:#fff;
-    }
-    .header .title-wrap{
-      position:absolute;
-      left:18px;
-      top:48px;
-    }
-    .header .title{
-      display:inline-block;
-      background:#32CD32;
-      color:#fff;
-      font-weight:900;
-      font-size: 26px;
-      padding:10px 16px;
-      border-radius: 6px;
-      letter-spacing: .5px;
-    }
-    .header .subtitle{
-      display:inline-block;
-      margin-top:8px;
-      background: rgba(0,0,0,.6);
-      color:#fff;
+
+    .brand{
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .8px;
       font-size: 12px;
-      padding:6px 10px;
-      border-radius: 999px;
+      opacity: .95;
+      margin-bottom: 8px;
     }
 
-/* GRID */
-table.grid{
-  width:100%;
-  border-collapse: separate;
-  border-spacing: 14px 14px;
-  table-layout: fixed;
-}
+    /* “ribbon” effect */
+    .ribbon{
+      background: var(--orange);
+      color:#fff;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      display: inline-block;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 26px;
+      line-height: 1;
+    }
 
-/* CARD */
-.card{
-  border:1px solid #e6e6e6;
-  border-radius: 12px;
-  overflow:hidden;
-  background:#fff;
-  height: 320px;            /* ✅ alles even hoog */
-}
+    .subtitle{
+      margin-top: 8px;
+      display:inline-block;
+      background: rgba(255,255,255,.14);
+      padding: 6px 10px;
+      border-radius: 10px;
+      font-size: 12px;
+      color:#fff;
+    }
 
-/* IMAGE */
-.img{
-  width:100%;
-  height: 155px;            /* ✅ vaste hoogte -> geen verspringen */
-  background:#efefef;
-  overflow:hidden;
-}
-.img img{
-  width:100%;
-  height:155px;
-  object-fit:cover;         /* ✅ altijd netjes vullen */
-  display:block;
-}
+    .sp { height: 14px; }
 
-/* CONTENT */
-.pad{ padding: 10px 12px; }
+    /* ===== GRID 2x2 ===== */
+    table.grid{
+      width:100%;
+      border-collapse: separate;
+      border-spacing: 12px; /* gap tussen cards */
+      table-layout: fixed;
+    }
+    td.cell{
+      width:50%;
+      vertical-align: top;
+    }
 
-.name{
-  font-weight:900;
-  font-size: 12px;
-  letter-spacing:.3px;
-  text-transform: uppercase;
-  margin: 0 0 6px 0;
-  height: 28px;             /* ✅ max 2 regels plek */
-  overflow: hidden;         /* ✅ voorkomt duwen */
-}
+    .card{
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+      background: var(--card);
+    }
 
-.price{
-  color:#32CD32;
-  font-weight: 900;
-  font-size: 22px;
-  margin: 0 0 6px 0;
-}
+    .photo{
+      height: 150px;
+      background: #f0f0f0;
+      border-bottom: 1px solid var(--line);
+      overflow:hidden;
+    }
+    .photo img{
+      width:100%;
+      height:150px;
+      object-fit: cover;   /* ✅ voorkomt “kruis”/rare verhoudingen */
+      display:block;
+    }
+    .noimg{
+      height:150px;
+      text-align:center;
+      line-height:150px;
+      color:#999;
+      font-weight:800;
+      font-size: 12px;
+    }
 
-.meta{
-  font-size: 11px;
-  color:#222;
-  margin: 0;
-  line-height: 1.55;
-  height: 55px;             /* ✅ vaste plek voor specs */
-  overflow:hidden;
-}
+    .body{
+      padding: 10px 12px 12px 12px;
+    }
 
-.bullet{
-  font-size: 10px;
-  color:#444;
-  margin-top: 8px;
-}
+    .car-title{
+      font-weight: 900;
+      text-transform: uppercase;
+      font-size: 12px;
+      margin: 0 0 6px 0;
+      letter-spacing: .2px;
+    }
 
+    .price{
+      color: var(--orange);
+      font-weight: 900;
+      font-size: 18px;
+      margin: 0 0 8px 0;
+    }
 
-    /* Footer */
+    .meta{
+      font-size: 11px;
+      line-height: 1.55;
+      color:#111;
+    }
+    .meta b{ font-weight: 900; }
+    .dot{ color:#999; padding:0 6px; }
+
+    .bullet{
+      margin-top: 8px;
+      font-size: 10px;
+      color:#333;
+    }
+
+    /* ===== FOOTER ===== */
     .footer{
       margin-top: 10px;
-      background:#111;
+      background: #111;
       color:#fff;
-      border-radius: 10px;
-      padding: 10px 14px;
+      border-radius: 14px;
+      padding: 10px 12px;
       font-size: 11px;
+      text-align:center;
     }
-    .footer .row{
-      display: table;
-      width: 100%;
-    }
-    .footer .col{
-      display: table-cell;
-      vertical-align: middle;
-      width: 50%;
-    }
-    .footer .right{
-      text-align:right;
-    }
+    .footer strong{ font-weight: 900; }
+    .footer .sep{ opacity:.6; padding:0 10px; }
   </style>
 </head>
 
 <body>
-  <div class="sheet">
+@php
+  function occ_title($o) {
+    $merk  = $o->merk ?? '';
+    $model = $o->model ?? '';
+    $type  = $o->type ?? '';
+    $t = trim("$merk $model $type");
+    return $t ?: ('Occasion #'.$o->id);
+  }
 
-    {{-- HEADER --}}
-    <div class="header">
-      <div class="green"></div>
-      <div class="brand">GERRITSEN AUTOMOTIVE</div>
-      <div class="title-wrap">
-        <div class="title">{{ $reclame->title ?? 'WEKENAANBIEDING' }}</div><br>
-        <div class="subtitle">{{ $reclame->subtitle ?? 'Alleen deze week scherp geprijsd!' }}</div>
-      </div>
-    </div>
+  function occ_price($o) {
+    $p = (float)($o->prijs ?? 0);
+    return '€ ' . number_format($p, 0, ',', '.') . ',-';
+  }
 
-    {{-- GRID 2x2 --}}
-    @php
-      $items = $items ?? ($reclame->items ?? collect());
-      $items = collect($items)->take(4)->values();
+  function occ_km($o) {
+    $km = $o->tellerstand ?? null;
+    return ($km !== null && $km !== '') ? number_format((float)$km, 0, ',', '.') : '-';
+  }
 
-      // zorg dat er altijd 4 plekken zijn (voor vaste layout)
-      while($items->count() < 4) $items->push(null);
+  function occ_year($o) { return $o->bouwjaar ?? '-'; }
+  function occ_fuel($o) { return $o->brandstof ?? '-'; }
+  function occ_trans($o) { return $o->transmissie ?? '-'; }
 
-      // helper
-      $fmtEuro = function($n){
-        $n = (float)($n ?? 0);
-        return '€ '.number_format($n, 0, ',', '.').',-';
-      };
-      $fmtInt = function($n){
-        if($n === null || $n === '') return '-';
-        return number_format((float)$n, 0, ',', '.');
-      };
-    @endphp
+  // ✅ DomPDF-proof (base64)
+  function occ_img_datauri($o) {
+    if (empty($o->hoofdfoto_path)) return null;
 
-    <table class="grid">
-      <tr>
-        @for($i=0; $i<2; $i++)
-          @php $it = $items[$i]; $o = $it?->occasion; @endphp
-          <td>
-            @if($o)
-              @php
-                $name = trim(($o->merk ?? '').' '.($o->model ?? '').' '.($o->type ?? ''));
-                $rel = $o->hoofdfoto_path ?? null;
-                $abs = $rel ? public_path('storage/'.$rel) : null;
-                $hasImg = $abs && file_exists($abs);
-              @endphp
+    $abs = public_path('storage/' . ltrim($o->hoofdfoto_path, '/'));
+    if (!file_exists($abs)) return null;
 
-              <div class="card">
-                <div class="img">
-                  @if($hasImg)
-                    <img src="{{ $abs }}" alt="">
-                  @endif
-                </div>
-                <div class="pad">
-                  <div class="name">{{ $name ?: 'Occasion #'.$o->id }}</div>
-                  <div class="price">{{ $fmtEuro($o->prijs) }}</div>
-                  <div class="meta">
-                    <b>KM:</b> {{ $fmtInt($o->tellerstand) }} &nbsp;•&nbsp;
-                    <b>Bouwjaar:</b> {{ $o->bouwjaar ?? '-' }}<br>
-                    <b>Brandstof:</b> {{ $o->brandstof ?? '-' }} &nbsp;&nbsp;
-                    <b>Transmissie:</b> {{ $o->transmissie ?? '-' }}
-                  </div>
-                  <div class="bullet">• Incl. nieuwe APK en garantie!</div>
-                </div>
-              </div>
-            @else
-              {{-- lege plek --}}
-              <div class="card">
-                <div class="img"></div>
-                <div class="pad">
-                  <div class="name">&nbsp;</div>
-                  <div class="price">&nbsp;</div>
-                  <div class="meta">&nbsp;</div>
-                </div>
-              </div>
-            @endif
-          </td>
-        @endfor
-      </tr>
+    $ext = strtolower(pathinfo($abs, PATHINFO_EXTENSION));
+    $mime = match ($ext) {
+      'jpg','jpeg' => 'image/jpeg',
+      'png'        => 'image/png',
+      'webp'       => 'image/webp',
+      default      => null,
+    };
+    if (!$mime) return null;
 
-      <tr>
-        @for($i=2; $i<4; $i++)
-          @php $it = $items[$i]; $o = $it?->occasion; @endphp
-          <td>
-            @if($o)
-              @php
-                $name = trim(($o->merk ?? '').' '.($o->model ?? '').' '.($o->type ?? ''));
-                $rel = $o->hoofdfoto_path ?? null;
-                $abs = $rel ? public_path('storage/'.$rel) : null;
-                $hasImg = $abs && file_exists($abs);
-              @endphp
+    return 'data:'.$mime.';base64,'.base64_encode(file_get_contents($abs));
+  }
 
-              <div class="card">
-                <div class="img">
-                  @if($hasImg)
-                    <img src="{{ $abs }}" alt="">
-                  @endif
-                </div>
-                <div class="pad">
-                  <div class="name">{{ $name ?: 'Occasion #'.$o->id }}</div>
-                  <div class="price">{{ $fmtEuro($o->prijs) }}</div>
-                  <div class="meta">
-                    <b>KM:</b> {{ $fmtInt($o->tellerstand) }} &nbsp;•&nbsp;
-                    <b>Bouwjaar:</b> {{ $o->bouwjaar ?? '-' }}<br>
-                    <b>Brandstof:</b> {{ $o->brandstof ?? '-' }} &nbsp;&nbsp;
-                    <b>Transmissie:</b> {{ $o->transmissie ?? '-' }}
-                  </div>
-                  <div class="bullet">• Incl. nieuwe APK en garantie!</div>
-                </div>
-              </div>
-            @else
-              <div class="card">
-                <div class="img"></div>
-                <div class="pad">
-                  <div class="name">&nbsp;</div>
-                  <div class="price">&nbsp;</div>
-                  <div class="meta">&nbsp;</div>
-                </div>
-              </div>
-            @endif
-          </td>
-        @endfor
-      </tr>
-    </table>
+  $items = ($items ?? ($reclame->items ?? collect()))->values()->take(4);
 
-    {{-- FOOTER --}}
-    <div class="footer">
-      <div class="row">
-        <div class="col">
-          gerritsenautomotive.nl
-        </div>
-        <div class="col right">
-          0341 252520
-        </div>
-      </div>
-    </div>
+  // 4 vaste slots voor 2x2
+  $slots = [];
+  for ($i=0; $i<4; $i++) $slots[] = $items[$i] ?? null;
+@endphp
 
+<div class="page">
+
+  <div class="header">
+    <div class="brand">GERRITSEN AUTOMOTIVE</div>
+    <div class="ribbon">{{ $reclame->title ?? 'WEKENAANBIEDING' }}</div><br>
+    <div class="subtitle">{{ $reclame->subtitle ?? 'Alleen deze week scherp geprijsd!' }}</div>
   </div>
+
+  <div class="sp"></div>
+
+  <table class="grid">
+    <tr>
+      @for($c=0; $c<2; $c++)
+        @php $o = $slots[$c]; @endphp
+        <td class="cell">
+          @if($o)
+            @php $img = occ_img_datauri($o); @endphp
+            <div class="card">
+              <div class="photo">
+                @if($img)
+                  <img src="{{ $img }}" alt="Foto">
+                @else
+                  <div class="noimg">GEEN FOTO</div>
+                @endif
+              </div>
+
+              <div class="body">
+                <div class="car-title">{{ occ_title($o) }}</div>
+                <div class="price">{{ occ_price($o) }}</div>
+
+                <div class="meta">
+                  <b>KM:</b> {{ occ_km($o) }} <span class="dot">•</span>
+                  <b>Bouwjaar:</b> {{ occ_year($o) }}<br>
+
+                  <b>Brandstof:</b> {{ occ_fuel($o) }} <span class="dot">•</span>
+                  <b>Transmissie:</b> {{ occ_trans($o) }}
+                </div>
+
+                <div class="bullet">• Incl. nieuwe APK en garantie!</div>
+              </div>
+            </div>
+          @endif
+        </td>
+      @endfor
+    </tr>
+
+    <tr>
+      @for($c=2; $c<4; $c++)
+        @php $o = $slots[$c]; @endphp
+        <td class="cell">
+          @if($o)
+            @php $img = occ_img_datauri($o); @endphp
+            <div class="card">
+              <div class="photo">
+                @if($img)
+                  <img src="{{ $img }}" alt="Foto">
+                @else
+                  <div class="noimg">GEEN FOTO</div>
+                @endif
+              </div>
+
+              <div class="body">
+                <div class="car-title">{{ occ_title($o) }}</div>
+                <div class="price">{{ occ_price($o) }}</div>
+
+                <div class="meta">
+                  <b>KM:</b> {{ occ_km($o) }} <span class="dot">•</span>
+                  <b>Bouwjaar:</b> {{ occ_year($o) }}<br>
+
+                  <b>Brandstof:</b> {{ occ_fuel($o) }} <span class="dot">•</span>
+                  <b>Transmissie:</b> {{ occ_trans($o) }}
+                </div>
+
+                <div class="bullet">• Incl. nieuwe APK en garantie!</div>
+              </div>
+            </div>
+          @endif
+        </td>
+      @endfor
+    </tr>
+  </table>
+
+  <div class="footer">
+    <strong>gerritsenautomotive.nl</strong>
+    <span class="sep">|</span>
+    <strong>0341 252520</strong>
+  </div>
+
+</div>
 </body>
 </html>
