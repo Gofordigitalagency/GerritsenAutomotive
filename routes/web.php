@@ -10,6 +10,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\SellCarController;
 use App\Http\Controllers\WorkshopAppointmentController;
 use App\Http\Controllers\OccasionPdfController;
+use App\Http\Controllers\Admin\ReclameController;
 
 
 
@@ -54,6 +55,15 @@ Route::post('/reserveren', [BookingController::class, 'store'])->name('booking.s
 // --- Admin (achter login) ---
 Route::middleware('auth')->prefix('admin')->as('admin.')->group(function () {
     Route::get('/', fn () => redirect()->route('admin.occasions.index'));
+
+    Route::get('reclame', [ReclameController::class, 'index'])->name('reclame.index');
+    Route::get('reclame/nieuw', [ReclameController::class, 'create'])->name('reclame.create');
+    Route::post('reclame', [ReclameController::class, 'store'])->name('reclame.store');
+
+    Route::get('reclame/{reclame}/bewerken', [ReclameController::class, 'edit'])->name('reclame.edit');
+    Route::put('reclame/{reclame}', [ReclameController::class, 'update'])->name('reclame.update');
+
+    Route::get('reclame/{reclame}/pdf', [ReclameController::class, 'exportPdf'])->name('reclame.pdf');
 
     // Occasions CRUD
     Route::resource('occasions', AdminOccasionController::class);

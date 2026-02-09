@@ -2,6 +2,9 @@
 
 return [
     'exterieur' => [
+        'Metallic lak',
+        'Bumpers in kleur',
+        'Spiegels in kleur',
         'Dakrails',
         'Getinte ramen',
         'Lichtmetalen velgen',
@@ -24,7 +27,6 @@ return [
         'Winterpakket',
         'Sneeuwbanden',
         'Vierseizoenenbanden',
-        'Zomerbanden',
         'Reservewiel',
         'Noodwiel',
         'Pechset',
