@@ -10,7 +10,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\SellCarController;
 use App\Http\Controllers\WorkshopAppointmentController;
 use App\Http\Controllers\OccasionPdfController;
-use App\Http\Controllers\Admin\ReclameController;
+use App\Http\Controllers\admin\ReclameController;
 
 
 
