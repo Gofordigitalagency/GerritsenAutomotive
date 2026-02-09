@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\admin;
-
+use Illuminate\Support\Arr;
 use App\Http\Controllers\Controller;
 use App\Models\Occasion;
 use Barryvdh\DomPDF\Facade\Pdf;
