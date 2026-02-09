@@ -27,36 +27,82 @@
       <label>Kies max. 4 occasions</label>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;max-height:360px;overflow:auto;padding:8px;border:1px solid #ddd;border-radius:8px;">
         @foreach($occasions as $o)
-          @php
+            @php
             $checked = in_array($o->id, old('occasion_ids',$selected));
-            $title = trim(($o->brand ?? '').' '.($o->model ?? '')); // pas aan naar jouw velden
-          @endphp
+            $title = trim(($o->merk ?? '').' '.($o->model ?? '').' '.($o->type ?? ''));
+            $img = $o->hoofdfoto_path ? asset('storage/'.$o->hoofdfoto_path) : null;
+            @endphp
 
-          <label style="display:flex;gap:10px;align-items:flex-start;border:1px solid #eee;border-radius:8px;padding:10px;">
-            <input type="checkbox" name="occasion_ids[]" value="{{ $o->id }}"
-                   {{ $checked ? 'checked' : '' }} style="margin-top:4px">
-            <div>
-              <div style="font-weight:700">{{ $title ?: ($o->title ?? 'Occasion #'.$o->id) }}</div>
-              <div style="font-size:12px;color:#555">
-                € {{ number_format((float)($o->price ?? 0), 0, ',', '.') }}
-                • {{ $o->km ?? $o->mileage ?? '-' }} km
-                • {{ $o->year ?? $o->bouwjaar ?? '-' }}
-              </div>
+            <label class="occ-card">
+            <input type="checkbox" name="occasion_ids[]" value="{{ $o->id }}" {{ $checked ? 'checked' : '' }}>
+
+            <div class="occ-inner">
+
+                <div class="occ-thumb">
+                @if($img)
+                    <img src="{{ $img }}">
+                @else
+                    <div class="occ-noimg">Geen foto</div>
+                @endif
+                </div>
+
+                <div class="occ-info">
+                <div class="occ-title">{{ $title ?: 'Occasion #'.$o->id }}</div>
+                <div class="occ-meta">
+                    € {{ number_format((float)($o->prijs ?? 0), 0, ',', '.') }}
+                    • {{ $o->tellerstand ?? '-' }} km
+                    • {{ $o->bouwjaar ?? '-' }}
+                </div>
+                </div>
+
             </div>
-          </label>
+            </label>
+
         @endforeach
       </div>
       <small style="display:block;margin-top:6px;color:#666">Tip: checkbox-limit kun je ook client-side afdwingen.</small>
     </div>
 
-    <div style="display:flex;gap:10px;margin-top:16px;">
-      <button class="btn-primary" type="submit">Opslaan</button>
+<button class="btn" type="submit">Opslaan</button>
 
       @if($reclame->exists)
         <a class="btn" href="{{ route('admin.reclame.pdf',$reclame) }}" target="_blank">Export PDF</a>
       @endif
     </div>
   </form>
+
+  <style>
+    .form-row{
+  margin-bottom: 14px;
+}
+.occ-card{
+  display:block;
+  border:1px solid #e7e7e7;
+  border-radius:12px;
+  overflow:hidden;
+  background:#fff;
+}
+.occ-card input{ margin:12px; }
+.occ-inner{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  padding:10px 12px 12px 0;
+}
+.occ-thumb{
+  width:110px;height:70px;
+  background:#f3f3f3;
+  border-radius:10px;
+  overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  margin-left:10px;
+}
+.occ-thumb img{ width:100%; height:100%; object-fit:cover; }
+.occ-noimg{ font-size:12px; color:#999; }
+.occ-title{ font-weight:800; }
+.occ-meta{ font-size:12px; color:#666; }
+</style>
+
 
   <script>
     // max 4 selecteren (client-side)
