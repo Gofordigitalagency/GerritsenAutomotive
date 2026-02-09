@@ -992,28 +992,32 @@ window.WA = (() => {
 
   // ===== step UI =====
   function showStep(n){
-    step = n;
+   step = n;
 
-    // panels
-    qsa(".wa-panel").forEach(p => p.classList.remove("wa-show"));
-    const panel = qs(`.wa-panel[data-panel="${n}"]`);
-    if(panel) panel.classList.add("wa-show");
+  // panels
+  qsa(".wa-panel").forEach(p => p.classList.remove("wa-show"));
+  const panel = qs(`.wa-panel[data-panel="${n}"]`);
+  if(panel) panel.classList.add("wa-show");
 
-    // stepper
-    const steps = qsa(".wa-stepper .wa-step");
-    const lines = qsa(".wa-stepper .wa-line");
+  // stepper
+  const steps = qsa(".wa-stepper .wa-step");
+  const lines = qsa(".wa-stepper .wa-line");
 
-    steps.forEach(s => {
-      const sNum = Number(s.getAttribute("data-step"));
-      s.classList.toggle("wa-active", sNum === n);
-      const dot = s.querySelector(".wa-dot");
-      if(dot) dot.classList.toggle("wa-on", sNum <= n);
-    });
+  steps.forEach(s => {
+    const sNum = Number(s.getAttribute("data-step"));
+    s.classList.toggle("wa-active", sNum === n);
+    const dot = s.querySelector(".wa-dot");
+    if(dot) dot.classList.toggle("wa-on", sNum <= n);
+  });
 
-    lines.forEach((l, idx) => l.classList.toggle("wa-on", n >= (idx + 2)));
+  lines.forEach((l, idx) => l.classList.toggle("wa-on", n >= (idx + 2)));
 
-    sync();
+  sync();
+
+  // ✅ alleen scrollen als we dat willen
+  if (opts.scroll) {
     window.scrollTo({ top: qs("#wa")?.offsetTop - 20 || 0, behavior: "smooth" });
+  }
   }
 
   function next(){
@@ -1217,7 +1221,7 @@ window.WA = (() => {
 
     renderCalendar();
     sync();
-    showStep(1);
+    showStep(1, { scroll: false });
   }
 
   return { next, prev, acc, calPrev, calNext, pickTime, sync, init: bind };
