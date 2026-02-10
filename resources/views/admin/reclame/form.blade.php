@@ -25,52 +25,55 @@
 
     <div class="form-row">
       <label>Kies max. 4 occasions</label>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;max-height:360px;overflow:auto;padding:8px;border:1px solid #ddd;border-radius:8px;">
+
+      <div class="occ-grid">
         @foreach($occasions as $o)
-   @php
-  $abs = $o->hoofdfoto_path ? public_path('storage/'.$o->hoofdfoto_path) : null;
-  $hasImg = $abs && file_exists($abs);
-@endphp
+          @php
+            // ✅ FIX: altijd definiëren
+            $checked = in_array($o->id, old('occasion_ids', $selected ?? []));
 
-<div class="img">
-  @if($hasImg)
-    <img src="{{ $abs }}" alt="">
-  @else
-    <div class="noimg">Geen foto</div>
-  @endif
-</div>  
+            $title = trim(($o->merk ?? '').' '.($o->model ?? '').' '.($o->type ?? ''));
 
-            <label class="occ-card">
-            <input type="checkbox" name="occasion_ids[]" value="{{ $o->id }}" {{ $checked ? 'checked' : '' }}>
+            // ✅ Browser-image: gebruik URL, geen public_path()
+            $img = $o->hoofdfoto_path
+              ? asset('storage/'.ltrim($o->hoofdfoto_path,'/'))
+              : null;
+          @endphp
+
+          <label class="occ-card">
+            <input class="occ-check"
+                   type="checkbox"
+                   name="occasion_ids[]"
+                   value="{{ $o->id }}"
+                   {{ $checked ? 'checked' : '' }}>
 
             <div class="occ-inner">
-
-                <div class="occ-thumb">
+              <div class="occ-thumb">
                 @if($img)
-                    <img src="{{ $img }}">
+                  <img src="{{ $img }}" alt="">
                 @else
-                    <div class="occ-noimg">Geen foto</div>
+                  <div class="occ-noimg">Geen foto</div>
                 @endif
-                </div>
+              </div>
 
-                <div class="occ-info">
+              <div class="occ-info">
                 <div class="occ-title">{{ $title ?: 'Occasion #'.$o->id }}</div>
                 <div class="occ-meta">
-                    € {{ number_format((float)($o->prijs ?? 0), 0, ',', '.') }}
-                    • {{ $o->tellerstand ?? '-' }} km
-                    • {{ $o->bouwjaar ?? '-' }}
+                  € {{ number_format((float)($o->prijs ?? 0), 0, ',', '.') }}
+                  • {{ $o->tellerstand ?? '-' }} km
+                  • {{ $o->bouwjaar ?? '-' }}
                 </div>
-                </div>
-
+              </div>
             </div>
-            </label>
-
+          </label>
         @endforeach
       </div>
-      <small style="display:block;margin-top:6px;color:#666">Tip: checkbox-limit kun je ook client-side afdwingen.</small>
+
+      <small class="hint">Tip: maximaal 4 selecteren.</small>
     </div>
 
-<button class="btn" type="submit">Opslaan</button>
+    <div class="actions">
+      <button class="btn" type="submit">Opslaan</button>
 
       @if($reclame->exists)
         <a class="btn" href="{{ route('admin.reclame.pdf',$reclame) }}" target="_blank">Export PDF</a>
@@ -79,37 +82,73 @@
   </form>
 
   <style>
-    .form-row{
-  margin-bottom: 14px;
-}
-.occ-card{
-  display:block;
-  border:1px solid #e7e7e7;
-  border-radius:12px;
-  overflow:hidden;
-  background:#fff;
-}
-.occ-card input{ margin:12px; }
-.occ-inner{
-  display:flex;
-  gap:12px;
-  align-items:center;
-  padding:10px 12px 12px 0;
-}
-.occ-thumb{
-  width:110px;height:70px;
-  background:#f3f3f3;
-  border-radius:10px;
-  overflow:hidden;
-  display:flex;align-items:center;justify-content:center;
-  margin-left:10px;
-}
-.occ-thumb img{ width:100%; height:100%; object-fit:cover; }
-.occ-noimg{ font-size:12px; color:#999; }
-.occ-title{ font-weight:800; }
-.occ-meta{ font-size:12px; color:#666; }
-</style>
+    .form-row{ margin-bottom:14px; }
 
+    .occ-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      max-height:360px;
+      overflow:auto;
+      padding:8px;
+      border:1px solid #ddd;
+      border-radius:8px;
+      background:#fff;
+    }
+
+    .occ-card{
+      display:block;
+      border:1px solid #e7e7e7;
+      border-radius:12px;
+      overflow:hidden;
+      background:#fff;
+      cursor:pointer;
+    }
+
+    .occ-inner{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      padding:10px 12px 12px 12px;
+    }
+
+    .occ-check{
+      margin:12px;
+    }
+
+    .occ-thumb{
+      width:110px;
+      height:70px;
+      background:#f3f3f3;
+      border-radius:10px;
+      overflow:hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex:0 0 auto;
+    }
+
+    .occ-thumb img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    .occ-noimg{ font-size:12px; color:#999; }
+
+    .occ-title{ font-weight:800; }
+    .occ-meta{ font-size:12px; color:#666; }
+
+    .hint{ display:block; margin-top:6px; color:#666; }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      margin-top:12px;
+      align-items:center;
+    }
+  </style>
 
   <script>
     // max 4 selecteren (client-side)
