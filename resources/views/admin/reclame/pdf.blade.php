@@ -1,307 +1,291 @@
 <!doctype html>
 <html lang="nl">
 <head>
-  <meta charset="utf-8">
-  <title>Reclame export</title>
+<meta charset="utf-8">
 
-  <style>
-    * { font-family: DejaVu Sans, Arial, Helvetica, sans-serif !important; }
-    @page { margin: 0; }
-    body { margin:0; padding:0; font-size: 12px; color:#111; }
+<style>
+  * { font-family: DejaVu Sans, Arial, Helvetica, sans-serif !important; }
+  @page { margin:0; }
+  body { margin:0; padding:0; }
 
-    :root{
-      --green:#32CD32;
-      --dark:#111;
-      --muted:#666;
-      --card:#ffffff;
-      --line:#e6e6e6;
-    }
+  .topbar{
+    background:#0e0e0e;
+    height:75px;
+    padding-left:22px;
+  }
+  .topbar img{ height:44px; margin-top:16px; }
 
-    .page{ padding: 28px 34px; background:#fff; }
+  .hero{
+    background:#fff;
+    padding: 26px 0 20px;
+  }
 
-    .header{
-      position: relative;
-      padding: 18px 18px 16px 18px;
-      border-radius: 14px;
-      background: #111;
-      color:#fff;
-      overflow:hidden;
-    }
-    .header:after{
-      content:"";
-      position:absolute;
-      right:-120px;
-      top:-120px;
-      width:320px;height:320px;
-      background: var(--green);
-      border-radius: 999px;
-    }
+.hero-title{
+  text-align:center;
+  font-size:46px;
+  letter-spacing:2px;
+  color:#111;
+  font-weight:700; /* 👈 maakt WEKENAANBIEDING! dik */
+}
+  .hero-title .ing{ color:#f4b400; }
 
-    .brand{
-      position:relative;
-      font-weight:800;
-      letter-spacing:.8px;
-      text-transform:uppercase;
-      font-size: 13px;
-      opacity:.95;
-      margin-bottom: 8px;
-    }
+  /* lijn + pill */
+  .line-wrap{
+    position:relative;
+    height:32px;
+    margin-top:18px;
+  }
 
-    .title{
-      position:relative;
-      display:inline-block;
-      background: var(--green);
-      color:#fff;
-      padding: 10px 14px;
-      border-radius: 10px;
-      font-size: 26px;
-      font-weight: 900;
-      letter-spacing:.5px;
-      text-transform: uppercase;
-      margin: 0;
-      line-height: 1;
-    }
+  /* doorlopende lijn (achter) */
+  .line-wrap .line{
+    position:absolute;
+    left:0;
+    right:0;
+    top:16px;        /* geen transform */
+    height:2px;
+    background:#111;
+    z-index:1;
+  }
 
-    .subtitle{
-      position:relative;
-      display:inline-block;
-      margin-top: 8px;
-      background: rgba(255,255,255,.15);
-      padding: 6px 10px;
-      border-radius: 10px;
-      font-size: 12px;
-      color:#fff;
-    }
+  /* pill exact gecentreerd via table */
+  .pill-table{
+    width:100%;
+    border-collapse:collapse;
+    position:relative;
+    z-index:2;
+  }
+  .pill-table td{
+    text-align:center;
+    padding:0;
+  }
+  .pill{
+    display:inline-block;
+    background:#f4b400;
+    color:#000;
+    padding:7px 18px;
+    font-size:12px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+  }
 
-    .sp{ height: 18px; }
+/* ===== TITLE ===== */
+.title {
+  text-align: center;
+  margin: 18px 0 6px;
+  font-size: 32px;
+}
 
-    table.grid{
-      width:100%;
-      border-collapse: separate;
-      border-spacing: 14px;
-      table-layout: fixed;
-    }
+.subtitle {
+  text-align: center;
+  background: var(--green);
+  color: #fff;
+  display: inline-block;
+  padding: 6px 16px;
+  margin: 0 auto 20px;
+}
 
-    td.cell{ width:50%; vertical-align: top; }
+/* ===== GRID ===== */
+table.grid {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 16px;
+}
 
-    .card{
-      border:1px solid var(--line);
-      border-radius: 14px;
-      overflow:hidden;
-      background: var(--card);
-    }
+td.cell {
+  width: 50%;
+  vertical-align: top;
+}
 
-    .photo{
-      height: 150px;
-      background: #efefef;
-      border-bottom:1px solid var(--line);
-      overflow:hidden;
-    }
-    .photo img{
-      width:100%;
-      height:150px;
-      object-fit: cover;
-      display:block;
-    }
-    .noimg{
-      height:150px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      color:#999;
-      font-weight:700;
-      font-size: 12px;
-    }
+/* ===== CARD ===== */
+.card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
 
-    .body{ padding: 12px; }
+/* IMAGE */
+.card-img {
+  height: 190px;
+  overflow: hidden;
+  background: #000;
+}
 
-    .car-title{
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: .2px;
-      font-size: 12px;
-      margin: 0 0 6px 0;
-    }
+.card-img img {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin-top: -25px; /* 👈 schuift foto omhoog */
+}
 
-    .price{
-      font-size: 18px;
-      font-weight: 900;
-      color: var(--green);
-      margin: 0 0 8px 0;
-    }
+/* BODY */
+.card-body {
+  padding: 12px;
+}
 
-    .meta{
-      color:#222;
-      font-size: 11px;
-      line-height: 1.5;
-    }
+.car-title {
+  font-size: 13px;
+  margin-bottom: 4px;
+}
 
-    .meta b{ font-weight: 900; }
-    .dots{ color:#999; padding:0 6px; }
+.car-meta {
+  color: #666;
+  margin-bottom: 8px;
+}
 
-    .bullet{
-      margin-top: 8px;
-      font-size: 10px;
-      color:#444;
-    }
+.year {
+  display: inline-block;
+  background: var(--green);
+  color: #fff;
+  padding: 3px 8px;
+  font-size: 11px;
+}
 
-    .footer{
-      margin-top: 14px;
-      text-align:center;
-      color:#666;
-      font-size: 10px;
-    }
-  </style>
+.price {
+  float: right;
+  font-size: 18px;
+  color: var(--green);
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  margin-top: 22px;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
+
+.footer-table {
+  width: 100%;
+}
+
+.phone {
+  font-size: 18px;
+}
+
+.domain {
+  background: #000;
+  color: #fff;
+  display: inline-block;
+  padding: 6px 14px;
+  margin: 6px 0;
+}
+
+.address {
+  color: #666;
+}
+
+.rdw {
+  text-align: right;
+}
+</style>
 </head>
 
 <body>
 @php
-  /**
-   * ✅ DomPDF-proof foto via base64 data-uri (zoals raamkaart)
-   */
-  function occ_photo_datauri($occasion) {
-    if (!$occasion) return null;
-    if (empty($occasion->hoofdfoto_path)) return null;
+function photo($o) {
+  if (!$o->hoofdfoto_path) return null;
+  $p = public_path('storage/'.$o->hoofdfoto_path);
+  if (!file_exists($p)) return null;
+  $type = pathinfo($p, PATHINFO_EXTENSION);
+  return 'data:image/'.$type.';base64,'.base64_encode(file_get_contents($p));
+}
 
-    // Zorg dat we altijd uitkomen op public/storage/...
-    $rel = ltrim($occasion->hoofdfoto_path, '/');
-    $rel = preg_replace('#^storage/#', '', $rel);
-    $rel = ltrim($rel, '/');
-
-    $abs = public_path('storage/' . $rel);
-    if (!file_exists($abs) || !is_readable($abs)) return null;
-
-    $ext = strtolower(pathinfo($abs, PATHINFO_EXTENSION));
-    $mime = null;
-
-    if (in_array($ext, ['jpg','jpeg'])) $mime = 'image/jpeg';
-    elseif ($ext === 'png') $mime = 'image/png';
-    elseif ($ext === 'webp') $mime = 'image/webp';
-
-    if (!$mime) return null;
-
-    return 'data:'.$mime.';base64,'.base64_encode(file_get_contents($abs));
-  }
-
-  function occ_title($o) {
-    $merk  = $o->merk ?? '';
-    $model = $o->model ?? '';
-    $type  = $o->type ?? '';
-    $t = trim("$merk $model $type");
-    return $t ?: ('Occasion #'.$o->id);
-  }
-
-  function occ_price($o) {
-    $p = (float)($o->prijs ?? 0);
-    return '€ ' . number_format($p, 0, ',', '.') . ',-';
-  }
-
-  function occ_km($o) {
-    $km = $o->tellerstand ?? null;
-    return ($km !== null && $km !== '') ? number_format((float)$km, 0, ',', '.') : '-';
-  }
-
-  function occ_year($o)  { return $o->bouwjaar ?? '-'; }
-  function occ_fuel($o)  { return $o->brandstof ?? '-'; }
-  function occ_trans($o) { return $o->transmissie ?? '-'; }
-
-  /**
-   * ✅ BELANGRIJK: $reclame->items zijn ReclameItems -> we willen Occasion
-   */
-  $items = collect($reclame->items ?? [])
-    ->sortBy('position')
-    ->map(fn($it) => $it->occasion)
-    ->filter()
-    ->values()
-    ->take(4);
-
-  // altijd 4 slots voor 2x2
-  $slots = [];
-  for ($i=0; $i<4; $i++) $slots[] = $items[$i] ?? null;
+$items = $reclame->items->pluck('occasion')->take(4);
+while ($items->count() < 4) $items->push(null);
 @endphp
 
 <div class="page">
 
-  <div class="header">
-    <div class="brand">GERRITSEN AUTOMOTIVE</div>
-    <h1 class="title">{{ $reclame->title ?? 'WEKENAANBIEDING' }}</h1><br>
-    <div class="subtitle">{{ $reclame->subtitle ?? 'Alleen deze week scherp geprijsd!' }}</div>
+<div class="topbar">
+  <img src="{{ public_path('assets/gerritsen-logo-white.png') }}" alt="Gerritsen">
+</div>
+
+<div class="hero">
+  <div class="hero-title">
+    WEKENAANBIED<span class="ing">ING!</span>
   </div>
 
-  <div class="sp"></div>
+  <div class="line-wrap">
+    <div class="line"></div>
 
+    <table class="pill-table">
+      <tr>
+        <td>
+          <span class="pill">{{ strtoupper($reclame->subtitle ?? 'ALLEEN DEZE WEEK SCHERP GEPRIJSD!') }}</span>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+</div>
+
+  {{-- GRID --}}
   <table class="grid">
     <tr>
-      @for($c=0; $c<2; $c++)
-        @php $o = $slots[$c]; @endphp
-        <td class="cell">
-          @if($o)
-            @php $img = occ_photo_datauri($o); @endphp
-            <div class="card">
-              <div class="photo">
-                @if($img)
-                  <img src="{{ $img }}" alt="Foto">
-                @else
-                  <div class="noimg">GEEN FOTO</div>
-                @endif
-              </div>
-
-              <div class="body">
-                <div class="car-title">{{ occ_title($o) }}</div>
-                <div class="price">{{ occ_price($o) }}</div>
-
-                <div class="meta">
-                  <b>KM:</b> {{ occ_km($o) }} <span class="dots">•</span>
-                  <b>Bouwjaar:</b> {{ occ_year($o) }} <br>
-                  <b>Brandstof:</b> {{ occ_fuel($o) }} <span class="dots">•</span>
-                  <b>Transmissie:</b> {{ occ_trans($o) }}
-                </div>
-
-                <div class="bullet">• Incl. nieuwe APK en garantie!</div>
-              </div>
-            </div>
-          @endif
-        </td>
+      @for($i=0;$i<2;$i++)
+      @php $o = $items[$i]; @endphp
+      <td class="cell">
+        @if($o)
+        <div class="card">
+          <div class="card-img">
+            @if($img = photo($o))
+              <img src="{{ $img }}">
+            @endif
+          </div>
+          <div class="card-body">
+            <div class="car-title">{{ $o->merk }} {{ $o->model }} {{ $o->type }}</div>
+            <div class="car-meta">{{ $o->bouwjaar }} • {{ number_format($o->tellerstand,0,',','.') }} km</div>
+            <span class="year">JAAR {{ $o->bouwjaar }}</span>
+            <span class="price">€ {{ number_format($o->prijs,0,',','.') }},-</span>
+          </div>
+        </div>
+        @endif
+      </td>
       @endfor
     </tr>
 
     <tr>
-      @for($c=2; $c<4; $c++)
-        @php $o = $slots[$c]; @endphp
-        <td class="cell">
-          @if($o)
-            @php $img = occ_photo_datauri($o); @endphp
-            <div class="card">
-              <div class="photo">
-                @if($img)
-                  <img src="{{ $img }}" alt="Foto">
-                @else
-                  <div class="noimg">GEEN FOTO</div>
-                @endif
-              </div>
-
-              <div class="body">
-                <div class="car-title">{{ occ_title($o) }}</div>
-                <div class="price">{{ occ_price($o) }}</div>
-
-                <div class="meta">
-                  <b>KM:</b> {{ occ_km($o) }} <span class="dots">•</span>
-                  <b>Bouwjaar:</b> {{ occ_year($o) }} <br>
-                  <b>Brandstof:</b> {{ occ_fuel($o) }} <span class="dots">•</span>
-                  <b>Transmissie:</b> {{ occ_trans($o) }}
-                </div>
-
-                <div class="bullet">• Incl. nieuwe APK en garantie!</div>
-              </div>
-            </div>
-          @endif
-        </td>
+      @for($i=2;$i<4;$i++)
+      @php $o = $items[$i]; @endphp
+      <td class="cell">
+        @if($o)
+        <div class="card">
+          <div class="card-img">
+            @if($img = photo($o))
+              <img src="{{ $img }}">
+            @endif
+          </div>
+          <div class="card-body">
+            <div class="car-title">{{ $o->merk }} {{ $o->model }} {{ $o->type }}</div>
+            <div class="car-meta">{{ $o->bouwjaar }} • {{ number_format($o->tellerstand,0,',','.') }} km</div>
+            <span class="year">JAAR {{ $o->bouwjaar }}</span>
+            <span class="price">€ {{ number_format($o->prijs,0,',','.') }},-</span>
+          </div>
+        </div>
+        @endif
+      </td>
       @endfor
     </tr>
   </table>
 
+  {{-- FOOTER --}}
   <div class="footer">
-    Gerritsen Automotive • gerritsenautomotive.nl
+    <table class="footer-table">
+      <tr>
+        <td>
+          <div class="phone">
+            <img src="{{ public_path('assets/phone-call (6).svg') }}" height="16">
+            +31 6 38257987
+          </div>
+          <div class="domain">GERRITSENAUTOMOTIVE.NL</div>
+          <div class="address">Roggenstraat 1 • 8081 JN • Elburg</div>
+        </td>
+        <td class="rdw">
+          <img src="{{ public_path('assets/rdw.svg') }}" height="42">
+        </td>
+      </tr>
+    </table>
   </div>
 
 </div>
