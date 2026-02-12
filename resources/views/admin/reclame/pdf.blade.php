@@ -16,13 +16,30 @@
   .page{ padding:0; }
 
   /* ===== TOPBAR ===== */
-  .topbar{
-    background:#0e0e0e;
-    height:75px;
-    padding:0 22px;
-  }
-.topbar img{ height:56px; margin-top:10px; }
+.topbar{
+  background:#0e0e0e;
+  height:110px;
+  padding:0 22px;
+}
 
+.topbarTable{
+  width:100%;
+  height:110px;
+  border-collapse:collapse;
+}
+
+.topbarLeft{
+  height:110px;
+  padding:0;
+  vertical-align:middle;
+}
+
+.topLogo{
+  height:75px;
+  display:block;
+  position: relative;
+  top: 2px;   /* probeer 2px */
+}
 
   /* ===== HERO ===== */
   .hero{
@@ -148,10 +165,9 @@ table.grid {
     margin-top: 6px;
     padding: 0 22px 18px 22px;
   }
-  .footer-inner{
-    border-top:1px solid var(--border);
-    padding-top:14px;
-  }
+.footer-inner{
+  padding-top:14px;
+}
 
   table.footer-table{ width:100%; border-collapse:collapse; }
   .phone{
@@ -178,6 +194,28 @@ table.grid {
   }
 
   .rdw{ text-align:right; }
+
+
+  .phone table{
+  border-collapse: collapse;
+}
+
+.phoneIcon{
+  display:block;
+  position:relative;
+  top:12px;
+}
+
+.phoneNumber{
+  vertical-align: middle;
+  font-size:28px;
+  font-weight:700;
+}
+.phoneIcon img{
+  display:block;
+  position:relative;
+  top:3px;   /* speel tussen 2px en 4px */
+}
 </style>
 </head>
 
@@ -198,9 +236,15 @@ table.grid {
 
 <div class="page">
 
-  <div class="topbar">
-    <img src="{{ public_path('assets/gerritsen-logo-white.png') }}" alt="Gerritsen">
-  </div>
+<div class="topbar">
+  <table class="topbarTable">
+    <tr>
+      <td class="topbarLeft" valign="middle">
+        <img class="topLogo" src="{{ public_path('assets/gerritsen-logo-white.png') }}" alt="Gerritsen">
+      </td>
+    </tr>
+  </table>
+</div>
 
   <div class="hero">
     <h1 class="hero-title">
@@ -276,10 +320,18 @@ table.grid {
       <table class="footer-table">
         <tr>
           <td>
-            <div class="phone">
-              <img src="{{ public_path('assets/phone-call (6).svg') }}" height="18" alt="">
-              +31 6 38257987
-            </div>
+           <div class="phone">
+  <table>
+    <tr>
+      <td class="phoneIcon">
+        <img src="{{ public_path('assets/phone-call (6).svg') }}" height="20">
+      </td>
+      <td class="phoneNumber">
+        +31 6 38257987
+      </td>
+    </tr>
+  </table>
+</div>
 
             <div class="domain">GERRITSENAUTOMOTIVE.NL</div>
 
