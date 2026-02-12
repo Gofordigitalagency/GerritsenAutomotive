@@ -248,7 +248,6 @@ ul.bullets li{ margin:0 0 6px 0; }
     <div>INTERESSE IN DEZE TOP AUTO? NEEM GERUST CONTACT OP MET ONS!</div>
     <div>WIJ ZIJN BEREIKBAAR OP</div>
     <div class="phone">+31 6 49951874</div>
-    <div>www.gerritsenautomotive.nl</div>
     <div class="tagline">Gerritsen Automotive - Dat is fijn zaken doen!</div>
   </div>
 
