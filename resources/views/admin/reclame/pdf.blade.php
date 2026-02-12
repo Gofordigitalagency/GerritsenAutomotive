@@ -9,7 +9,7 @@
   body { margin:0; padding:0; }
 
   :root{
-    --yellow:#f4b400;
+    --yellow:#FFA500;
     --border:#d9d9d9;
   }
 
