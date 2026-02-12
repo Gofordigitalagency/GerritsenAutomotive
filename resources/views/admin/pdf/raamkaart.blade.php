@@ -156,11 +156,17 @@ ul.bullets li{ margin:0 0 6px 0; }
     if (is_string($arr)) $arr = json_decode($arr, true) ?: [];
     if (is_array($arr)) $allOptions = array_merge($allOptions, $arr);
   }
-  $allOptions = array_values(array_filter(array_map('trim', $allOptions)));
+ $allOptions = array_values(array_filter(array_map('trim', $allOptions)));
 
-  $half = (int) ceil(count($allOptions) / 2);
-  $optL = array_slice($allOptions, 0, $half);
-  $optR = array_slice($allOptions, $half);
+/* ===== MAX OPTIES BEPERKEN ===== */
+$maxOptions = 18;
+$shownOptions = array_slice($allOptions, 0, $maxOptions);
+$extraCount = max(0, count($allOptions) - $maxOptions);
+
+/* ===== SPLIT IN 2 KOLOMMEN ===== */
+$half = (int) ceil(count($shownOptions) / 2);
+$optL = array_slice($shownOptions, 0, $half);
+$optR = array_slice($shownOptions, $half);
 
   $prijs = !empty($occasion->prijs) ? '€ '.number_format($occasion->prijs, 0, ',', '.').',-' : '€ -';
 @endphp
@@ -240,6 +246,12 @@ ul.bullets li{ margin:0 0 6px 0; }
           </td>
         </tr>
       </table>
+
+      @if($extraCount > 0)
+  <div style="margin-top:10px; font-size:12px;">
+    + {{ $extraCount }} extra opties (zie website)
+  </div>
+@endif
     </div>
 
   </div>
