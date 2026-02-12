@@ -21,11 +21,8 @@
     height:75px;
     padding:0 22px;
   }
-  .topbar img{
-    height:44px;
-    margin-top:16px;
-    display:block;
-  }
+.topbar img{ height:56px; margin-top:10px; }
+
 
   /* ===== HERO ===== */
   .hero{
@@ -41,7 +38,7 @@
     font-weight:700;
     margin:0;
   }
-  .hero-title .ing{ color:var(--yellow); }
+.hero-title .ing{ color:#111; }
 
   .line-wrap{
     position:relative;
@@ -69,6 +66,7 @@
     display:inline-block;
     background:var(--yellow);
     color:#000;
+    font-weight:700;
     padding:8px 22px;
     font-size:13px;
     letter-spacing:1px;
@@ -82,6 +80,7 @@ table.grid {
 }
   td.cell{
     width:50%;
+    padding:5px;
     vertical-align:top;
   }
 
@@ -279,12 +278,12 @@ table.grid {
           <td>
             <div class="phone">
               <img src="{{ public_path('assets/phone-call (6).svg') }}" height="18" alt="">
-              0525 - 686 040
+              +31 6 38257987
             </div>
 
             <div class="domain">GERRITSENAUTOMOTIVE.NL</div>
 
-            <div class="address">Roggenstraat 1 • 8081 JN • Elburg</div>
+            <div class="address">Gelderse Rooslaan 14 A, 6841 BE Arnhem</div>
           </td>
           <td class="rdw">
             <img src="{{ public_path('assets/rdw.svg') }}" height="46" alt="RDW">
