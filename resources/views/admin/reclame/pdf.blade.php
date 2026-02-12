@@ -8,284 +8,290 @@
   @page { margin:0; }
   body { margin:0; padding:0; }
 
+  :root{
+    --yellow:#f4b400;
+    --border:#d9d9d9;
+  }
+
+  .page{ padding:0; }
+
+  /* ===== TOPBAR ===== */
   .topbar{
     background:#0e0e0e;
     height:75px;
-    padding-left:22px;
+    padding:0 22px;
   }
-  .topbar img{ height:44px; margin-top:16px; }
+  .topbar img{
+    height:44px;
+    margin-top:16px;
+    display:block;
+  }
 
+  /* ===== HERO ===== */
   .hero{
     background:#fff;
-    padding: 26px 0 20px;
+    padding: 22px 22px 16px;
   }
 
-.hero-title{
-  text-align:center;
-  font-size:46px;
-  letter-spacing:2px;
-  color:#111;
-  font-weight:700; /* 👈 maakt WEKENAANBIEDING! dik */
-}
-  .hero-title .ing{ color:#f4b400; }
+  .hero-title{
+    text-align:center;
+    font-size:54px;
+    letter-spacing:2px;
+    color:#111;
+    font-weight:700;
+    margin:0;
+  }
+  .hero-title .ing{ color:var(--yellow); }
 
-  /* lijn + pill */
   .line-wrap{
     position:relative;
     height:32px;
-    margin-top:18px;
+    margin-top:12px;
   }
-
-  /* doorlopende lijn (achter) */
   .line-wrap .line{
     position:absolute;
     left:0;
     right:0;
-    top:16px;        /* geen transform */
+    top:16px;
     height:2px;
     background:#111;
+    opacity:.55;
     z-index:1;
   }
-
-  /* pill exact gecentreerd via table */
   .pill-table{
     width:100%;
     border-collapse:collapse;
     position:relative;
     z-index:2;
   }
-  .pill-table td{
-    text-align:center;
-    padding:0;
-  }
+  .pill-table td{ text-align:center; padding:0; }
   .pill{
     display:inline-block;
-    background:#f4b400;
+    background:var(--yellow);
     color:#000;
-    padding:7px 18px;
-    font-size:12px;
+    padding:8px 22px;
+    font-size:13px;
     letter-spacing:1px;
     text-transform:uppercase;
   }
 
-/* ===== TITLE ===== */
-.title {
-  text-align: center;
-  margin: 18px 0 6px;
-  font-size: 32px;
-}
-
-.subtitle {
-  text-align: center;
-  background: var(--green);
-  color: #fff;
-  display: inline-block;
-  padding: 6px 16px;
-  margin: 0 auto 20px;
-}
-
-/* ===== GRID ===== */
+  /* ===== GRID (2x2) ===== */
 table.grid {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 16px;
+  border-collapse: collapse;
+  padding: 0 22px;
 }
+  td.cell{
+    width:50%;
+    vertical-align:top;
+  }
 
-td.cell {
-  width: 50%;
-  vertical-align: top;
-}
+  /* ===== CARD ===== */
+  .card{
+    border:1px solid var(--border);
+    border-radius:12px;
+    overflow:hidden;
+    background:#fff;
+  }
 
-/* ===== CARD ===== */
-.card {
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  overflow: hidden;
-  background: #fff;
-}
+  .card-img{
+    height:190px;
+    overflow:hidden;
+    background:#eee;
+  }
+  .card-img img{
+    width:100%;
+    height:auto;
+    display:block;
+    margin-top:-22px; /* foto iets omhoog zoals voorbeeld */
+  }
 
-/* IMAGE */
-.card-img {
-  height: 190px;
-  overflow: hidden;
-  background: #000;
-}
+  .card-body{
+    padding: 12px 12px 10px;
+  }
 
-.card-img img {
-  width: 100%;
-  height: auto;
-  display: block;
-  margin-top: -25px; /* 👈 schuift foto omhoog */
-}
+  .car-title{
+    font-size:22px;
+    font-weight:700;
+    margin:0 0 4px 0;
+    line-height:1.05;
+  }
 
-/* BODY */
-.card-body {
-  padding: 12px;
-}
+  .car-meta{
+    color:#666;
+    font-size:13px;
+    margin:0 0 10px 0;
+  }
 
-.car-title {
-  font-size: 13px;
-  margin-bottom: 4px;
-}
+  .year{
+    display:inline-block;
+    background:var(--yellow);
+    color:#000;
+    padding:5px 10px;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.5px;
+    text-transform:uppercase;
+  }
 
-.car-meta {
-  color: #666;
-  margin-bottom: 8px;
-}
+  .price{
+    float:right;
+    font-size:26px;
+    font-weight:700;
+    color:#111;
+    white-space:nowrap;
+  }
 
-.year {
-  display: inline-block;
-  background: var(--green);
-  color: #fff;
-  padding: 3px 8px;
-  font-size: 11px;
-}
+  /* clearfix */
+  .row-clear{ clear:both; height:1px; }
 
-.price {
-  float: right;
-  font-size: 18px;
-  color: var(--green);
-}
+  /* ===== FOOTER ===== */
+  .footer{
+    margin-top: 6px;
+    padding: 0 22px 18px 22px;
+  }
+  .footer-inner{
+    border-top:1px solid var(--border);
+    padding-top:14px;
+  }
 
-/* ===== FOOTER ===== */
-.footer {
-  margin-top: 22px;
-  border-top: 1px solid var(--border);
-  padding-top: 14px;
-}
+  table.footer-table{ width:100%; border-collapse:collapse; }
+  .phone{
+    font-size:28px;
+    font-weight:700;
+    color:#111;
+    margin-bottom:10px;
+  }
+  .phone img{ vertical-align:middle; margin-right:8px; }
 
-.footer-table {
-  width: 100%;
-}
+  .domain{
+    background:#0e0e0e;
+    color:#fff;
+    display:inline-block;
+    padding:8px 16px;
+    font-weight:700;
+    letter-spacing:.8px;
+    margin: 2px 0 10px 0;
+  }
 
-.phone {
-  font-size: 18px;
-}
+  .address{
+    color:#666;
+    font-size:13px;
+  }
 
-.domain {
-  background: #000;
-  color: #fff;
-  display: inline-block;
-  padding: 6px 14px;
-  margin: 6px 0;
-}
-
-.address {
-  color: #666;
-}
-
-.rdw {
-  text-align: right;
-}
+  .rdw{ text-align:right; }
 </style>
 </head>
 
 <body>
 @php
-function photo($o) {
-  if (!$o->hoofdfoto_path) return null;
-  $p = public_path('storage/'.$o->hoofdfoto_path);
-  if (!file_exists($p)) return null;
-  $type = pathinfo($p, PATHINFO_EXTENSION);
-  return 'data:image/'.$type.';base64,'.base64_encode(file_get_contents($p));
-}
+  function photo($o) {
+    if (!$o || !$o->hoofdfoto_path) return null;
+    $p = public_path('storage/'.$o->hoofdfoto_path);
+    if (!file_exists($p)) return null;
+    $type = strtolower(pathinfo($p, PATHINFO_EXTENSION));
+    $mime = $type === 'jpg' ? 'jpeg' : $type;
+    return 'data:image/'.$mime.';base64,'.base64_encode(file_get_contents($p));
+  }
 
-$items = $reclame->items->pluck('occasion')->take(4);
-while ($items->count() < 4) $items->push(null);
+  $items = $reclame->items->pluck('occasion')->take(4);
+  while ($items->count() < 4) $items->push(null);
 @endphp
 
 <div class="page">
 
-<div class="topbar">
-  <img src="{{ public_path('assets/gerritsen-logo-white.png') }}" alt="Gerritsen">
-</div>
-
-<div class="hero">
-  <div class="hero-title">
-    WEKENAANBIED<span class="ing">ING!</span>
+  <div class="topbar">
+    <img src="{{ public_path('assets/gerritsen-logo-white.png') }}" alt="Gerritsen">
   </div>
 
-  <div class="line-wrap">
-    <div class="line"></div>
+  <div class="hero">
+    <h1 class="hero-title">
+      WEEKAANBIED<span class="ing">ING!</span>
+    </h1>
 
-    <table class="pill-table">
-      <tr>
-        <td>
-          <span class="pill">{{ strtoupper($reclame->subtitle ?? 'ALLEEN DEZE WEEK SCHERP GEPRIJSD!') }}</span>
-        </td>
-      </tr>
-    </table>
+    <div class="line-wrap">
+      <div class="line"></div>
+      <table class="pill-table">
+        <tr>
+          <td>
+            <span class="pill">{{ strtoupper($reclame->subtitle ?? 'ALLEEN DEZE WEEK GELDIG') }}</span>
+          </td>
+        </tr>
+      </table>
+    </div>
   </div>
-</div>
-
-</div>
 
   {{-- GRID --}}
   <table class="grid">
     <tr>
       @for($i=0;$i<2;$i++)
-      @php $o = $items[$i]; @endphp
-      <td class="cell">
-        @if($o)
-        <div class="card">
-          <div class="card-img">
-            @if($img = photo($o))
-              <img src="{{ $img }}">
-            @endif
-          </div>
-          <div class="card-body">
-            <div class="car-title">{{ $o->merk }} {{ $o->model }} {{ $o->type }}</div>
-            <div class="car-meta">{{ $o->bouwjaar }} • {{ number_format($o->tellerstand,0,',','.') }} km</div>
-            <span class="year">JAAR {{ $o->bouwjaar }}</span>
-            <span class="price">€ {{ number_format($o->prijs,0,',','.') }},-</span>
-          </div>
-        </div>
-        @endif
-      </td>
+        @php $o = $items[$i]; @endphp
+        <td class="cell">
+          @if($o)
+            <div class="card">
+              <div class="card-img">
+                @if($img = photo($o))
+                  <img src="{{ $img }}" alt="">
+                @endif
+              </div>
+              <div class="card-body">
+                <div class="car-title">{{ trim($o->merk.' '.$o->model) }}</div>
+                <div class="car-meta">{{ $o->bouwjaar }} • {{ number_format($o->tellerstand,0,',','.') }} km</div>
+                <span class="year">JAAR {{ $o->bouwjaar }}</span>
+                <span class="price">€ {{ number_format($o->prijs,0,',','.') }},-</span>
+                <div class="row-clear"></div>
+              </div>
+            </div>
+          @endif
+        </td>
       @endfor
     </tr>
 
     <tr>
       @for($i=2;$i<4;$i++)
-      @php $o = $items[$i]; @endphp
-      <td class="cell">
-        @if($o)
-        <div class="card">
-          <div class="card-img">
-            @if($img = photo($o))
-              <img src="{{ $img }}">
-            @endif
-          </div>
-          <div class="card-body">
-            <div class="car-title">{{ $o->merk }} {{ $o->model }} {{ $o->type }}</div>
-            <div class="car-meta">{{ $o->bouwjaar }} • {{ number_format($o->tellerstand,0,',','.') }} km</div>
-            <span class="year">JAAR {{ $o->bouwjaar }}</span>
-            <span class="price">€ {{ number_format($o->prijs,0,',','.') }},-</span>
-          </div>
-        </div>
-        @endif
-      </td>
+        @php $o = $items[$i]; @endphp
+        <td class="cell">
+          @if($o)
+            <div class="card">
+              <div class="card-img">
+                @if($img = photo($o))
+                  <img src="{{ $img }}" alt="">
+                @endif
+              </div>
+              <div class="card-body">
+                <div class="car-title">{{ trim($o->merk.' '.$o->model) }}</div>
+                <div class="car-meta">{{ $o->bouwjaar }} • {{ number_format($o->tellerstand,0,',','.') }} km</div>
+                <span class="year">JAAR {{ $o->bouwjaar }}</span>
+                <span class="price">€ {{ number_format($o->prijs,0,',','.') }},-</span>
+                <div class="row-clear"></div>
+              </div>
+            </div>
+          @endif
+        </td>
       @endfor
     </tr>
   </table>
 
   {{-- FOOTER --}}
   <div class="footer">
-    <table class="footer-table">
-      <tr>
-        <td>
-          <div class="phone">
-            <img src="{{ public_path('assets/phone-call (6).svg') }}" height="16">
-            +31 6 38257987
-          </div>
-          <div class="domain">GERRITSENAUTOMOTIVE.NL</div>
-          <div class="address">Roggenstraat 1 • 8081 JN • Elburg</div>
-        </td>
-        <td class="rdw">
-          <img src="{{ public_path('assets/rdw.svg') }}" height="42">
-        </td>
-      </tr>
-    </table>
+    <div class="footer-inner">
+      <table class="footer-table">
+        <tr>
+          <td>
+            <div class="phone">
+              <img src="{{ public_path('assets/phone-call (6).svg') }}" height="18" alt="">
+              0525 - 686 040
+            </div>
+
+            <div class="domain">GERRITSENAUTOMOTIVE.NL</div>
+
+            <div class="address">Roggenstraat 1 • 8081 JN • Elburg</div>
+          </td>
+          <td class="rdw">
+            <img src="{{ public_path('assets/rdw.svg') }}" height="46" alt="RDW">
+          </td>
+        </tr>
+      </table>
+    </div>
   </div>
 
 </div>
