@@ -15,7 +15,7 @@ class OccasionPdfController extends Controller
        public function raamkaart(Occasion $occasion)
     {
         // LOGO (zet logo in public/assets/gerritsen-logo.png)
-        $logo = public_path('assets/gerritsen-logo.png');
+        $logo = public_path('assets/gerritsen-logo-white.png');
 
         // TITEL
         $titel = trim(($occasion->merk ?? '') . ' ' . ($occasion->model ?? '') . ' ' . ($occasion->type ?? ''));

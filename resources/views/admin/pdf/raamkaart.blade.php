@@ -1,94 +1,76 @@
-
 <!doctype html>
 <html lang="nl">
 <head>
-  <meta charset="utf-8">
-  <title>Raamkaart</title>
+<meta charset="utf-8">
+<title>Raamkaart</title>
 
-  <style>
-*{
-  font-family: DejaVu Sans, Arial, Helvetica, sans-serif !important;
-}
+<style>
+* { font-family: DejaVu Sans, Arial, Helvetica, sans-serif !important; }
 
 @page { margin: 0; }
+body { margin:0; padding:0; font-size: 13px; color:#111; }
 
-body{
-  margin:0;
-  padding:0;
-  font-family: DejaVu Sans, sans-serif;
-  font-size: 13px;
+.sheet{
+  width: 794px;
+  height: 1123px;
+  background:#fff;
+  position: relative;
 }
-
-h1, h2, h3, h4, h5,
-.title-under-logo,
-.price,
-.footer .cta,
-.footer .phone{
-  font-family: DejaVu Sans, Arial, Helvetica, sans-serif;
-}
-
-:root{
-  --blue:#2b7ea0;
-  --line:#cfd6dc;
-  --muted:#606a73;
-}
-
-.page{
-  padding: 34px 44px;
-}
-
-.sp1{ height: 14px; }
-.sp2{ height: 22px; }
-.sp3{ height: 34px; }
-
-.line{ border-top:1px solid var(--line); }
 
 /* ===== HEADER ===== */
 .header{
-  text-align:right;
+  background:#0b0b0b;
+  color:#fff;
+  padding: 18px 26px;
 }
-.logo img{
-  width: 180px;
-  height:auto;
-  opacity:.28;
-}
-
-.title-under-logo{
-  margin-top: 40px;
-  font-weight: 700;
-  text-align: left;
-  color: var(--blue);
-  text-transform: uppercase;
-  letter-spacing: .2px;
-  line-height: 1.15;
-  font-size: 40px;
-}
-
-/* ===== FOTO + INFO ===== */
-.top{
+.headerTable{
   width:100%;
   border-collapse:collapse;
-  table-layout: fixed;
-  
 }
-.leftCol{
-  width: 340px;
-  vertical-align: top;
+.headerLeft{ width:50%; vertical-align:middle; }
+.headerRight{ width:50%; vertical-align:middle; text-align:right; font-size:16px; }
+
+
+
+.logo img{
+  height:60px !important;
+  width:auto !important;
+  max-height:60px !important;
 }
-.rightCol{
-  vertical-align: top;
-  padding-left: 28px;
+/* ===== CONTENT ===== */
+.content{
+  padding: 18px 26px 0 26px;
 }
 
+.title{
+  text-align:center;
+  font-size:34px;
+  letter-spacing:.6px;
+  margin:8px 0 18px 0;
+  font-weight:700;
+
+}
+
+.topTable{
+  width:100%;
+  border-collapse:collapse;
+  table-layout:fixed;
+}
+
+.photoCol{
+  width:44%;
+}
+
+.specCol{
+  width:44%;
+  padding-left:12%;
+}
 .photoFrame{
-  width: 340px;
-  height: 210px;
-  border: 1px solid var(--line);
-  background:#fff;
-  overflow:hidden;
+  border:none;
+  padding:0;
 }
 .photoFrame img{
-  width: 340px;
+  width:100%;
   height:auto;
   display:block;
 }
@@ -96,111 +78,79 @@ h1, h2, h3, h4, h5,
 .specs{
   width:100%;
   border-collapse:collapse;
-  margin-top: 2px;
-  font-size: 13px;
+  font-size:13px;
+  margin-top:4px;
 }
 .specs td{
-  padding: 7px 0;
-  vertical-align: top;
+  padding:6px 0;
+  vertical-align:top;
 }
-.specs td.label{
-  width: 160px;
-  color:#222;
-}
-.specs td.value{
-  color:#222;
-}
+.specs .label{ width:55%; }
+.specs .value{ width:45%; text-align:right; }
 
-/* ===== PRIJS ===== */
+/* ===== PRICE ===== */
 .price{
-  font-size: 40px;
-  color: var(--blue);
-  letter-spacing: .2px;
+  font-size:34px;
+  margin:30px 0 30px 0;
   font-weight: 700;
 }
-.price .label{
-  margin-right: 10px;
+
+/* ===== OPTIONS ===== */
+.optsWrap{ margin-top:18px; }
+
+.optsTitle{
+  font-size:13px;
+  margin-bottom:10px;
 }
 
-/* ===== OPTIES ===== */
-.optsTitle{
-  margin-bottom: 8px;
-  color:#222;
-}
-.opts{
+.optsTable{
   width:100%;
   border-collapse:collapse;
-  table-layout: fixed;
+  table-layout:fixed;
 }
-.opts td{
-  vertical-align: top;
-  width:50%;
-}
-.opts td.colL{ padding-right: 22px; }
-.opts td.colR{ padding-left: 22px; }
+.optsTable td{ width:50%; vertical-align:top; }
+.optsTable .colL{ padding-right:20px; }
+.optsTable .colR{ padding-left:20px; }
 
-.bullets{
+ul.bullets{
   margin:0;
-  padding-left: 18px;
-  line-height: 1.9;
-  font-size: 13px;
+  padding-left:18px;
+  line-height:1.8;
+  font-size:13px;
 }
-.bullets li{ margin:0; }
+ul.bullets li{ margin:0 0 6px 0; }
 
 /* ===== FOOTER ===== */
 .footer{
-  font-weight: 700;
+  position:absolute;
+  bottom:0;
+  left:0;
+  right:0;
+  padding:24px 26px 30px 26px;
   text-align:center;
-  margin-top: 18px;
-}
-.footer .cta{
-    font-weight: 700;
-  color:#222;
-  margin: 4px 0;
-}
-.footer .ctaBlue{
-     font-weight: 700;
-  color: var(--blue);
-  letter-spacing: .2px;
+  font-size:16px;
+  font-weight:700;
 }
 .footer .phone{
-     font-weight: 700;
-  font-size: 28px;
-  color: var(--blue);
-  margin: 6px 0 4px;
+  font-size:20px;
+  margin:6px 0 10px 0;
 }
-.footer .web{
-     font-weight: 700;
-  font-size: 18px;
-  color:#2f3b45;
-  margin: 6px 0 6px;
+.footer .tagline{
+  margin-top:8px;
 }
-.footer .slogan{
-     font-weight: 700;
-  color:#222;
-  margin-top: 14px;
-}
-
-.bottomPad{ height: 10px; }
-  </style>
+</style>
 </head>
-
 
 <body>
 @php
-  // Bouw titel in 2 regels zoals jij wil:
   $line1 = strtoupper(trim(($occasion->merk ?? '').' '.($occasion->model ?? '')));
   $line2 = strtoupper(trim(($occasion->type ?? '')));
-
-  // specifieke wens: "MERCEDES-BENZ C-KLASSE" en "CABRIO 63 S AMG" (dus type op 2e regel)
-  // (merk+model staat al op regel 1, type op regel 2)
 
   $km = !empty($occasion->tellerstand) ? number_format($occasion->tellerstand,0,',','.').' km' : '-';
   $pk = $occasion->vermogen_pk ?? $occasion->pk ?? null;
   $pk = !empty($pk) ? $pk.' pk' : '-';
   $apk = $occasion->apk_tot ? \Carbon\Carbon::parse($occasion->apk_tot)->format('d-m-Y') : '-';
 
-  // Combineer alle opties (4 velden) tot 1 lijst
   $allOptions = [];
   foreach (['exterieur_options','interieur_options','veiligheid_options','overige_options'] as $f) {
     $arr = $occasion->{$f} ?? [];
@@ -209,130 +159,100 @@ h1, h2, h3, h4, h5,
   }
   $allOptions = array_values(array_filter(array_map('trim', $allOptions)));
 
-  // Split opties netjes in 2 kolommen
   $half = (int) ceil(count($allOptions) / 2);
   $optL = array_slice($allOptions, 0, $half);
   $optR = array_slice($allOptions, $half);
+
+  $prijs = !empty($occasion->prijs) ? '€ '.number_format($occasion->prijs, 0, ',', '.').',-' : '€ -';
 @endphp
 
-<div class="page">
+<div class="sheet">
 
-
-  {{-- LOGO (rechtsboven) --}}
   <div class="header">
-    @if(!empty($logo) && file_exists($logo))
-      <div class="logo">
-        <img src="{{ $logo }}" alt="Gerritsen Automotive">
-      </div>
-    @endif
-
-    {{-- Blauwe titel ONDER het logo --}}
-    <div class="title-under-logo">
-      {{ $line1 ?: 'OCCASION' }}<br>
-      {{ $line2 ?: '' }}
+    <table class="headerTable">
+      <tr>
+<td class="headerLeft">
+  @if(!empty($logo) && file_exists($logo))
+    <div class="logo">
+      <img src="{{ $logo }}" alt="Gerritsen Automotive">
     </div>
+  @endif
+</td>
+        <td class="headerRight">
+          www.gerritsenautomotive.nl
+        </td>
+      </tr>
+    </table>
   </div>
 
-  <div class="sp2"></div>
+  <div class="content">
 
-  {{-- FOTO LINKS + INFO RECHTS --}}
-  <table class="top">
-    <tr>
-      <td class="leftCol">
-        <div class="photoFrame">
-@if(!empty($photoDataUri))
-  <img src="{{ $photoDataUri }}" alt="Occasion foto">
-@endif
-        </div>
-      </td>
+    <div class="title">
+      {{ $line1 ?: 'OCCASION' }} {{ $line2 ? ' '.$line2 : '' }}
+    </div>
 
-      <td class="rightCol">
-        <table class="specs">
-          <tr><td class="label">Kenteken:</td><td class="value">{{ $occasion->kenteken ?? '-' }}</td></tr>
-          <tr><td class="label">Bouwjaar:</td><td class="value">{{ $occasion->bouwjaar ?? '-' }}</td></tr>
-          <tr><td class="label">Gewicht:</td><td class="value">{{ !empty($occasion->gewicht) ? $occasion->gewicht.' KG' : '-' }}</td></tr>
-          <tr><td class="label">Vermogen:</td><td class="value">{{ $pk }}</td></tr>
-          <tr><td class="label">Brandstof:</td><td class="value">{{ $occasion->brandstof ?? '-' }}</td></tr>
-          <tr><td class="label">Kleur:</td><td class="value">{{ $occasion->kleur ?? '-' }}</td></tr>
-          <tr><td class="label">Kilometerstand:</td><td class="value">{{ $km }}</td></tr>
-          <tr><td class="label">Transmissie:</td><td class="value">{{ $occasion->transmissie ?? '-' }}</td></tr>
-          <tr><td class="label">APK:</td><td class="value">{{ $apk }}</td></tr>
-        </table>
-      </td>
-    </tr>
-  </table>
+    <table class="topTable">
+      <tr>
+        <td class="photoCol">
+          <div class="photoFrame">
+            @if(!empty($photoDataUri))
+              <img src="{{ $photoDataUri }}" alt="Occasion foto">
+            @endif
+          </div>
+        </td>
 
-  <div class="sp3"></div>
+        <td class="specCol">
+          <table class="specs">
+            <tr><td class="label">Kenteken:</td><td class="value">{{ $occasion->kenteken ?? '-' }}</td></tr>
+            <tr><td class="label">Bouwjaar:</td><td class="value">{{ $occasion->bouwjaar ?? '-' }}</td></tr>
+            <tr><td class="label">Gewicht:</td><td class="value">{{ !empty($occasion->gewicht) ? $occasion->gewicht.' KG' : '-' }}</td></tr>
+            <tr><td class="label">Vermogen:</td><td class="value">{{ $pk }}</td></tr>
+            <tr><td class="label">Brandstof:</td><td class="value">{{ $occasion->brandstof ?? '-' }}</td></tr>
+            <tr><td class="label">Kleur:</td><td class="value">{{ $occasion->kleur ?? '-' }}</td></tr>
+            <tr><td class="label">Kilometerstand:</td><td class="value">{{ $km }}</td></tr>
+            <tr><td class="label">Transmissie:</td><td class="value">{{ $occasion->transmissie ?? '-' }}</td></tr>
+            <tr><td class="label">APK:</td><td class="value">{{ $apk }}</td></tr>
+          </table>
+        </td>
+      </tr>
+    </table>
 
-  {{-- VRAAGPRIJS --}}
-  <div class="price">
-    <span class="label">Vraagprijs:</span>
-    € {{ number_format($occasion->prijs ?? 0, 0, ',', '.') }},-
+    <div class="price">
+      Vraagprijs: {{ $prijs }}
+    </div>
+
+    <div class="optsWrap">
+      <div class="optsTitle">Opties:</div>
+      <table class="optsTable">
+        <tr>
+          <td class="colL">
+            <ul class="bullets">
+              @foreach($optL as $o)
+                <li>{{ $o }}</li>
+              @endforeach
+            </ul>
+          </td>
+          <td class="colR">
+            <ul class="bullets">
+              @foreach($optR as $o)
+                <li>{{ $o }}</li>
+              @endforeach
+            </ul>
+          </td>
+        </tr>
+      </table>
+    </div>
+
   </div>
 
-  <div class="sp1"></div>
-  <div class="line"></div>
-
-  <div class="sp2"></div>
-
-  $photoDataUri = null;
-
-if ($occasion->hoofdfoto_path) {
-    $abs = public_path('storage/'.$occasion->hoofdfoto_path);
-
-    if (file_exists($abs)) {
-        $type = pathinfo($abs, PATHINFO_EXTENSION);
-        $data = file_get_contents($abs);
-        $photoDataUri = 'data:image/'.$type.';base64,'.base64_encode($data);
-    }
-}
-
-  {{-- OPTIES --}}
-  <div class="optsTitle">Opties:</div>
-
-  <table class="opts">
-    <tr>
-      <td class="colL">
-        <ul class="bullets">
-          @if(count($optL))
-            @foreach($optL as $o)
-              <li>{{ $o }}</li>
-            @endforeach
-          @else
-            <li>-</li>
-          @endif
-        </ul>
-      </td>
-      <td class="colR">
-        <ul class="bullets">
-          @foreach($optR as $o)
-            <li>{{ $o }}</li>
-          @endforeach
-        </ul>
-      </td>
-    </tr>
-  </table>
-
-  <div class="sp3"></div>
-
-  {{-- STREEP ONDER OPTIES --}}
-  <div class="line"></div>
-
-  <div class="sp2"></div>
-
-  {{-- FOOTER GECENTREERD --}}
   <div class="footer">
-    <div class="cta">INTERESSE IN DEZE TOP AUTO? NEEM GERUST CONTACT OP MET ONS!</div>
-    <div class="cta">WIJ ZIJN BEREIKBAAR OP</div>
+    <div>INTERESSE IN DEZE TOP AUTO? NEEM GERUST CONTACT OP MET ONS!</div>
+    <div>WIJ ZIJN BEREIKBAAR OP</div>
     <div class="phone">+31 6 49951874</div>
-    <div class="web">www.gerritsenautomotive.nl</div>
-
-    <div class="sp2"></div>
-
-    <div class="slogan">Gerritsen Automotive - Dat is fijn zaken doen!</div>
+    <div>www.gerritsenautomotive.nl</div>
+    <div class="tagline">Gerritsen Automotive - Dat is fijn zaken doen!</div>
   </div>
 
-  <div class="bottomPad"></div>
 </div>
 
 </body>
