@@ -159,7 +159,7 @@ ul.bullets li{ margin:0 0 6px 0; }
  $allOptions = array_values(array_filter(array_map('trim', $allOptions)));
 
 /* ===== MAX OPTIES BEPERKEN ===== */
-$maxOptions = 18;
+$maxOptions = 16;
 $shownOptions = array_slice($allOptions, 0, $maxOptions);
 $extraCount = max(0, count($allOptions) - $maxOptions);
 
