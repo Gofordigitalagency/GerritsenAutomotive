@@ -279,7 +279,7 @@ table.grid {
               <div class="card-body">
                 <div class="car-title">{{ trim($o->merk.' '.$o->model) }}</div>
                 <div class="car-meta">{{ $o->bouwjaar }} • {{ number_format($o->tellerstand,0,',','.') }} km • {{ $o->brandstof ?? '-' }} • {{ $o->transmissie ?? '-' }}</div>
-                <span class="year">JAAR {{ $o->bouwjaar }}</span>
+                <span class="year">BOUWJAAR {{ $o->bouwjaar }}</span>
                 <span class="price">€ {{ number_format($o->prijs,0,',','.') }},-</span>
                 <div class="row-clear"></div>
               </div>
