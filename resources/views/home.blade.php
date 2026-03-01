@@ -351,7 +351,78 @@
   </div>
 </div>
 
+<section class="ga-rental-section">
+    <div class="ga-container">
+        <div class="ga-rental-content">
 
+          <div class="ga-rental-text">
+    <div class="ga-price-badge">Vanaf €35 per dag</div>
+
+    <h2>Toyota Aygo Premium Edition</h2>
+
+    <p>
+        Compact rijden. Premium gevoel.
+    </p>
+
+    <div class="ga-columns">
+
+        <div class="ga-column">
+            <h3>Uitrusting & Comfort</h3>
+            <ul class="ga-benefits">
+                <li>✔ Apple CarPlay</li>
+                <li>✔ Lederen interieur</li>
+                <li>✔ Airco</li>
+                <li>✔ 5-deurs comfort</li>
+                <li>✔ Elektrische ramen</li>
+                <li>✔ Handgeschakeld</li>
+                <li>✔ Zuinig in verbruik</li>
+                <li>✔ Onbeperkte KM</li>
+            </ul>
+        </div>
+
+    </div>
+<p class="ga-location">
+    Direct beschikbaar in Arnhem
+</p>
+<p class="ga-voorwaarden-link" onclick="openVoorwaarden()">
+    Bekijk huurvoorwaarden
+</p>
+
+    <div class="ga-buttons">
+        <a href="#contact" class="ga-btn-main">Reserveer Nu</a>
+        <a href="tel: +31649951874" class="ga-btn-ghost">Bel Direct</a>
+    </div>
+</div>
+
+            <!-- IMAGE SLIDER -->
+            <div class="ga-slider">
+                <div class="ga-slides"  id="gaSlides">
+                <img src="{{ asset('images/WhatsApp Image 2026-02-25 at 08.05.40.jpeg') }}" alt="Handdruk">
+                <img src="{{ asset('images/WhatsApp Image 2026-02-25 at 08.05.41 (1).jpeg') }}" alt="Handdruk">
+                <img src="{{ asset('images/WhatsApp Image 2026-02-25 at 08.05.41 (2).jpeg') }}" alt="Handdruk">
+                <img src="{{ asset('images/WhatsApp Image 2026-02-25 at 08.05.41 (3).jpeg') }}" alt="Handdruk">
+                <img src="{{ asset('images/WhatsApp Image 2026-02-25 at 08.05.41 (4).jpeg') }}" alt="Handdruk">
+                <img src="{{ asset('images/WhatsApp Image 2026-02-25 at 08.05.41 (5).jpeg') }}" alt="Handdruk">
+                <img src="{{ asset('images/WhatsApp Image 2026-02-25 at 08.05.41.jpeg') }}" alt="Handdruk">
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+<div class="ga-modal-overlay" id="gaVoorwaardenModal">
+    <div class="ga-modal">
+        <span class="ga-modal-close" onclick="closeVoorwaarden()">×</span>
+        <h3>Huurvoorwaarden</h3>
+        <ul>
+            <li>Borg €250</li>
+            <li>Eigen risico €500</li>
+            <li>Volgetankt retour</li>
+            <li>Niet roken</li>
+            <li>Gebruik uitsluitend voor legale doeleinden</li>
+        </ul>
+    </div>
+</div>
 
 
 
@@ -593,6 +664,286 @@
 
 
 <style>
+
+  .ga-benefits {
+    list-style: none;
+    margin-bottom: 35px;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 kolommen */
+    gap: 10px 30px; /* verticale en horizontale ruimte tussen items */
+}
+
+.ga-benefits li {
+    margin-bottom: 0; /* margin niet nodig meer per item */
+}
+
+ .ga-rental-section {
+    background: #0f0f0f;
+    padding: 100px 20px;
+    color: #fff;
+}
+
+.ga-container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.ga-rental-content {
+    display: flex;
+    align-items: stretch; /* BELANGRIJK */
+    justify-content: space-between;
+    gap: 60px;
+    flex-wrap: wrap;
+}
+
+/* TEXT */
+.ga-rental-text {
+    flex: 1;
+}
+
+.ga-price-badge {
+    display: inline-block;
+    background: #1c1c1c;
+    padding: 10px 18px;
+    margin-bottom: 20px;
+    border: 1px solid #747474;
+    font-size: 18px;
+    color: #fff;
+}
+
+.ga-rental-text h2 {
+    font-size: 42px;
+    margin-bottom: 20px;
+    color: #fff;
+}
+
+.ga-rental-text p {
+    font-size: 18px;
+    line-height: 1.7;
+    margin-bottom: 25px;
+    color: #fff;
+}
+
+.ga-benefits{
+  list-style: none;
+  padding: 0;
+  margin: 0 0 35px 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 30px;
+}
+
+.ga-benefits li{
+  margin: 0;
+  text-align: left;
+}
+
+/* BUTTONS */
+.ga-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 0;  /* dit haalt de extra gap weg */
+}
+
+.ga-btn-main {
+    background: #747474;
+    color: #fff;
+    padding: 14px 30px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.3s ease;
+}
+
+.ga-btn-main:hover {
+    background: #5e5e5e;
+    transform: translateY(-3px);
+}
+
+.ga-btn-ghost {
+    border: 2px solid #747474;
+    color: #fff;
+    padding: 14px 30px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.3s ease;
+}
+
+.ga-btn-ghost:hover {
+    background: #747474;
+}
+
+/* Slider container */
+.ga-slider {
+    flex: 1;
+    max-width: 580px;
+    height: 580px;
+    overflow: hidden;
+    border-radius: 15px;
+    position: relative;
+}
+
+.ga-slides {
+    display: flex;
+    height: 100%;
+    transition: transform 0.6s ease-in-out;
+}
+
+.ga-slides img {
+    min-width: 100%;   /* 👈 HEEL BELANGRIJK */
+    height: 100%;
+    object-fit: cover;
+}
+
+.ga-columns {
+    display: flex;
+    gap: 40px;
+    margin: 30px 0;
+    flex-wrap: wrap;
+}
+
+.ga-column {
+    flex: 1;
+    min-width: 250px;
+}
+
+.ga-column h3 {
+    margin-bottom: 15px;
+    color: #fff;
+    font-size: 18px;
+}
+
+.ga-location {
+    margin-top: 15px;   /* was waarschijnlijk groter */
+    margin-bottom: 4px; /* bijna geen ruimte onder */
+    font-weight: 600;
+    font-size: 16px;
+}
+
+
+
+/* ✅ Mobiel: 1 kolom (geen rare sprongen) + links uitlijnen */
+@media (max-width: 768px){
+    .ga-columns {
+        flex-direction: column;
+    }
+
+     .ga-rental-content {
+        flex-direction: column;
+    }
+
+    .ga-slider {
+        order: 2;          /* 👈 foto onder tekst */
+        max-width: 100%;
+        height: 420px;     /* iets kleiner op mobiel */
+        margin-top: 30px;
+    }
+
+    .ga-rental-text {
+        order: 1;
+    }
+}
+
+
+/* Kleine knop */
+.ga-voorwaarden-link {
+    margin-top: 2px;
+    margin-bottom: 15px;   /* kleine ruimte boven knoppen */
+    font-size: 12px;       /* kleiner */
+    color: #747474;
+    cursor: pointer;
+    transition: 0.3s ease;
+    display: inline-block;
+}
+.ga-voorwaarden-link:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+/* Reset alle spacing in dit blok */
+.ga-rental-text p {
+    margin: 0;
+}
+
+/* Direct beschikbaar */
+.ga-location {
+    margin-top: 12px;
+    margin-bottom: 2px;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+/* Huurvoorwaarden link */
+.ga-voorwaarden-link {
+    margin: 0;
+    font-size: 12px;
+    color: #747474;
+    cursor: pointer;
+    transition: 0.2s ease;
+    display: inline-block;
+}
+
+.ga-voorwaarden-link:hover {
+    color: #fff;
+}
+
+/* Knoppen direct eronder */
+.ga-buttons {
+    margin-top: 12px;
+}
+
+
+/* Modal overlay */
+.ga-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.3s ease;
+    z-index: 9999;
+}
+
+.ga-modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Modal box */
+.ga-modal {
+    background: #111;
+    padding: 40px;
+    border-radius: 12px;
+    max-width: 400px;
+    width: 90%;
+    color: #fff;
+    position: relative;
+}
+
+.ga-modal h3 {
+    margin-bottom: 20px;
+}
+
+.ga-modal ul {
+    list-style: none;
+    padding: 0;
+}
+
+.ga-modal ul li {
+    margin-bottom: 10px;
+}
+
+/* Close button */
+.ga-modal-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 22px;
+    cursor: pointer;
+}
 /* --- basic button trigger --- */
 .btn-sell-open{padding: 10px 20px;;border:none;background:#747474;color:#fff;  font-family: 'Play', sans-serif; font-size:16px; font-weight: bold;}
 
@@ -770,6 +1121,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+
   // (optioneel) bestaand contactModal gedrag — veilig gemaakt
   var modal = document.getElementById('contactModal');
   if (modal) {
@@ -780,6 +1132,26 @@ document.addEventListener('DOMContentLoaded', function () {
     modal.addEventListener('click', function(e){ if(e.target === modal){ closeModal(); } });
     document.addEventListener('keydown', function(e){ if(e.key === 'Escape'){ closeModal(); } });
   }
+
+  window.openVoorwaarden = function() {
+    document.getElementById('gaVoorwaardenModal').classList.add('active');
+}
+
+window.closeVoorwaarden = function() {
+    document.getElementById('gaVoorwaardenModal').classList.remove('active');
+}
+
+  const slides = document.getElementById('gaSlides');
+
+if (slides) {
+    const totalSlides = slides.children.length;
+    let index = 0;
+
+    setInterval(() => {
+        index = (index + 1) % totalSlides;
+        slides.style.transform = `translateX(-${index * 100}%)`;
+    }, 4000);
+}
 
   // ✅ SellCar module
   window.SellCar = (function () {
