@@ -21,8 +21,10 @@ class ReclameController extends Controller
 
     public function create()
     {
-        $occasions = Occasion::orderByDesc('created_at')->limit(200)->get();
-
+$occasions = Occasion::where('model', 'NOT LIKE', '%(VERKOCHT)%')
+    ->orderByDesc('created_at')
+    ->limit(200)
+    ->get();
         return view('admin.reclame.form', [
             'reclame'   => new Reclame(),
             'occasions' => $occasions,
@@ -60,8 +62,10 @@ class ReclameController extends Controller
     public function edit(Reclame $reclame)
     {
         $reclame->load('items.occasion');
-        $occasions = Occasion::orderByDesc('created_at')->limit(200)->get();
-        $selected  = $reclame->items->pluck('occasion_id')->values()->all();
+$occasions = Occasion::where('model', 'NOT LIKE', '%(VERKOCHT)%')
+    ->orderByDesc('created_at')
+    ->limit(200)
+    ->get();        $selected  = $reclame->items->pluck('occasion_id')->values()->all();
 
         return view('admin.reclame.form', compact('reclame','occasions','selected'));
     }

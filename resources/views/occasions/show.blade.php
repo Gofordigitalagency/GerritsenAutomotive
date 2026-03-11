@@ -347,7 +347,7 @@
               @else — @endif
             </span>
           </li>
-          <li><span class="k">Wegenbelasting</span><span class="v"> € {{ $occasion->wegenbelasting_min ?? '—' }}</span></li>
+          <li><span class="k">Wegenbelasting per kwartaal</span><span class="v"> € {{ $occasion->wegenbelasting_min ?? '—' }}</span></li>
         </ul>
       </div>
     </section>

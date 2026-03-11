@@ -160,7 +160,7 @@
     </label>
 
     <label class="input-row">
-      <span>Wegenbelasting min</span>
+      <span>Wegenbelasting per kwartaal</span>
       <input id="wegenbelastingMinInput" name="wegenbelasting_min" value="{{ old('wegenbelasting_min',$occasion->wegenbelasting_min) }}">
     </label>
 
