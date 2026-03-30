@@ -179,8 +179,8 @@ public function edit(Occasion $occasion)
     {
         // Extra check: max aantal + totale MB (zelfde grenzen als StoreOccasionRequest)
         $request->validate([
-            'gallery'   => ['required','array','max:15', new TotalUploadSize(30)], // totaal ≤ 30MB
-            'gallery.*' => ['required','image','mimes:jpg,jpeg,png,webp','max:6144'], // ≤ 6MB per foto
+            'gallery'   => ['required','array','max:15', new TotalUploadSize(50)], // totaal ≤ 50MB
+            'gallery.*' => ['required','file','mimes:jpg,jpeg,png,webp,heic,heif','max:10240'], // ≤ 10MB per foto (iPhone HEIC)
         ]);
 
         $gallery = $occasion->galerij ?? [];

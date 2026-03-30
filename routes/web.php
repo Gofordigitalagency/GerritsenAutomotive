@@ -66,7 +66,7 @@ Route::middleware('auth')->prefix('admin')->as('admin.')->group(function () {
     Route::get('reclame/{reclame}/pdf', [ReclameController::class, 'exportPdf'])->name('reclame.pdf');
 
     // Occasions CRUD
-    Route::resource('occasions', AdminOccasionController::class);
+    Route::resource('occasions', AdminOccasionController::class)->except(['show']);
 Route::get('occasions/rdw/{kenteken}', [AdminOccasionController::class, 'rdwLookup'])
     ->name('occasions.rdw');
 

@@ -45,11 +45,11 @@ class StoreOccasionRequest extends FormRequest
 
 
             // bestanden
-            'hoofdfoto'  => ['nullable','file','image','mimes:jpg,jpeg,png,webp','max:4096'], // 4MB
+            'hoofdfoto'  => ['nullable','file','mimes:jpg,jpeg,png,webp,heic,heif','max:10240'], // 10MB (iPhone HEIC)
 
             // multi-upload: array + per file + totaal limiet
-            'gallery'    => ['nullable','array','max:15', new TotalUploadSize(30)], // max 15 files, totaal ≤ 30MB
-            'gallery.*'  => ['nullable','file','image','mimes:jpg,jpeg,png,webp','max:6144'], // ≤ 6MB per foto
+            'gallery'    => ['nullable','array','max:15', new TotalUploadSize(50)], // max 15 files, totaal ≤ 50MB
+            'gallery.*'  => ['nullable','file','mimes:jpg,jpeg,png,webp,heic,heif','max:10240'], // ≤ 10MB per foto (iPhone HEIC)
 
             // textareas
 'exterieur_options' => ['nullable','array'],

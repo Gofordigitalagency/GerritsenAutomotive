@@ -24,7 +24,7 @@ class SellCarController extends Controller
             'message'        => ['nullable','string','max:2000'],
             'privacy'        => ['accepted'],
             'photos'         => ['nullable','array','max:20'],
-            'photos.*'       => ['image','mimes:jpg,jpeg,png,webp','max:6144'],
+            'photos.*'       => ['file','mimes:jpg,jpeg,png,webp,heic,heif','max:10240'],
         ]);
 
         // Foto’s opslaan
