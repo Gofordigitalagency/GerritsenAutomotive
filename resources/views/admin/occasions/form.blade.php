@@ -663,7 +663,89 @@ if (data.carrosserie) document.getElementById('carrosserieInput').value = data.c
 
 <script>
 (function(){
-  // Elements
+
+  /* ===========================================================
+     Image compressie — verklein foto's vóór upload (iPhone fix)
+     =========================================================== */
+  const MAX_DIM  = 2400;   // max breedte/hoogte in pixels
+  const QUALITY  = 0.82;   // JPEG kwaliteit (0-1)
+
+  function compressImage(file) {
+    return new Promise((resolve) => {
+      // Alleen afbeeldingen comprimeren
+      if (!file.type.match(/^image\/(jpeg|png|webp|heic|heif)/i) && !file.name.match(/\.(heic|heif)$/i)) {
+        return resolve(file);
+      }
+
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+
+      img.onload = function() {
+        URL.revokeObjectURL(url);
+
+        let w = img.naturalWidth;
+        let h = img.naturalHeight;
+
+        // Alleen verkleinen als nodig
+        if (w <= MAX_DIM && h <= MAX_DIM && file.size < 1.5 * 1024 * 1024) {
+          return resolve(file); // al klein genoeg
+        }
+
+        // Schaal berekenen
+        if (w > MAX_DIM || h > MAX_DIM) {
+          const ratio = Math.min(MAX_DIM / w, MAX_DIM / h);
+          w = Math.round(w * ratio);
+          h = Math.round(h * ratio);
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width  = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+
+        canvas.toBlob(function(blob) {
+          if (!blob) return resolve(file);
+          // Nieuw bestand met .jpg extensie
+          const name = file.name.replace(/\.(heic|heif|png|webp)$/i, '') + '.jpg';
+          const compressed = new File([blob], name, { type: 'image/jpeg', lastModified: Date.now() });
+          resolve(compressed);
+        }, 'image/jpeg', QUALITY);
+      };
+
+      img.onerror = function() {
+        URL.revokeObjectURL(url);
+        resolve(file); // bij fout: origineel gebruiken
+      };
+
+      img.src = url;
+    });
+  }
+
+  async function compressFiles(fileList) {
+    const promises = [...fileList].map(f => compressImage(f));
+    return Promise.all(promises);
+  }
+
+  /* ===========================================================
+     Hoofdfoto compressie
+     =========================================================== */
+  const hoofdfotoInput = document.getElementById('hoofdfoto');
+  if (hoofdfotoInput) {
+    hoofdfotoInput.addEventListener('change', async function() {
+      if (!this.files || !this.files[0]) return;
+      const compressed = await compressImage(this.files[0]);
+      if (compressed !== this.files[0]) {
+        const dt = new DataTransfer();
+        dt.items.add(compressed);
+        this.files = dt.files;
+      }
+    });
+  }
+
+  /* ===========================================================
+     Galerij upload met compressie + sortable + drag-drop
+     =========================================================== */
   const input   = document.getElementById('galleryInput');
   const browse  = document.getElementById('nu-browse');
   const dz      = document.getElementById('nu-dropzone');
@@ -671,7 +753,6 @@ if (data.carrosserie) document.getElementById('carrosserieInput').value = data.c
   const grid    = document.getElementById('nu-grid');
   const orderEl = document.getElementById('galleryNewOrder');
 
-  // We houden onze set files zelf bij
   /** @type {File[]} */
   let files = [];
   /** objectURLs om later te revoken */
@@ -683,12 +764,18 @@ if (data.carrosserie) document.getElementById('carrosserieInput').value = data.c
 
   function uniqKey(f){ return [f.name, f.size, f.lastModified].join('::'); }
 
-  function addFiles(list){
+  async function addFiles(list){
+    // Toon loading indicator
+    if (dz) dz.classList.add('nu-compressing');
+
+    const compressed = await compressFiles(list);
     const existing = new Set(files.map(uniqKey));
-    [...list].forEach(f=>{
+    compressed.forEach(f=>{
       const key = uniqKey(f);
       if (!existing.has(key)) { files.push(f); existing.add(key); }
     });
+
+    if (dz) dz.classList.remove('nu-compressing');
     render();
   }
 
@@ -711,24 +798,23 @@ if (data.carrosserie) document.getElementById('carrosserieInput').value = data.c
       const card = document.createElement('div');
       card.className = 'nu-item';
       card.dataset.idx = String(idx);
+      const sizeMB = (f.size / 1024 / 1024).toFixed(1);
       card.innerHTML = `
         <div class="nu-toolbar">
           <button type="button" class="nu-del" title="Verwijderen">&times;</button>
           <span class="nu-handle" title="Sleep om te sorteren">⋮⋮</span>
         </div>
         <div class="nu-thumb"><img src="${url}" alt="${f.name}"></div>
-        <div class="nu-meta" title="${f.name}">${f.name}</div>
+        <div class="nu-meta" title="${f.name}">${f.name} (${sizeMB} MB)</div>
       `;
       grid.appendChild(card);
     });
 
-    // update hidden order (oude indices = huidige volgorde)
     orderEl.value = JSON.stringify(files.map((_,i)=>i));
     showGrid();
     rebuildInputFileList();
   }
 
-  // Zet de FileList van het <input> in de huidige volgorde
   function rebuildInputFileList(){
     const dt = new DataTransfer();
     files.forEach(f => dt.items.add(f));
@@ -744,10 +830,8 @@ if (data.carrosserie) document.getElementById('carrosserieInput').value = data.c
       if (evt.oldIndex === evt.newIndex) return;
       const moved = files.splice(evt.oldIndex,1)[0];
       files.splice(evt.newIndex,0,moved);
-      // update order + input
       orderEl.value = JSON.stringify(files.map((_,i)=>i));
       rebuildInputFileList();
-      // indexes in DOM opnieuw zetten (voor remove handlers)
       [...grid.children].forEach((el,i)=> el.dataset.idx = String(i));
     }
   });
@@ -759,7 +843,6 @@ if (data.carrosserie) document.getElementById('carrosserieInput').value = data.c
     const card = btn.closest('.nu-item');
     const idx = parseInt(card.dataset.idx,10);
     removeAt(idx);
-    // reset dataset idx
     [...grid.children].forEach((el,i)=> el.dataset.idx = String(i));
   });
 
@@ -809,6 +892,7 @@ if (data.carrosserie) document.getElementById('carrosserieInput').value = data.c
   .nu-thumb { display:flex; align-items:center; justify-content:center; background:#fff; border:1px solid #e5e7eb; border-radius:10px; min-height:140px; padding:8px; }
   .nu-thumb img { max-width:100%; max-height:180px; border-radius:8px; display:block; }
   .nu-meta { font-size:.9rem; color:#475569; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding:0 2px; }
+  .nu-compressing .nu-drop-inner::after { content:'Foto\27s verkleinen...'; display:block; width:100%; color:#6366f1; font-weight:600; margin-top:4px; }
   @media (max-width:640px){ .nu-grid{ grid-template-columns:1fr 1fr; } }
 </style>
 @endsection
