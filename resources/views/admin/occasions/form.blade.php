@@ -667,78 +667,104 @@ if (data.carrosserie) document.getElementById('carrosserieInput').value = data.c
   /* ===========================================================
      Image compressie — verklein foto's vóór upload (iPhone fix)
      =========================================================== */
-  const MAX_DIM  = 2400;   // max breedte/hoogte in pixels
-  const QUALITY  = 0.82;   // JPEG kwaliteit (0-1)
+  const MAX_DIM  = 2000;   // max breedte/hoogte in pixels
+  const QUALITY  = 0.80;   // JPEG kwaliteit (0-1)
+  const MAX_BYTES = 1024 * 1024; // 1MB — altijd comprimeren als groter
 
   function compressImage(file) {
     return new Promise((resolve) => {
-      // Alleen afbeeldingen comprimeren
-      if (!file.type.match(/^image\/(jpeg|png|webp|heic|heif)/i) && !file.name.match(/\.(heic|heif)$/i)) {
-        return resolve(file);
-      }
+      // Check of het een afbeelding is (breed matchen — type kan leeg zijn op mobiel)
+      const isImage = file.type.startsWith('image/')
+        || /\.(jpe?g|png|webp|heic|heif|gif|bmp)$/i.test(file.name);
+      if (!isImage) return resolve(file);
 
-      const img = new Image();
-      const url = URL.createObjectURL(file);
+      // Kleine bestanden hoeven niet gecomprimeerd
+      if (file.size < MAX_BYTES) return resolve(file);
 
-      img.onload = function() {
-        URL.revokeObjectURL(url);
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          let w = img.naturalWidth;
+          let h = img.naturalHeight;
 
-        let w = img.naturalWidth;
-        let h = img.naturalHeight;
+          // Schaal berekenen
+          if (w > MAX_DIM || h > MAX_DIM) {
+            const ratio = Math.min(MAX_DIM / w, MAX_DIM / h);
+            w = Math.round(w * ratio);
+            h = Math.round(h * ratio);
+          }
 
-        // Alleen verkleinen als nodig
-        if (w <= MAX_DIM && h <= MAX_DIM && file.size < 1.5 * 1024 * 1024) {
-          return resolve(file); // al klein genoeg
-        }
+          const canvas = document.createElement('canvas');
+          canvas.width  = w;
+          canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
 
-        // Schaal berekenen
-        if (w > MAX_DIM || h > MAX_DIM) {
-          const ratio = Math.min(MAX_DIM / w, MAX_DIM / h);
-          w = Math.round(w * ratio);
-          h = Math.round(h * ratio);
-        }
-
-        const canvas = document.createElement('canvas');
-        canvas.width  = w;
-        canvas.height = h;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, w, h);
-
-        canvas.toBlob(function(blob) {
-          if (!blob) return resolve(file);
-          // Nieuw bestand met .jpg extensie
-          const name = file.name.replace(/\.(heic|heif|png|webp)$/i, '') + '.jpg';
-          const compressed = new File([blob], name, { type: 'image/jpeg', lastModified: Date.now() });
-          resolve(compressed);
-        }, 'image/jpeg', QUALITY);
+          canvas.toBlob(function(blob) {
+            if (!blob || blob.size >= file.size) return resolve(file);
+            const ext = file.name.replace(/\.[^.]+$/, '');
+            const compressed = new File([blob], ext + '.jpg', {
+              type: 'image/jpeg',
+              lastModified: Date.now()
+            });
+            resolve(compressed);
+          }, 'image/jpeg', QUALITY);
+        };
+        img.onerror = function() { resolve(file); };
+        img.src = e.target.result;
       };
-
-      img.onerror = function() {
-        URL.revokeObjectURL(url);
-        resolve(file); // bij fout: origineel gebruiken
-      };
-
-      img.src = url;
+      reader.onerror = function() { resolve(file); };
+      reader.readAsDataURL(file);
     });
   }
 
   async function compressFiles(fileList) {
-    const promises = [...fileList].map(f => compressImage(f));
-    return Promise.all(promises);
+    return Promise.all([...fileList].map(f => compressImage(f)));
   }
 
   /* ===========================================================
-     Hoofdfoto compressie
+     Hoofdfoto — comprimeer bij selectie
      =========================================================== */
   const hoofdfotoInput = document.getElementById('hoofdfoto');
+  let hoofdfotoReady = true; // vlag: is compressie klaar?
+
   if (hoofdfotoInput) {
     hoofdfotoInput.addEventListener('change', async function() {
       if (!this.files || !this.files[0]) return;
-      const compressed = await compressImage(this.files[0]);
-      if (compressed !== this.files[0]) {
-        const dt = new DataTransfer();
-        dt.items.add(compressed);
-        this.files = dt.files;
+      hoofdfotoReady = false;
+      const original = this.files[0];
+      const compressed = await compressImage(original);
+      const dt = new DataTransfer();
+      dt.items.add(compressed);
+      this.files = dt.files;
+      hoofdfotoReady = true;
+    });
+  }
+
+  /* ===========================================================
+     Form submit — wacht tot alle compressie klaar is
+     =========================================================== */
+  const form = document.getElementById('occasionForm');
+  let galleryBusy = false; // vlag: worden er gallery-files gecomprimeerd?
+
+  if (form) {
+    form.addEventListener('submit', async function(e) {
+      // Als er nog compressie bezig is, blokkeer submit en wacht
+      if (!hoofdfotoReady || galleryBusy) {
+        e.preventDefault();
+        const btn = form.querySelector('button[type="submit"]');
+        const origText = btn ? btn.textContent : '';
+        if (btn) { btn.disabled = true; btn.textContent = 'Foto\'s verkleinen...'; }
+
+        // Wacht max 30 seconden
+        let waited = 0;
+        while ((!hoofdfotoReady || galleryBusy) && waited < 30000) {
+          await new Promise(r => setTimeout(r, 200));
+          waited += 200;
+        }
+
+        if (btn) { btn.disabled = false; btn.textContent = origText; }
+        form.submit();
       }
     });
   }
@@ -755,7 +781,6 @@ if (data.carrosserie) document.getElementById('carrosserieInput').value = data.c
 
   /** @type {File[]} */
   let files = [];
-  /** objectURLs om later te revoken */
   let urls  = [];
 
   function showGrid(){
@@ -765,7 +790,7 @@ if (data.carrosserie) document.getElementById('carrosserieInput').value = data.c
   function uniqKey(f){ return [f.name, f.size, f.lastModified].join('::'); }
 
   async function addFiles(list){
-    // Toon loading indicator
+    galleryBusy = true;
     if (dz) dz.classList.add('nu-compressing');
 
     const compressed = await compressFiles(list);
@@ -776,6 +801,7 @@ if (data.carrosserie) document.getElementById('carrosserieInput').value = data.c
     });
 
     if (dz) dz.classList.remove('nu-compressing');
+    galleryBusy = false;
     render();
   }
 
@@ -798,14 +824,15 @@ if (data.carrosserie) document.getElementById('carrosserieInput').value = data.c
       const card = document.createElement('div');
       card.className = 'nu-item';
       card.dataset.idx = String(idx);
-      const sizeMB = (f.size / 1024 / 1024).toFixed(1);
+      const sizeKB = Math.round(f.size / 1024);
+      const sizeLabel = sizeKB > 1024 ? (sizeKB/1024).toFixed(1)+' MB' : sizeKB+' KB';
       card.innerHTML = `
         <div class="nu-toolbar">
           <button type="button" class="nu-del" title="Verwijderen">&times;</button>
           <span class="nu-handle" title="Sleep om te sorteren">⋮⋮</span>
         </div>
         <div class="nu-thumb"><img src="${url}" alt="${f.name}"></div>
-        <div class="nu-meta" title="${f.name}">${f.name} (${sizeMB} MB)</div>
+        <div class="nu-meta" title="${f.name}">${f.name} (${sizeLabel})</div>
       `;
       grid.appendChild(card);
     });
@@ -849,10 +876,10 @@ if (data.carrosserie) document.getElementById('carrosserieInput').value = data.c
   // Browse knop
   browse.addEventListener('click', ()=> input.click());
 
-  // Input change (toevoegen, niet vervangen)
+  // Input change
   input.addEventListener('change', ()=> addFiles(input.files));
 
-  // Drag & drop op de dropzone
+  // Drag & drop
   ;['dragenter','dragover'].forEach(ev=>{
     dz.addEventListener(ev, (e)=>{ e.preventDefault(); dz.classList.add('nu-dragging'); });
   });
@@ -861,11 +888,6 @@ if (data.carrosserie) document.getElementById('carrosserieInput').value = data.c
   });
   dz.addEventListener('drop', (e)=>{
     if (e.dataTransfer && e.dataTransfer.files) addFiles(e.dataTransfer.files);
-  });
-
-  // Op form-submit: opruimen object URLs
-  input.form?.addEventListener('submit', ()=>{
-    clearURLs();
   });
 
 })();
