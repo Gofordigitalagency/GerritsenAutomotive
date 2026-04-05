@@ -163,26 +163,33 @@
       <h1 class="wa-title">Plan een afspraak</h1>
       <p class="wa-sub">Reparatie, onderhoud of APK? Plan het hier. Staat uw reparatie er niet bij? <a href="#footer">Neem contact op</a>.</p>
     </div>
-    <div class="wa-stepper" data-a>
-      <div class="wa-step wa-active" data-step="1"><div class="wa-step-label">AUTOGEGEVENS</div><div class="wa-dot wa-on"></div></div>
-      <div class="wa-line wa-on"></div>
-      <div class="wa-step" data-step="2"><div class="wa-step-label">WERKZAAMHEDEN</div><div class="wa-dot"></div></div>
-      <div class="wa-line"></div>
-      <div class="wa-step" data-step="3"><div class="wa-step-label">TIJDSTIP</div><div class="wa-dot"></div></div>
-      <div class="wa-line"></div>
-      <div class="wa-step" data-step="4"><div class="wa-step-label">CONTACT</div><div class="wa-dot"></div></div>
+    <div class="wa-steps" data-a>
+      <button type="button" class="wa-pill is-active" data-step="1"><span class="wa-pill-num">1</span> Auto</button>
+      <button type="button" class="wa-pill" data-step="2"><span class="wa-pill-num">2</span> Werk</button>
+      <button type="button" class="wa-pill" data-step="3"><span class="wa-pill-num">3</span> Tijd</button>
+      <button type="button" class="wa-pill" data-step="4"><span class="wa-pill-num">4</span> Contact</button>
     </div>
-    <div class="wa-grid" data-a>
-      <div class="wa-main">
+    <div class="wa-body" data-a>
         <form id="wa-form" method="POST" action="{{ route('workshop.finish') }}">
           @csrf
           <section class="wa-panel wa-show" data-panel="1">
-            <h2 class="wa-h2">Autogegevens</h2><p class="wa-help">Vul uw kenteken en km-stand in.</p>
+            <h2 class="wa-h2">Autogegevens</h2>
+            <p class="wa-help">Vul uw kenteken en kilometerstand in om te beginnen.</p>
+
             <div class="wa-row">
-              <div class="wa-plate"><div class="wa-plate-nl">NL</div><input class="wa-plate-input" name="license_plate" id="wa-license" type="text" placeholder="00-XXX-0" autocomplete="off"></div>
-              <div class="wa-km"><input class="wa-km-input" name="mileage" id="wa-mileage" type="number" min="0" step="1" placeholder="Km-stand"><div class="wa-km-suf">KM</div></div>
+              <div class="wa-plate">
+                <div class="wa-plate-nl">NL</div>
+                <input class="wa-plate-input" name="license_plate" id="wa-license" type="text" placeholder="AB-123-C" autocomplete="off" maxlength="9">
+              </div>
+              <div class="wa-km">
+                <input class="wa-km-input" name="mileage" id="wa-mileage" type="number" min="0" step="1" placeholder="Kilometerstand">
+                <div class="wa-km-suf">KM</div>
+              </div>
             </div>
-            <div class="wa-actions wa-actions-right"><button class="wa-btn wa-btn-primary" type="button" onclick="WA.next()">Volgende &rsaquo;</button></div>
+
+            <div class="wa-actions wa-actions-right" style="margin-top:28px">
+              <button class="wa-btn wa-btn-primary" type="button" onclick="WA.next()">Volgende &rsaquo;</button>
+            </div>
           </section>
           <section class="wa-panel" data-panel="2">
             <h2 class="wa-h2">Werkzaamheden</h2><p class="wa-help">Wat moet er gebeuren?</p>
@@ -217,15 +224,13 @@
             <div class="wa-actions"><button class="wa-btn wa-btn-ghost" type="button" onclick="WA.prev()">&lsaquo; Vorige</button><button class="wa-btn wa-btn-primary" type="submit">Afspraak inplannen</button></div>
           </section>
         </form>
-      </div>
-      <aside class="wa-side">
-        <div class="wa-side-title">OVERZICHT</div>
-        <div class="wa-acc"><button class="wa-acc-head" type="button" onclick="WA.acc(this)"><span class="wa-ic"><i class="fas fa-car"></i></span> AUTO <span class="wa-caret">&and;</span></button><div class="wa-acc-body wa-open"><div class="wa-acc-row"><b>Kenteken:</b> <span id="ov-plate">-</span></div><div class="wa-acc-row"><b>KM:</b> <span id="ov-km">-</span></div></div></div>
-        <div class="wa-acc"><button class="wa-acc-head" type="button" onclick="WA.acc(this)"><span class="wa-ic"><i class="fas fa-wrench"></i></span> WERK <span class="wa-caret">&and;</span></button><div class="wa-acc-body"><div class="wa-acc-row"><b>Onderhoud:</b> <span id="ov-main">-</span></div><div class="wa-acc-row"><b>Extra:</b> <span id="ov-extra">-</span></div></div></div>
-        <div class="wa-acc"><button class="wa-acc-head" type="button" onclick="WA.acc(this)"><span class="wa-ic"><i class="fas fa-calendar"></i></span> TIJD <span class="wa-caret">&and;</span></button><div class="wa-acc-body"><div class="wa-acc-row"><b>Datum:</b> <span id="ov-date">-</span></div><div class="wa-acc-row"><b>Tijd:</b> <span id="ov-time">-</span></div><div class="wa-acc-row"><b>Wachten:</b> <span id="ov-wait">-</span></div></div></div>
-        <div class="wa-acc"><button class="wa-acc-head" type="button" onclick="WA.acc(this)"><span class="wa-ic"><i class="fas fa-user"></i></span> CONTACT <span class="wa-caret">&and;</span></button><div class="wa-acc-body"><div class="wa-acc-row"><b>Naam:</b> <span id="ov-name">-</span></div><div class="wa-acc-row"><b>Email:</b> <span id="ov-email">-</span></div></div></div>
-      </aside>
     </div>
+    {{-- hidden spans for overview sync (JS expects these) --}}
+    <span id="ov-plate" hidden></span><span id="ov-km" hidden></span>
+    <span id="ov-main" hidden></span><span id="ov-extra" hidden></span>
+    <span id="ov-date" hidden></span><span id="ov-time" hidden></span>
+    <span id="ov-wait" hidden></span><span id="ov-name" hidden></span>
+    <span id="ov-email" hidden></span>
   </div>
 </section>
 
@@ -413,7 +418,17 @@ document.addEventListener('DOMContentLoaded',function(){
     function fN(s){if(!s)return'-';const[y,m,d]=s.split('-');return`${d}-${m}-${y}`}
     function nP(v){return(v||'').toString().trim().toUpperCase()}
     function fK(v){if(v===''||v==null)return'-';const n=Number(v);return isNaN(n)?'-':n.toLocaleString('nl-NL')}
-    function show(n,o){o=o||{};step=n;qa('.wa-panel').forEach(p=>p.classList.remove('wa-show'));const p=q(`.wa-panel[data-panel="${n}"]`);if(p)p.classList.add('wa-show');qa('.wa-stepper .wa-step').forEach(s=>{const sn=+s.dataset.step;s.classList.toggle('wa-active',sn===n);const d=s.querySelector('.wa-dot');if(d)d.classList.toggle('wa-on',sn<=n)});qa('.wa-stepper .wa-line').forEach((l,i)=>l.classList.toggle('wa-on',n>=(i+2)));sync();if(o.scroll!==false)window.scrollTo({top:q('#wa')?.offsetTop-20||0,behavior:'smooth'})}
+    function show(n,o){o=o||{};step=n;
+      qa('.wa-panel').forEach(p=>p.classList.remove('wa-show'));
+      const p=q(`.wa-panel[data-panel="${n}"]`);if(p)p.classList.add('wa-show');
+      // update pills
+      qa('.wa-pill').forEach(pill=>{
+        const sn=+pill.dataset.step;
+        pill.classList.remove('is-active','is-done');
+        if(sn===n)pill.classList.add('is-active');
+        else if(sn<n)pill.classList.add('is-done');
+      });
+      sync();if(o.scroll!==false)window.scrollTo({top:q('#wa')?.offsetTop-20||0,behavior:'smooth'})}
     function next(){if(!val(step))return;if(step<4)show(step+1)}
     function prev(){if(step>1)show(step-1)}
     function acc(b){const bd=b?.parentElement?.querySelector('.wa-acc-body');if(bd)bd.classList.toggle('wa-open')}
