@@ -1,274 +1,48 @@
-/* app.js – Gerritsen Automotive
-   - Mobiel menu (open/close + focus + ESC)
-   - Sticky header + smooth scroll met offset
-   - Dark mode toggle (desktop + mobiel) met localStorage
-*/
+/* Gerritsen Automotive 2026 */
 'use strict';
+(()=>{try{if(localStorage.getItem('ga_theme')==='light')document.documentElement.classList.add('light')}catch(e){}})();
 
-/* ========== Theme pre-apply (voorkom flits) ========== */
-(() => {
-  try {
-    const saved = localStorage.getItem('ga_theme');
-    if (saved === 'dark') document.documentElement.classList.add('dark');
-  } catch (_) {}
-})();
+document.addEventListener('DOMContentLoaded',()=>{
 
-document.addEventListener('DOMContentLoaded', () => {
-  /* ===========================
-     NAV / MENU / SCROLL
-  ============================ */
-  const toggleBtn = document.getElementById('menuToggle');
-  const overlay   = document.getElementById('navOverlay');
-  const closeBtn  = document.getElementById('menuClose');
-  const navbar    = document.querySelector('.navbar');
+  // Scroll animations
+  const aObs=new IntersectionObserver(en=>{en.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');aObs.unobserve(e.target)}})},{threshold:.05,rootMargin:'0px 0px -20px 0px'});
+  document.querySelectorAll('[data-a]').forEach(el=>aObs.observe(el));
 
-  // Header offset variabele bijhouden
-  const setHeaderOffset = () => {
-    if (!navbar) return;
-    const h = navbar.offsetHeight;
-    document.documentElement.style.setProperty('--header-offset', `${h}px`);
-  };
+  // Hero particles
+  const pc=document.getElementById('heroParticles');
+  if(pc)for(let i=0;i<20;i++){const s=document.createElement('span');s.style.left=Math.random()*100+'%';s.style.animationDuration=(12+Math.random()*20)+'s';s.style.animationDelay=Math.random()*14+'s';s.style.width=s.style.height=(1.5+Math.random()*2.5)+'px';pc.appendChild(s)}
 
-  // Menu openen/sluiten
-  const openMenu = () => {
-    document.body.classList.add('menu-open');
-    if (toggleBtn) {
-      toggleBtn.classList.add('is-open');
-      toggleBtn.setAttribute('aria-expanded', 'true');
-    }
-    if (overlay) {
-      overlay.classList.add('is-open');
-      overlay.setAttribute('aria-hidden', 'false');
-      const firstLink = overlay.querySelector('.nav-mobile a');
-      if (firstLink) firstLink.focus({ preventScroll: true });
-    }
-  };
+  // Nav
+  const tog=document.getElementById('menuToggle'),ov=document.getElementById('navOverlay'),cls=document.getElementById('menuClose'),nav=document.querySelector('.navbar');
+  const setOff=()=>{if(nav)document.documentElement.style.setProperty('--header-offset',nav.offsetHeight+'px')};
+  function openM(){document.body.classList.add('menu-open');tog?.classList.add('is-open');tog?.setAttribute('aria-expanded','true');ov?.classList.add('is-open');ov?.setAttribute('aria-hidden','false')}
+  function closeM(){document.body.classList.remove('menu-open');tog?.classList.remove('is-open');tog?.setAttribute('aria-expanded','false');ov?.classList.remove('is-open');ov?.setAttribute('aria-hidden','true')}
+  tog?.addEventListener('click',()=>ov?.classList.contains('is-open')?closeM():openM());
+  cls?.addEventListener('click',closeM);
+  ov?.addEventListener('click',e=>{if(e.target===ov)closeM()});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&ov?.classList.contains('is-open'))closeM()});
+  const onScroll=()=>{if(!nav)return;nav.classList.toggle('scrolled',scrollY>8);setOff()};
+  const getOff=()=>{const v=getComputedStyle(document.documentElement).getPropertyValue('--header-offset').trim();const n=parseInt(v,10);return Number.isFinite(n)?n:(nav?.offsetHeight||0)};
+  const scrollTo=el=>{window.scrollTo({top:Math.max(0,el.getBoundingClientRect().top+scrollY-getOff()-12),behavior:'smooth'})};
+  const samePage=a=>{if(!a.hash?.startsWith('#'))return false;return location.pathname.replace(/\/+$/,'')===a.pathname.replace(/\/+$/,'')};
+  document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{if(!samePage(a))return;const t=document.querySelector(a.hash);if(!t)return;e.preventDefault();if(ov?.classList.contains('is-open'))closeM();scrollTo(t);history.pushState(null,'',a.hash)})});
+  onScroll();setOff();
+  window.addEventListener('scroll',onScroll,{passive:true});
+  window.addEventListener('resize',setOff);
+  if('ResizeObserver'in window&&nav)new ResizeObserver(setOff).observe(nav);
 
-  const closeMenu = () => {
-    document.body.classList.remove('menu-open');
-    if (toggleBtn) {
-      toggleBtn.classList.remove('is-open');
-      toggleBtn.setAttribute('aria-expanded', 'false');
-      toggleBtn.focus?.({ preventScroll: true });
-    }
-    if (overlay) {
-      overlay.classList.remove('is-open');
-      overlay.setAttribute('aria-hidden', 'true');
-    }
-  };
+  // Theme
+  const TK='ga_theme';
+  function isTheme(el){return!!el&&(el.id==='themeToggle'||el.id==='themeToggleMobile'||el.closest?.('#themeToggle,#themeToggleMobile'))}
+  function syncA(){const l=document.documentElement.classList.contains('light');document.querySelectorAll('#themeToggle,#themeToggleMobile').forEach(b=>b.setAttribute('aria-pressed',String(l)))}
+  function toggle(){const n=!document.documentElement.classList.contains('light');document.documentElement.classList.toggle('light',n);try{localStorage.setItem(TK,n?'light':'dark')}catch(e){}syncA()}
+  document.addEventListener('click',e=>{if(isTheme(e.target)){e.preventDefault();toggle()}});syncA();
 
-  toggleBtn?.addEventListener('click', () => {
-    const isOpen = overlay?.classList.contains('is-open');
-    isOpen ? closeMenu() : openMenu();
-  });
-  closeBtn?.addEventListener('click', closeMenu);
-  overlay?.addEventListener('click', (e) => {
-    if (e.target === overlay) closeMenu();
-  });
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && overlay?.classList.contains('is-open')) closeMenu();
-  });
-
-  // Sticky header + offset
-  const onScroll = () => {
-    if (!navbar) return;
-    if (window.scrollY > 8) navbar.classList.add('scrolled');
-    else navbar.classList.remove('scrolled');
-    setHeaderOffset();
-  };
-
-  // Smooth scroll met offset
-  const getOffset = () => {
-    const cssVar = getComputedStyle(document.documentElement).getPropertyValue('--header-offset').trim();
-    const n = parseInt(cssVar, 10);
-    return Number.isFinite(n) ? n : (navbar?.offsetHeight || 0);
-  };
-
-  const smoothScrollTo = (targetEl) => {
-    const off = getOffset();
-    const top = Math.max(0, targetEl.getBoundingClientRect().top + window.scrollY - off - 12);
-    window.scrollTo({ top, behavior: 'smooth' });
-  };
-
-  const isSamePageHash = (a) => {
-    if (!a.hash || !a.hash.startsWith('#')) return false;
-    const cur = location.pathname.replace(/\/+$/, '');
-    const linkPath = a.pathname.replace(/\/+$/, '');
-    return cur === linkPath;
-  };
-
-  const handleAnchorClick = (e) => {
-    const a = e.currentTarget;
-    if (!isSamePageHash(a)) return;
-
-    const target = document.querySelector(a.hash);
-    if (!target) return;
-
-    e.preventDefault();
-    if (overlay?.classList.contains('is-open')) closeMenu();
-    smoothScrollTo(target);
-    history.pushState(null, '', a.hash);
-  };
-
-  document.querySelectorAll('a[href^="#"]').forEach((a) => {
-    a.addEventListener('click', handleAnchorClick);
-  });
-
-  const btnBekijkAanbod = document.getElementById('btnBekijkAanbod');
-  if (btnBekijkAanbod) {
-    btnBekijkAanbod.addEventListener('click', () => {
-      const t = document.querySelector('#aanbod');
-      if (t) {
-        smoothScrollTo(t);
-        history.pushState(null, '', '#aanbod');
-      }
-    });
+  // Auto-animate car cards
+  const grid=document.getElementById('nieuwGrid');
+  if(grid){
+    const mo=new MutationObserver(()=>{grid.querySelectorAll('.car-card:not([data-a])').forEach((c,i)=>{c.setAttribute('data-a','');c.style.transitionDelay=(i*.03)+'s';aObs.observe(c)})});
+    mo.observe(grid,{childList:true});
+    grid.querySelectorAll('.car-card').forEach((c,i)=>{c.setAttribute('data-a','');c.style.transitionDelay=(i*.03)+'s';aObs.observe(c)});
   }
-
-  // Init
-  onScroll();
-  setHeaderOffset();
-
-  window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', setHeaderOffset);
-  window.addEventListener('orientationchange', setHeaderOffset);
-
-  if ('ResizeObserver' in window && navbar) {
-    const ro = new ResizeObserver(setHeaderOffset);
-    ro.observe(navbar);
-  }
-
-  /* ===========================
-     THEME: Dark/Light (robust)
-  ============================ */
-  const STORAGE_KEY = 'ga_theme';
-
-  // 1) Toepassen huidige theme (als pre-apply niet liep)
-  (function applyInitial() {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved === 'dark' || saved === 'light') {
-        document.documentElement.classList.toggle('dark', saved === 'dark');
-      }
-    } catch (_) {}
-  })();
-
-  // 2) Delegated clicks: werkt altijd, ook als knoppen later wisselen
-  function isToggleButton(el) {
-    return !!el && (el.id === 'themeToggle' || el.id === 'themeToggleMobile' || el.closest?.('#themeToggle, #themeToggleMobile'));
-  }
-
-  function syncAria() {
-    const dark = document.documentElement.classList.contains('dark');
-    document.querySelectorAll('#themeToggle, #themeToggleMobile').forEach(btn => {
-      btn.setAttribute('aria-pressed', String(dark));
-    });
-  }
-
-  function toggleTheme() {
-    const nextDark = !document.documentElement.classList.contains('dark');
-    document.documentElement.classList.toggle('dark', nextDark);
-    try { localStorage.setItem(STORAGE_KEY, nextDark ? 'dark' : 'light'); } catch(_) {}
-    syncAria();
-  }
-
-  // Koppel één listener op document (delegation)
-  document.addEventListener('click', (e) => {
-    const target = e.target;
-    if (isToggleButton(target)) {
-      e.preventDefault();
-      toggleTheme();
-    }
-  });
-
-
-const WorkshopWizard = (() => {
-  let current = 1;
-
-  function qs(sel, root=document){ return root.querySelector(sel); }
-  function qsa(sel, root=document){ return Array.from(root.querySelectorAll(sel)); }
-
-  function open(){
-    const ov = qs('#ws-overlay');
-    ov.classList.add('is-open');
-    ov.setAttribute('aria-hidden','false');
-    current = 1;
-    show(current);
-    sync();
-    document.body.style.overflow = 'hidden';
-  }
-
-  function close(e){
-    if (e && e.target && !e.target.classList.contains('ws-overlay')) {
-      // close called from button without overlay click
-    }
-    const ov = qs('#ws-overlay');
-    ov.classList.remove('is-open');
-    ov.setAttribute('aria-hidden','true');
-    document.body.style.overflow = '';
-  }
-
-  function show(step){
-    current = step;
-
-    // panels
-    qsa('.ws-panel').forEach(p => p.classList.remove('is-active'));
-    const panel = qs(`.ws-panel[data-panel="${step}"]`);
-    if(panel) panel.classList.add('is-active');
-
-    // stepper
-    qsa('.ws-step').forEach(s => s.classList.remove('is-active'));
-    const st = qs(`.ws-step[data-step="${step}"]`);
-    if(st) st.classList.add('is-active');
-
-    // scroll modal top a bit for UX
-    const modal = qs('.ws-modal');
-    if(modal) modal.scrollTop = 0;
-  }
-
-  function next(){
-    if(current < 4) show(current + 1);
-    sync();
-  }
-
-  function prev(){
-    if(current > 1) show(current - 1);
-    sync();
-  }
-
-  function sync(){
-    const f = qs('#ws-form');
-    if(!f) return;
-
-    const plate = (f.license_plate?.value || '').trim() || '-';
-    const mileage = (f.mileage?.value || '').trim();
-    const km = mileage ? `${Number(mileage).toLocaleString('nl-NL')} km` : '-';
-
-    const maintenance = (f.querySelector('input[name="maintenance_option"]:checked')?.value) || '-';
-
-    const extras = qsa('input[name="extra_services[]"]:checked', f).map(x => x.value);
-    const extrasTxt = extras.length ? extras.join(', ') : '-';
-
-    const date = (f.appointment_date?.value || '').trim();
-    const time = (f.appointment_time?.value || '').trim();
-    const dt = (date && time) ? `${date} ${time}` : '-';
-
-    const waitVal = (f.querySelector('input[name="wait_while_service"]:checked')?.value);
-    const waitTxt = waitVal === "1" ? "Ja" : (waitVal === "0" ? "Nee" : "-");
-
-    qs('#sum-license').textContent = plate.toUpperCase();
-    qs('#sum-mileage').textContent = km;
-    qs('#sum-maintenance').textContent = maintenance;
-    qs('#sum-extras').textContent = extrasTxt;
-    qs('#sum-datetime').textContent = dt;
-    qs('#sum-wait').textContent = waitTxt;
-  }
-
-  return { open, close, next, prev, sync };
-})();
-
-
-
-  // Sync aria state bij load
-  syncAria();
 });

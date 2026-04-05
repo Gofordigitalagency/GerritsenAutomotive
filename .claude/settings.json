@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Read(//c/laragon/**)",
-      "Bash(xargs wc:*)"
+      "Bash(xargs wc:*)",
+      "Read(//dev/**)",
+      "Bash(composer install:*)"
     ]
   }
 }

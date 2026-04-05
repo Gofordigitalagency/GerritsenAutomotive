@@ -2,1664 +2,435 @@
 
 @section('content')
 
+{{-- ====== HERO ====== --}}
 <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-particles" id="heroParticles"></div>
     <div class="container">
-        <div class="hero-content">
-            <h1>Uw Partner in</h1>
-            <h1>BETROUWBARE OCCASIONS</h1>
-            <p>Bij Gerritsen Automotive vindt u zorgvuldig geselecteerde auto’s, persoonlijke service en eerlijk advies.</p>
-            <div class="hero-buttons">
-                <a href="#aanbod" class="btn btn-primary">Bekijk Occasions</a>
-                <a href="#footer" class="btn btn-secondary">Contact</a>
+        <div class="hero-inner">
+            <div class="hero-eyebrow"><span class="dot"></span> Arnhem</div>
+            <h1>Rijd weg in<br>uw <em>volgende auto</em></h1>
+            <p class="hero-desc">Geselecteerde occasions, transparante prijzen en persoonlijk advies. Al meer dan 10 jaar uw adres in Arnhem.</p>
+            <div class="hero-ctas">
+                <a href="#aanbod" class="btn btn-red">Bekijk aanbod</a>
+                <a href="#diensten" class="btn btn-outline">Onze diensten</a>
             </div>
         </div>
     </div>
 </section>
 
-<section id="info" class="info-section">
+{{-- ====== MARQUEE ====== --}}
+<div class="marquee-strip">
+    <div class="marquee-track">
+        <span class="marquee-item">Occasions <span class="sep"></span></span>
+        <span class="marquee-item">Werkplaats <span class="sep"></span></span>
+        <span class="marquee-item">Auto verhuur <span class="sep"></span></span>
+        <span class="marquee-item">Aanhanger verhuur <span class="sep"></span></span>
+        <span class="marquee-item">Auto verkopen <span class="sep"></span></span>
+        <span class="marquee-item">Koplampen polijsten <span class="sep"></span></span>
+        <span class="marquee-item">Tapijtreiniger huur <span class="sep"></span></span>
+        <span class="marquee-item">NAP controle <span class="sep"></span></span>
+        <span class="marquee-item">Occasions <span class="sep"></span></span>
+        <span class="marquee-item">Werkplaats <span class="sep"></span></span>
+        <span class="marquee-item">Auto verhuur <span class="sep"></span></span>
+        <span class="marquee-item">Aanhanger verhuur <span class="sep"></span></span>
+        <span class="marquee-item">Auto verkopen <span class="sep"></span></span>
+        <span class="marquee-item">Koplampen polijsten <span class="sep"></span></span>
+        <span class="marquee-item">Tapijtreiniger huur <span class="sep"></span></span>
+        <span class="marquee-item">NAP controle <span class="sep"></span></span>
+    </div>
+</div>
+
+{{-- ====== DIENSTEN ====== --}}
+<section id="diensten" class="services" style="background:var(--dark)">
     <div class="container">
-        <div class="info-section-inner">
-
-            <div class="info-image">
-                <img src="{{ asset('images/handshake.jpg') }}" alt="Handdruk">
+        <div class="services-header" data-a>
+            <div class="tag">Wat wij doen</div>
+            <h2 class="heading-lg">Alles onder &eacute;&eacute;n dak</h2>
+            <p class="sub">Van aankoop tot onderhoud &mdash; wij regelen het</p>
+        </div>
+        <div class="services-grid" data-s>
+            <div class="svc-card" data-a>
+                <div class="svc-icon"><i class="fas fa-car"></i></div>
+                <h3>Occasions</h3>
+                <p>Zorgvuldig geselecteerde auto's met NAP-controle, garantie en scherpe prijzen.</p>
+                <a href="#aanbod" class="svc-link">Bekijk aanbod <span>&rarr;</span></a>
             </div>
-
-            <div class="info-content">
-                <h1>Gerritsen Automotive</h1>
-                <p>Gerritsen Automotive is jouw vertrouwde adres in Arnhem voor advies, verkoop van geselecteerde occasions en praktische verhuur.</p>
-                <p>We houden het persoonlijk en helder: duidelijke prijzen, transparante informatie en snel schakelen. Of je nu vandaag wil proefrijden of iets wilt huren, we regelen het vlot en zonder gedoe. Klaar om te rijden? We denken met je mee.</p>
-               <div class="btn-aanbod">
-                <a href="#aanbod" class="btn btn-primary">Bekijk Onze Aanbod</a>
-               </div>
+            <div class="svc-card" data-a>
+                <div class="svc-icon"><i class="fas fa-wrench"></i></div>
+                <h3>Werkplaats</h3>
+                <p>Onderhoud, reparatie en APK. Plan eenvoudig online een afspraak.</p>
+                <a href="#wa" class="svc-link">Plan afspraak <span>&rarr;</span></a>
             </div>
-
+            <div class="svc-card" data-a>
+                <div class="svc-icon"><i class="fas fa-key"></i></div>
+                <h3>Auto verhuur</h3>
+                <p>Toyota Aygo Premium Edition. Vanaf &euro;35/dag inclusief onbeperkte kilometers.</p>
+                <a href="#verhuur" class="svc-link">Meer info <span>&rarr;</span></a>
+            </div>
+            <div class="svc-card" data-a>
+                <div class="svc-icon"><i class="fas fa-trailer"></i></div>
+                <h3>Aanhanger huren</h3>
+                <p>Direct beschikbaar. Vanaf &euro;15 voor 4 uur. Inclusief advies over belading.</p>
+                <a href="{{ route('booking.show', ['type' => 'aanhanger']) }}" class="svc-link">Reserveer <span>&rarr;</span></a>
+            </div>
+            <div class="svc-card" data-a>
+                <div class="svc-icon"><i class="fas fa-hand-holding-dollar"></i></div>
+                <h3>Auto verkopen</h3>
+                <p>Snel en eerlijk bod. Geen gedoe met platforms of advertenties.</p>
+                <a href="#verkoop" class="svc-link">Verkoop uw auto <span>&rarr;</span></a>
+            </div>
+            <div class="svc-card" data-a>
+                <div class="svc-icon"><i class="fas fa-lightbulb"></i></div>
+                <h3>Koplampen polijsten</h3>
+                <p>Doffe lampen? Wij herstellen helderheid en glans in &eacute;&eacute;n behandeling.</p>
+                <a href="{{ route('booking.show', ['type' => 'aanhanger']) }}" class="svc-link">Boek nu <span>&rarr;</span></a>
+            </div>
         </div>
     </div>
 </section>
 
-<section id="aanbod" class="nieuw-binnen">
+{{-- ====== OVER ONS ====== --}}
+<section id="info" style="padding:100px 0;background:var(--dark-2)">
+    <div class="container">
+        <div class="split">
+            <div class="split-img" data-a="left"><img src="{{ asset('images/handshake.jpg') }}" alt="Persoonlijke service"></div>
+            <div class="split-text" data-a="right">
+                <div class="tag">Over ons</div>
+                <h2>Persoonlijk. Helder. Zonder gedoe.</h2>
+                <p>Gerritsen Automotive is al meer dan 10 jaar het vertrouwde adres in Arnhem voor occasions, verhuur en onderhoud. Wij geloven in transparante prijzen, eerlijk advies en snel schakelen.</p>
+                <p>Of je nu vandaag wil proefrijden, iets wilt huren of je auto wilt laten nakijken &mdash; wij denken met je mee en regelen het vlot.</p>
+                <div style="display:flex;gap:24px;margin-top:8px">
+                    <div><strong style="font-size:28px;color:var(--red)">10+</strong><br><span style="font-size:12px;color:var(--gray)">Jaar ervaring</span></div>
+                    <div><strong style="font-size:28px;color:var(--red)">200+</strong><br><span style="font-size:12px;color:var(--gray)">Auto's verkocht</span></div>
+                    <div><strong style="font-size:28px;color:var(--red)">&#9733; 5</strong><br><span style="font-size:12px;color:var(--gray)">Google reviews</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{{-- ====== OCCASIONS ====== --}}
+<section id="aanbod" class="occasions">
   <div class="container">
-
-    <div class="occasions-topbar" style="display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;">
-      <h2 class="sectie-titel" style="margin:0 0 1rem 0;">Alle Occasions</h2>
-
-      <div class="oc-sort" style="display:flex; align-items:center; gap:10px;">
-        <label for="sort" style="font-weight:600; font-size:14px;">Sorteren:</label>
-
-        <select id="sort" style="padding:10px 12px; border-radius:10px; border:1px solid rgba(0,0,0,.15);">
+    <div class="occasions-top" data-a>
+      <div>
+        <div class="tag">Ons aanbod</div>
+        <h2 class="heading-lg">Occasions</h2>
+      </div>
+      <div class="oc-sort">
+        <label for="sort">Sorteer:</label>
+        <select id="sort">
           <option value="best">Beste resultaten</option>
-          <option value="price_asc">Prijs oplopend</option>
-          <option value="price_desc">Prijs aflopend</option>
-          <option value="newest">Nieuwste aanbod eerst</option>
-          <option value="km_asc">Kilometerstand oplopend</option>
-          <option value="km_desc">Kilometerstand aflopend</option>
-          <option value="year_asc">Bouwjaar oplopend</option>
-          <option value="year_desc">Bouwjaar aflopend</option>
+          <option value="price_asc">Prijs &uarr;</option>
+          <option value="price_desc">Prijs &darr;</option>
+          <option value="newest">Nieuwste</option>
+          <option value="km_asc">KM &uarr;</option>
+          <option value="km_desc">KM &darr;</option>
+          <option value="year_asc">Bouwjaar &uarr;</option>
+          <option value="year_desc">Bouwjaar &darr;</option>
         </select>
       </div>
     </div>
-
-    {{-- GRID (partial) --}}
-    <div id="nieuwGrid" class="cards-grid">
+    <h2 class="sectie-titel-hidden">Alle Occasions</h2>
+    <div id="nieuwGrid" class="cards-grid" data-s>
       @include('occasions.partials.home_cards', ['nieuw' => $nieuw])
     </div>
-
-    {{-- CTA altijd laten staan, JS regelt tonen/verbergen --}}
-    <div class="cta-center" id="aanbodCta" style="display:none;">
-      <button id="btnBekijkAanbod" class="btn btn-primary" type="button">
-        Bekijk Het Aanbod
-      </button>
+    <div class="cta-center" id="aanbodCta" style="display:none">
+      <button id="btnBekijkAanbod" class="btn btn-red" type="button">Bekijk alles</button>
     </div>
-
   </div>
 </section>
 
+{{-- ====== CTA ====== --}}
+<section class="cta-full">
+    <div class="cta-full-bg"></div>
+    <div class="cta-full-overlay"></div>
+    <div class="container" data-a>
+        <div class="tag">Proefrit?</div>
+        <h2>Uw volgende auto staat hier</h2>
+        <p>Plan een afspraak en stap binnenkort in uw nieuwe auto.</p>
+        <a href="#footer" class="btn btn-red">Plan een afspraak</a>
+    </div>
+</section>
 
-<div class="wa-wrap" id="wa">
-  <h1 class="wa-title">Plan gemakkelijk en snel een werkplaatsafspraak</h1>
-  <p class="wa-sub">
-    Staat uw gewenste reparatie er niet tussen? Neem dan contact op.
-  </p>
-
-  {{-- STEPPER (zonder vestiging) --}}
-  <div class="wa-stepper" role="navigation" aria-label="Stappen">
-    <div class="wa-step wa-active" data-step="1">
-      <div class="wa-step-label">AUTOGEGEVENS</div>
-      <div class="wa-dot wa-on"></div>
+{{-- ====== WERKPLAATS ====== --}}
+<section class="wa-section" id="wa">
+  <div class="wa-wrap">
+    <div data-a>
+      <div class="tag">Werkplaats</div>
+      <h1 class="wa-title">Plan een afspraak</h1>
+      <p class="wa-sub">Reparatie, onderhoud of APK? Plan het hier. Staat uw reparatie er niet bij? <a href="#footer">Neem contact op</a>.</p>
     </div>
-    <div class="wa-line wa-on"></div>
-    <div class="wa-step" data-step="2">
-      <div class="wa-step-label">WERKZAAMHEDEN</div>
-      <div class="wa-dot"></div>
+    <div class="wa-stepper" data-a>
+      <div class="wa-step wa-active" data-step="1"><div class="wa-step-label">AUTOGEGEVENS</div><div class="wa-dot wa-on"></div></div>
+      <div class="wa-line wa-on"></div>
+      <div class="wa-step" data-step="2"><div class="wa-step-label">WERKZAAMHEDEN</div><div class="wa-dot"></div></div>
+      <div class="wa-line"></div>
+      <div class="wa-step" data-step="3"><div class="wa-step-label">TIJDSTIP</div><div class="wa-dot"></div></div>
+      <div class="wa-line"></div>
+      <div class="wa-step" data-step="4"><div class="wa-step-label">CONTACT</div><div class="wa-dot"></div></div>
     </div>
-    <div class="wa-line"></div>
-    <div class="wa-step" data-step="3">
-      <div class="wa-step-label">TIJDSTIP</div>
-      <div class="wa-dot"></div>
-    </div>
-    <div class="wa-line"></div>
-    <div class="wa-step" data-step="4">
-      <div class="wa-step-label">CONTACTGEGEVENS</div>
-      <div class="wa-dot"></div>
+    <div class="wa-grid" data-a>
+      <div class="wa-main">
+        <form id="wa-form" method="POST" action="{{ route('workshop.finish') }}">
+          @csrf
+          <section class="wa-panel wa-show" data-panel="1">
+            <h2 class="wa-h2">Autogegevens</h2><p class="wa-help">Vul uw kenteken en km-stand in.</p>
+            <div class="wa-row">
+              <div class="wa-plate"><div class="wa-plate-nl">NL</div><input class="wa-plate-input" name="license_plate" id="wa-license" type="text" placeholder="00-XXX-0" autocomplete="off"></div>
+              <div class="wa-km"><input class="wa-km-input" name="mileage" id="wa-mileage" type="number" min="0" step="1" placeholder="Km-stand"><div class="wa-km-suf">KM</div></div>
+            </div>
+            <div class="wa-actions wa-actions-right"><button class="wa-btn wa-btn-primary" type="button" onclick="WA.next()">Volgende &rsaquo;</button></div>
+          </section>
+          <section class="wa-panel" data-panel="2">
+            <h2 class="wa-h2">Werkzaamheden</h2><p class="wa-help">Wat moet er gebeuren?</p>
+            <div class="wa-block-title">ONDERHOUD</div>
+            <div class="wa-list">@php $maintenance=config('workshop_services.maintenance');@endphp @foreach($maintenance as $opt)<label class="wa-item"><span class="wa-radio"><input type="radio" name="maintenance_option" value="{{ $opt }}" onchange="WA.sync()"><span class="wa-radio-ui"></span></span><span class="wa-item-text">{{ $opt }}</span><span class="wa-info">i</span></label>@endforeach</div>
+            <div class="wa-block-title wa-mt">AANVULLEND</div>
+            <div class="wa-list">@php $extras=config('workshop_services.extras');@endphp @foreach($extras as $ex)<label class="wa-item wa-item-check"><span class="wa-check"><input type="checkbox" name="extra_services[]" value="{{ $ex }}" onchange="WA.sync()"><span class="wa-check-ui"></span></span><span class="wa-item-text">{{ $ex }}</span></label>@endforeach</div>
+            <div class="wa-actions"><button class="wa-btn wa-btn-ghost" type="button" onclick="WA.prev()">&lsaquo; Vorige</button><button class="wa-btn wa-btn-primary" type="button" onclick="WA.next()">Volgende &rsaquo;</button></div>
+          </section>
+          <section class="wa-panel" data-panel="3">
+            <h2 class="wa-h2">Tijdstip kiezen</h2><p class="wa-help">Selecteer een dag en tijd.</p>
+            <input type="hidden" name="appointment_date" id="wa-date"><input type="hidden" name="appointment_time" id="wa-time">
+            <div class="wa-cal"><div class="wa-cal-head"><button class="wa-cal-nav" type="button" onclick="WA.calPrev()">&lsaquo;</button><div class="wa-cal-month" id="wa-cal-month">&mdash;</div><button class="wa-cal-nav" type="button" onclick="WA.calNext()">&rsaquo;</button></div><div class="wa-cal-week"><div>Ma</div><div>Di</div><div>Wo</div><div>Do</div><div>Vr</div><div>Za</div><div>Zo</div></div><div class="wa-cal-grid" id="wa-cal-grid"></div></div>
+            <div class="wa-split"><div class="wa-card"><div class="wa-card-title">Wachten tijdens onderhoud?</div><label class="wa-radio-row"><input type="radio" name="wait_while_service" value="1" onchange="WA.sync()"> Ja</label><label class="wa-radio-row"><input type="radio" name="wait_while_service" value="0" onchange="WA.sync()"> Nee</label></div><div class="wa-card"><div class="wa-card-title">Hoe laat brengen?</div><div class="wa-times"><button type="button" class="wa-time" data-time="08:00" onclick="WA.pickTime(this)">08:00</button><button type="button" class="wa-time" data-time="09:00" onclick="WA.pickTime(this)">09:00</button><button type="button" class="wa-time" data-time="09:30" onclick="WA.pickTime(this)">09:30</button></div></div></div>
+            <div class="wa-actions"><button class="wa-btn wa-btn-ghost" type="button" onclick="WA.prev()">&lsaquo; Vorige</button><button class="wa-btn wa-btn-primary" type="button" onclick="WA.next()">Volgende &rsaquo;</button></div>
+          </section>
+          <section class="wa-panel" data-panel="4">
+            <h2 class="wa-h2">Contactgegevens</h2><p class="wa-help">Voor bevestiging van uw afspraak.</p>
+            <label class="wa-field"><span>Bedrijfsnaam (optioneel)</span><input type="text" name="company_name"></label>
+            <div class="wa-2col wa-mt2"><div class="wa-field"><span>Aanhef</span><div class="wa-inline"><label class="wa-radio-row"><input type="radio" name="salutation" value="dhr"> Dhr.</label><label class="wa-radio-row"><input type="radio" name="salutation" value="mevr"> Mevr.</label></div></div><div></div></div>
+            <label class="wa-field"><span>Voornaam</span><input type="text" name="first_name" required></label>
+            <label class="wa-field"><span>Tussenvoegsel</span><input type="text" name="middle_name"></label>
+            <label class="wa-field"><span>Achternaam</span><input type="text" name="last_name" required></label>
+            <div class="wa-3col wa-mt2"><label class="wa-field"><span>Straat</span><input type="text" name="street"></label><label class="wa-field"><span>Nr.</span><input type="text" name="house_number"></label><label class="wa-field"><span>Toev.</span><input type="text" name="addition"></label></div>
+            <div class="wa-2col wa-mt2"><label class="wa-field"><span>Postcode</span><input type="text" name="postal_code"></label><label class="wa-field"><span>Woonplaats</span><input type="text" name="city"></label></div>
+            <label class="wa-field wa-mt2"><span>Telefoon</span><input type="text" name="phone"></label>
+            <label class="wa-field"><span>E-mail</span><input type="email" name="email" required></label>
+            <label class="wa-field"><span>Opmerkingen</span><textarea name="remarks" rows="3" placeholder="Vragen of opmerkingen"></textarea></label>
+            <label class="wa-checkline"><input type="checkbox" name="terms_accepted" required><span>Ik ga akkoord met de voorwaarden</span></label>
+            <div class="wa-termsbox"><div class="wa-terms-title">Voorwaarden</div><div>Ik ga ermee akkoord dat mijn gegevens worden gebruikt voor mijn serviceafspraak.</div></div>
+            <label class="wa-checkline"><input type="checkbox" name="marketing_opt_in" value="1"><span>Houd mij op de hoogte van nieuws</span></label>
+            <div class="wa-actions"><button class="wa-btn wa-btn-ghost" type="button" onclick="WA.prev()">&lsaquo; Vorige</button><button class="wa-btn wa-btn-primary" type="submit">Afspraak inplannen</button></div>
+          </section>
+        </form>
+      </div>
+      <aside class="wa-side">
+        <div class="wa-side-title">OVERZICHT</div>
+        <div class="wa-acc"><button class="wa-acc-head" type="button" onclick="WA.acc(this)"><span class="wa-ic"><i class="fas fa-car"></i></span> AUTO <span class="wa-caret">&and;</span></button><div class="wa-acc-body wa-open"><div class="wa-acc-row"><b>Kenteken:</b> <span id="ov-plate">-</span></div><div class="wa-acc-row"><b>KM:</b> <span id="ov-km">-</span></div></div></div>
+        <div class="wa-acc"><button class="wa-acc-head" type="button" onclick="WA.acc(this)"><span class="wa-ic"><i class="fas fa-wrench"></i></span> WERK <span class="wa-caret">&and;</span></button><div class="wa-acc-body"><div class="wa-acc-row"><b>Onderhoud:</b> <span id="ov-main">-</span></div><div class="wa-acc-row"><b>Extra:</b> <span id="ov-extra">-</span></div></div></div>
+        <div class="wa-acc"><button class="wa-acc-head" type="button" onclick="WA.acc(this)"><span class="wa-ic"><i class="fas fa-calendar"></i></span> TIJD <span class="wa-caret">&and;</span></button><div class="wa-acc-body"><div class="wa-acc-row"><b>Datum:</b> <span id="ov-date">-</span></div><div class="wa-acc-row"><b>Tijd:</b> <span id="ov-time">-</span></div><div class="wa-acc-row"><b>Wachten:</b> <span id="ov-wait">-</span></div></div></div>
+        <div class="wa-acc"><button class="wa-acc-head" type="button" onclick="WA.acc(this)"><span class="wa-ic"><i class="fas fa-user"></i></span> CONTACT <span class="wa-caret">&and;</span></button><div class="wa-acc-body"><div class="wa-acc-row"><b>Naam:</b> <span id="ov-name">-</span></div><div class="wa-acc-row"><b>Email:</b> <span id="ov-email">-</span></div></div></div>
+      </aside>
     </div>
   </div>
+</section>
 
-  <div class="wa-grid">
-    {{-- LEFT CONTENT --}}
-    <div class="wa-main">
-      <form id="wa-form" method="POST" action="{{ route('workshop.finish') }}">
-        @csrf
-
-        {{-- ================= STEP 1 ================= --}}
-        <section class="wa-panel wa-show" data-panel="1">
-          <h2 class="wa-h2">UW AUTOGEGEVENS</h2>
-          <p class="wa-help">Om u van dienst te zijn hebben wij uw kenteken en kilometerstand nodig.</p>
-
-          <div class="wa-row">
-            <div class="wa-plate">
-              <div class="wa-plate-nl">NL</div>
-              <input class="wa-plate-input" name="license_plate" id="wa-license" type="text" placeholder="00-XXX-0" autocomplete="off">
-            </div>
-
-            <div class="wa-km">
-              <input class="wa-km-input" name="mileage" id="wa-mileage" type="number" min="0" step="1" placeholder="Km-stand bij benadering">
-              <div class="wa-km-suf">KM</div>
-            </div>
-          </div>
-
-          <div class="wa-actions wa-actions-right">
-            <button class="wa-btn wa-btn-primary" type="button" onclick="WA.next()">DOOR NAAR STAP 2 <span class="wa-arr">›</span></button>
-          </div>
-        </section>
-
-        {{-- ================= STEP 2 ================= --}}
-        <section class="wa-panel" data-panel="2">
-          <h2 class="wa-h2">SELECTEER UW WERKZAAMHEDEN</h2>
-          <p class="wa-help">Kies werkzaamheden die aan uw auto moeten gebeuren.</p>
-
-          <div class="wa-block-title">ONDERHOUD</div>
-
-          <div class="wa-list">
-            @php $maintenance = config('workshop_services.maintenance'); @endphp
-            @foreach($maintenance as $opt)
-              <label class="wa-item">
-                <span class="wa-radio">
-                  <input type="radio" name="maintenance_option" value="{{ $opt }}" onchange="WA.sync()">
-                  <span class="wa-radio-ui"></span>
-                </span>
-
-                <span class="wa-item-text">{{ $opt }}</span>
-
-                <span class="wa-info" title="Info">i</span>
-              </label>
-            @endforeach
-          </div>
-
-          <div class="wa-block-title wa-mt">AANVULLENDE WERKZAAMHEDEN</div>
-
-          <div class="wa-list">
-            @php $extras = config('workshop_services.extras'); @endphp
-            @foreach($extras as $ex)
-              <label class="wa-item wa-item-check">
-                <span class="wa-check">
-                  <input type="checkbox" name="extra_services[]" value="{{ $ex }}" onchange="WA.sync()">
-                  <span class="wa-check-ui"></span>
-                </span>
-
-                <span class="wa-item-text">{{ $ex }}</span>
-              </label>
-            @endforeach
-          </div>
-
-          <div class="wa-actions">
-            <button class="wa-btn wa-btn-ghost" type="button" onclick="WA.prev()">‹ VORIGE</button>
-            <button class="wa-btn wa-btn-primary" type="button" onclick="WA.next()">VOLGENDE ›</button>
-          </div>
-        </section>
-
-        {{-- ================= STEP 3 ================= --}}
-        <section class="wa-panel" data-panel="3">
-          <h2 class="wa-h2">PLAN UW TIJDSTIP</h2>
-          <p class="wa-help">Selecteer een beschikbare dag.</p>
-
-          {{-- Hidden inputs die naar controller gaan --}}
-          <input type="hidden" name="appointment_date" id="wa-date">
-          <input type="hidden" name="appointment_time" id="wa-time">
-
-          <div class="wa-cal">
-            <div class="wa-cal-head">
-              <button class="wa-cal-nav" type="button" onclick="WA.calPrev()">‹</button>
-              <div class="wa-cal-month" id="wa-cal-month">—</div>
-              <button class="wa-cal-nav" type="button" onclick="WA.calNext()">›</button>
-            </div>
-
-            <div class="wa-cal-week">
-              <div>Maandag</div><div>Dinsdag</div><div>Woensdag</div><div>Donderdag</div><div>Vrijdag</div><div>Zaterdag</div><div>Zondag</div>
-            </div>
-
-            <div class="wa-cal-grid" id="wa-cal-grid"></div>
-          </div>
-
-          <div class="wa-split">
-            <div class="wa-card">
-              <div class="wa-card-title">WILT U WACHTEN TIJDENS HET ONDERHOUD OF REPARATIE?</div>
-              <label class="wa-radio-row">
-                <input type="radio" name="wait_while_service" value="1" onchange="WA.sync()"> Ja
-              </label>
-              <label class="wa-radio-row">
-                <input type="radio" name="wait_while_service" value="0" onchange="WA.sync()"> Nee
-              </label>
-            </div>
-
-            <div class="wa-card">
-              <div class="wa-card-title">HOE LAAT WILT U UW AUTO HET LIEFST BRENGEN?</div>
-              <div class="wa-times">
-                <button type="button" class="wa-time" data-time="08:00" onclick="WA.pickTime(this)">08:00</button>
-                <button type="button" class="wa-time" data-time="09:00" onclick="WA.pickTime(this)">09:00</button>
-                <button type="button" class="wa-time" data-time="09:30" onclick="WA.pickTime(this)">09:30</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- <div class="wa-card wa-mt2">
-            <div class="wa-card-title">WILT U VERVANGEND VERVOER?</div>
-            <label class="wa-radio-row"><input type="radio" name="replacement_transport" value="Ja, graag vervangend vervoer (tegen servicehuur tarief)" onchange="WA.sync()"> Ja, graag vervangend vervoer (tegen servicehuur tarief)</label>
-            <label class="wa-radio-row"><input type="radio" name="replacement_transport" value="Ja, graag vervangend vervoer, deze wordt vergoed door mijn leasemaatschappij" onchange="WA.sync()"> Ja, graag vervangend vervoer, deze wordt vergoed door mijn leasemaatschappij</label>
-            <label class="wa-radio-row"><input type="radio" name="replacement_transport" value="Ja, graag een leenfiets" onchange="WA.sync()"> Ja, graag een leenfiets.</label>
-            <label class="wa-radio-row"><input type="radio" name="replacement_transport" value="Nee, vervangend vervoer is niet nodig" onchange="WA.sync()"> Nee, vervangend vervoer is niet nodig.</label>
-          </div> -->
-
-          <div class="wa-actions">
-            <button class="wa-btn wa-btn-ghost" type="button" onclick="WA.prev()">‹ VORIGE</button>
-            <button class="wa-btn wa-btn-primary" type="button" onclick="WA.next()">VOLGENDE ›</button>
-          </div>
-        </section>
-
-        {{-- ================= STEP 4 ================= --}}
-        <section class="wa-panel" data-panel="4">
-          <h2 class="wa-h2">UW CONTACTGEGEVENS</h2>
-          <p class="wa-help">Wij hebben de volgende gegevens van u nodig om de afspraak te bevestigen.</p>
-
-          <label class="wa-field">
-            <span>Bedrijfsnaam (Optioneel)</span>
-            <input type="text" name="company_name">
-          </label>
-
-          <div class="wa-2col wa-mt2">
-            <div class="wa-field">
-              <span>Aanhef</span>
-              <div class="wa-inline">
-                <label class="wa-radio-row"><input type="radio" name="salutation" value="dhr"> Dhr.</label>
-                <label class="wa-radio-row"><input type="radio" name="salutation" value="mevr"> Mevr.</label>
-              </div>
-            </div>
-
-            <div></div>
-          </div>
-
-          <label class="wa-field"><span>Voornaam</span><input type="text" name="first_name" required></label>
-          <label class="wa-field"><span>Tussenvoegsel</span><input type="text" name="middle_name"></label>
-          <label class="wa-field"><span>Achternaam</span><input type="text" name="last_name" required></label>
-
-          <div class="wa-3col wa-mt2">
-            <label class="wa-field"><span>Straat</span><input type="text" name="street"></label>
-            <label class="wa-field"><span>Huisnummer</span><input type="text" name="house_number"></label>
-            <label class="wa-field"><span>Toevoeging</span><input type="text" name="addition"></label>
-          </div>
-
-          <div class="wa-2col wa-mt2">
-            <label class="wa-field"><span>Postcode</span><input type="text" name="postal_code"></label>
-            <label class="wa-field"><span>Woonplaats</span><input type="text" name="city"></label>
-          </div>
-
-          <label class="wa-field wa-mt2"><span>Telefoonnummer</span><input type="text" name="phone"></label>
-          <label class="wa-field"><span>E-mail</span><input type="email" name="email" required></label>
-
-          <label class="wa-field">
-            <span>Opmerkingen</span>
-            <textarea name="remarks" rows="5" placeholder="Zijn er nog andere werkzaamheden? Heeft u verder vragen of wilt u vooraf een kostenindicatie?"></textarea>
-          </label>
-
-          <label class="wa-checkline">
-            <input type="checkbox" name="terms_accepted" required>
-            <span>Ik ga akkoord met de voorwaarden</span>
-          </label>
-
-          <div class="wa-termsbox">
-            <div class="wa-terms-title">VOORWAARDEN</div>
-            <div>Ik ga ermee akkoord dat mijn gegevens worden gebruikt voor het afhandelen van mijn serviceafspraak.</div>
-          </div>
-
-          <label class="wa-checkline">
-            <input type="checkbox" name="marketing_opt_in" value="1">
-            <span>Houd mij op de hoogte van nieuws en aanbiedingen</span>
-          </label>
-
-          <div class="wa-actions">
-            <button class="wa-btn wa-btn-ghost" type="button" onclick="WA.prev()">‹ VORIGE</button>
-            <button class="wa-btn wa-btn-primary" type="submit">AFSPRAAK INPLANNEN</button>
-          </div>
-        </section>
-      </form>
-    </div>
-
-    {{-- RIGHT OVERVIEW --}}
-    <aside class="wa-side">
-      <div class="wa-side-title">OVERZICHT</div>
-
-      <div class="wa-acc">
-        <button class="wa-acc-head" type="button" onclick="WA.acc(this)">
-          <span class="wa-ic">🚗</span> AUTOGEGEVENS <span class="wa-caret">⌃</span>
-        </button>
-        <div class="wa-acc-body wa-open">
-          <div class="wa-acc-row"><b>Kenteken:</b> <span id="ov-plate">-</span></div>
-          <div class="wa-acc-row"><b>KM:</b> <span id="ov-km">-</span></div>
-        </div>
-      </div>
-
-      <div class="wa-acc">
-        <button class="wa-acc-head" type="button" onclick="WA.acc(this)">
-          <span class="wa-ic">🛠️</span> WERKZAAMHEDEN <span class="wa-caret">⌃</span>
-        </button>
-        <div class="wa-acc-body">
-          <div class="wa-acc-row"><b>Onderhoud:</b> <span id="ov-main">-</span></div>
-          <div class="wa-acc-row"><b>Aanvullend:</b> <span id="ov-extra">-</span></div>
-        </div>
-      </div>
-
-      <div class="wa-acc">
-        <button class="wa-acc-head" type="button" onclick="WA.acc(this)">
-          <span class="wa-ic">📅</span> TIJDSTIP <span class="wa-caret">⌃</span>
-        </button>
-        <div class="wa-acc-body">
-          <div class="wa-acc-row"><b>Datum:</b> <span id="ov-date">-</span></div>
-          <div class="wa-acc-row"><b>Tijd:</b> <span id="ov-time">-</span></div>
-          <div class="wa-acc-row"><b>Wachten:</b> <span id="ov-wait">-</span></div>
-        </div>
-      </div>
-
-      <div class="wa-acc">
-        <button class="wa-acc-head" type="button" onclick="WA.acc(this)">
-          <span class="wa-ic">👤</span> CONTACTGEGEVENS <span class="wa-caret">⌃</span>
-        </button>
-        <div class="wa-acc-body">
-          <div class="wa-acc-row"><b>Naam:</b> <span id="ov-name">-</span></div>
-          <div class="wa-acc-row"><b>Email:</b> <span id="ov-email">-</span></div>
-        </div>
-      </div>
-    </aside>
-  </div>
-</div>
-
-<section class="ga-rental-section">
-    <div class="ga-container">
-        <div class="ga-rental-content">
-
-          <div class="ga-rental-text">
-    <div class="ga-price-badge">Vanaf €35 per dag</div>
-
-    <h2>Toyota Aygo Premium Edition</h2>
-
-    <p>
-        Compact rijden. Premium gevoel.
-    </p>
-
-    <div class="ga-columns">
-
-        <div class="ga-column">
-            <h3>Uitrusting & Comfort</h3>
-            <ul class="ga-benefits">
-                <li>✔ Apple CarPlay</li>
-                <li>✔ Lederen interieur</li>
-                <li>✔ Airco</li>
-                <li>✔ 5-deurs comfort</li>
-                <li>✔ Elektrische ramen</li>
-                <li>✔ Handgeschakeld</li>
-                <li>✔ Zuinig in verbruik</li>
-                <li>✔ Onbeperkte KM</li>
+{{-- ====== VERHUUR ====== --}}
+<section id="verhuur" class="rental-section">
+    <div class="container">
+        <div class="rental">
+          <div class="rental-text" data-a="left">
+            <span class="rental-badge">Vanaf &euro;35/dag</span>
+            <h2>Toyota Aygo Premium</h2>
+            <p>Compact, zuinig en volledig uitgerust. Direct beschikbaar in Arnhem.</p>
+            <ul class="rental-benefits">
+              <li>&#10003; Apple CarPlay</li><li>&#10003; Lederen interieur</li>
+              <li>&#10003; Airco</li><li>&#10003; 5-deurs</li>
+              <li>&#10003; Elektrische ramen</li><li>&#10003; Zuinig verbruik</li>
+              <li>&#10003; Handgeschakeld</li><li>&#10003; Onbeperkte KM</li>
             </ul>
+            <p class="rental-terms" onclick="openVoorwaarden()">Huurvoorwaarden bekijken</p>
+            <div class="rental-btns">
+              <a href="#footer" class="btn btn-red">Reserveer</a>
+              <a href="tel:+31649951874" class="btn btn-outline">Bel direct</a>
+            </div>
+          </div>
+          <div class="rental-slider" data-a="right">
+            <div class="rental-slides" id="gaSlides">
+              <img src="{{ asset('images/WhatsApp Image 2026-02-25 at 08.05.40.jpeg') }}" alt="Aygo">
+              <img src="{{ asset('images/WhatsApp Image 2026-02-25 at 08.05.41 (1).jpeg') }}" alt="Aygo">
+              <img src="{{ asset('images/WhatsApp Image 2026-02-25 at 08.05.41 (2).jpeg') }}" alt="Aygo">
+              <img src="{{ asset('images/WhatsApp Image 2026-02-25 at 08.05.41 (3).jpeg') }}" alt="Aygo">
+              <img src="{{ asset('images/WhatsApp Image 2026-02-25 at 08.05.41 (4).jpeg') }}" alt="Aygo">
+              <img src="{{ asset('images/WhatsApp Image 2026-02-25 at 08.05.41 (5).jpeg') }}" alt="Aygo">
+              <img src="{{ asset('images/WhatsApp Image 2026-02-25 at 08.05.41.jpeg') }}" alt="Aygo">
+            </div>
+          </div>
         </div>
-
     </div>
-<p class="ga-location">
-    Direct beschikbaar in Arnhem
-</p>
-<p class="ga-voorwaarden-link" onclick="openVoorwaarden()">
-    Bekijk huurvoorwaarden
-</p>
+</section>
+<div class="ga-modal-overlay" id="gaVoorwaardenModal"><div class="ga-modal"><span class="ga-modal-close" onclick="closeVoorwaarden()">&times;</span><h3>Huurvoorwaarden</h3><ul><li>Borg &euro;250</li><li>Eigen risico &euro;500</li><li>Volgetankt retour</li><li>Niet roken</li><li>Uitsluitend legaal gebruik</li></ul></div></div>
 
-    <div class="ga-buttons">
-        <a href="#contact" class="ga-btn-main">Reserveer Nu</a>
-        <a href="tel: +31649951874" class="ga-btn-ghost">Bel Direct</a>
+{{-- ====== OPENINGSTIJDEN + VERKOPEN ====== --}}
+<section style="padding:100px 0;background:var(--dark-2)">
+    <div class="container">
+        <div class="split">
+            <div class="split-text" data-a="left">
+                <div class="tag">Bezoek ons</div>
+                <h2>Openingstijden</h2>
+                <p>Welkom voor een proefrit, advies of verhuur. Wij staan klaar.</p>
+                <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:14px;color:var(--gray-light);margin:4px 0">
+                    <strong style="color:#fff">Ma &ndash; Vr</strong><span>08:30 &ndash; 17:30</span>
+                    <strong style="color:#fff">Zaterdag</strong><span>09:00 &ndash; 16:00</span>
+                    <strong style="color:#fff">Zondag</strong><span>Gesloten</span>
+                </div>
+                <p>Buiten deze tijden? Neem contact op voor een afspraak.</p>
+                <div><a href="#footer" class="btn btn-red" style="margin-top:8px">Contact opnemen</a></div>
+            </div>
+            <div class="split-img" data-a="right"><img src="{{ asset('images/car-repair-maintenance-theme-mechanic-uniform-working-auto-service.jpg') }}" alt="Werkplaats"></div>
+        </div>
     </div>
-</div>
+</section>
 
-            <!-- IMAGE SLIDER -->
-            <div class="ga-slider">
-                <div class="ga-slides"  id="gaSlides">
-                <img src="{{ asset('images/WhatsApp Image 2026-02-25 at 08.05.40.jpeg') }}" alt="Handdruk">
-                <img src="{{ asset('images/WhatsApp Image 2026-02-25 at 08.05.41 (1).jpeg') }}" alt="Handdruk">
-                <img src="{{ asset('images/WhatsApp Image 2026-02-25 at 08.05.41 (2).jpeg') }}" alt="Handdruk">
-                <img src="{{ asset('images/WhatsApp Image 2026-02-25 at 08.05.41 (3).jpeg') }}" alt="Handdruk">
-                <img src="{{ asset('images/WhatsApp Image 2026-02-25 at 08.05.41 (4).jpeg') }}" alt="Handdruk">
-                <img src="{{ asset('images/WhatsApp Image 2026-02-25 at 08.05.41 (5).jpeg') }}" alt="Handdruk">
-                <img src="{{ asset('images/WhatsApp Image 2026-02-25 at 08.05.41.jpeg') }}" alt="Handdruk">
+{{-- ====== AUTO VERKOPEN ====== --}}
+<section id="verkoop" style="padding:100px 0;background:var(--dark)">
+    <div class="container">
+        <div class="split">
+            <div class="split-img" data-a="left"><img src="{{ asset('images/car-sale.jpg') }}" alt="Auto verkopen"></div>
+            <div class="split-text" data-a="right">
+                <div class="tag">Verkopen</div>
+                <h2>Uw auto verkopen?</h2>
+                <p>Geen gedoe met advertenties, onderhandelingen of oplichters. Vul uw gegevens in en ontvang snel een eerlijk, vrijblijvend bod.</p>
+                @if(session('success'))<div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.15);padding:10px 14px;border-radius:8px;color:#22c55e;font-size:13px">{{ session('success') }}</div>@endif
+                @if($errors->any())<div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.15);padding:10px 14px;border-radius:8px;color:#ef4444;font-size:13px"><ul style="margin:0;padding-left:16px">@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul></div>@endif
+                <button class="btn-sell" type="button" onclick="SellCar.open()">Auto verkopen &rarr;</button>
+                {{-- SELL CAR MODAL --}}
+                <div id="sellcar-overlay" class="sc-overlay" aria-hidden="true" onclick="SellCar.close()">
+                  <div class="sc-modal" onclick="event.stopPropagation()">
+                    <button class="sc-close" onclick="SellCar.close()">&times;</button>
+                    <h2 class="sc-title">Auto verkopen</h2>
+                    <form id="sellcar-form" class="sc-form" action="{{ route('sellcar.store') }}" method="POST" enctype="multipart/form-data" novalidate>
+                      @csrf
+                      <h3 class="sc-subtitle">Autogegevens</h3>
+                      <div class="sc-grid">
+                        <label class="sc-input"><span>Merk</span><input name="brand" type="text" placeholder="Merk"></label>
+                        <label class="sc-input"><span>Model</span><input name="model" type="text" placeholder="Model"></label>
+                        <label class="sc-input"><span>Kenteken *</span><input name="license_plate" type="text" placeholder="XX-999-X" required></label>
+                        <label class="sc-input"><span>KM-stand *</span><input name="mileage" type="number" min="0" placeholder="123456" required></label>
+                      </div>
+                      <div class="sc-field"><span class="sc-label">Opties</span><div class="sc-options">@php $opts=['Airco','Climate control','Cruise control','Elektrische ramen voor','Elektrische ramen achter','Schuifdak','Panoramadak','Lichtmetalen velgen','Navigatie','Multifunctioneel stuur','Xenon verlichting','Lederen bekleding','Stoelverwarming','Parkeersensoren','Elektrische stoelverstelling','Metallic lak','Elektrische spiegels'];@endphp @foreach($opts as $o)<label class="sc-check"><input type="checkbox" name="options[]" value="{{ $o }}"><span>{{ $o }}</span></label>@endforeach</div></div>
+                      <div class="sc-field"><span class="sc-label">Foto's</span><div id="sc-drop" class="sc-drop"><strong>Sleep bestanden hierheen</strong><span>of</span><label class="sc-browse">Blader<input id="photos" name="photos[]" type="file" accept="image/*" multiple hidden></label><div class="sc-count"><span id="sc-count">0</span>/20</div></div><div id="sc-preview" class="sc-preview"></div></div>
+                      <label class="sc-input"><span>Bijzonderheden</span><textarea name="remarks" rows="3" placeholder="Schade, onderhoud, opties..."></textarea></label>
+                      <h3 class="sc-subtitle">Uw gegevens</h3>
+                      <label class="sc-input"><span>Naam *</span><input name="name" type="text" required></label>
+                      <label class="sc-input"><span>Telefoon *</span><input name="phone" type="tel" required></label>
+                      <label class="sc-input"><span>E-mail *</span><input name="email" type="email" required></label>
+                      <label class="sc-input"><span>Opmerking</span><textarea name="message" rows="2" placeholder="(optioneel)"></textarea></label>
+                      <label class="sc-privacy"><input name="privacy" type="checkbox" required><span>Akkoord met het <a href="/privacy" target="_blank">privacybeleid</a></span></label>
+                      <button class="sc-submit" type="submit">Verzenden</button>
+                    </form>
+                  </div>
                 </div>
             </div>
-
-        </div>
-    </div>
-</section>
-<div class="ga-modal-overlay" id="gaVoorwaardenModal">
-    <div class="ga-modal">
-        <span class="ga-modal-close" onclick="closeVoorwaarden()">×</span>
-        <h3>Huurvoorwaarden</h3>
-        <ul>
-            <li>Borg €250</li>
-            <li>Eigen risico €500</li>
-            <li>Volgetankt retour</li>
-            <li>Niet roken</li>
-            <li>Gebruik uitsluitend voor legale doeleinden</li>
-        </ul>
-    </div>
-</div>
-
-
-
-<!-- <section class="openingstijden-section">
-    <div class="container">
-        <div class="openingstijden-section-inner">
-            <div class="openingstijden-image">
-                <img src="{{ asset('images/onderhoud.png') }}" alt="Handdruk">
-            </div>
-            <div class="openingstijden-content">
-                <h1>Onderhoud voor elke auto</h1>
-                <p>Voor elk onderhoud ben je bij ons aan het juiste adres. Wij zorgen dat jouw auto veilig, betrouwbaar en in topconditie blijft.</p>
-
-                <p>*Kleine beurt</p>
-
-                <p>*Grote beurt</p>
-
-                <p>*Olie & filters</p>
-
-                <p>*Remmenservice</p>
-                                
-                <p>*Diagnose & storingen</p>
-
-
-                <div class="btn-aanbod"><a href="#footer" class="btn btn-primary">Maak een afspraak</a></div>
-            </div>
-        </div>
-    </div>
-</section> -->
-
-<section class="openingstijden-section">
-    <div class="container">
-        <div class="openingstijden-section-inner">
-            <div class="openingstijden-content">
-                <h1>Huur vandaag nog een aanhanger</h1>
-                <p> Afmetingen laadbak: ca. 130x 250 cm <br>
-                    €25 per dag,
-                    €15 voor 4 uur,
-                    €50 voor een weekend. 
-                    </p>
-                <p>Onze aanhangers zijn veilig, schoon en direct beschikbaar in meerdere maten. Huur per dag, weekend of langer met heldere tarieven en zonder verrassingen.</p>
-                <p>Wij zetten ’m op tijd voor je klaar en geven gratis advies over belading, sjorpunten en kogeldruk. Spanbanden, netten en een disselslot zijn optioneel verkrijgbaar, zodat jij zorgeloos en volgens de regels de weg op kunt.</p>
-                <div class="btn-aanbod"><a href="{{ route('booking.show', ['type' => 'aanhanger']) }}" class="btn btn-primary">Boek nu!</a></div>
-            </div>
-            <div class="openingstijden-image">
-                <img src="{{ asset('images/cargo-trailers-passenger-car-parked-spacious-lot.jpg') }}" alt="Handdruk">
-            </div>
         </div>
     </div>
 </section>
 
-<section class="openingstijden-section">
-    <div class="container">
-        <div class="openingstijden-section-inner">
-            <div class="openingstijden-image">
-                <img src="{{ asset('images/1200x810.jpg') }}" alt="Handdruk">
-            </div>
-            <div class="openingstijden-content">
-                <h1>Numatic George Tapijtreiniger <br> Slechts €25 per dag!</h1>
-                <p>Wil je je tapijten, meubels of vloerkleden grondig reinigen? Huur dan de krachtige en betrouwbare Numatic George tapijtreiniger!</p>
-                <p>Huur per dag of weekend, zonder gedoe. We adviseren je graag over het juiste mondstuk, filtergebruik en veilig legen van de ketel.</p>
-                <div class="btn-aanbod"><a href="{{ route('booking.show', ['type' => 'aanhanger']) }}" class="btn btn-primary">Boek nu!</a></div>
-            </div>
-        </div>
-    </div>
-</section>
-
-
-<section class="openingstijden-section">
-    <div class="container">
-        <div class="openingstijden-section-inner">
-            <div class="openingstijden-content">
-                <h1>Koplampen polijsten</h1>
-                <p>Door verwering, zonlicht en vuil kunnen koplampen na verloop van tijd dof en geel worden, wat de lichtopbrengst en uitstraling van je auto vermindert. Met een professionele polijstbehandeling herstellen wij de helderheid en glans van je koplampen. Dit zorgt voor beter zicht in het donker, een veiligere rijervaring en een frisse, verzorgde uitstraling van je auto vaak met zichtbaar resultaat binnen één behandeling.<br></p>
-                <div class="btn-aanbod"><a href="{{ route('booking.show', ['type' => 'aanhanger']) }}" class="btn btn-primary">Boek nu!</a></div>
-            </div>
-            <div class="openingstijden-image">
-                <img src="{{ asset('images/head-lights-car.jpg') }}" alt="Handdruk">
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="afspraak-section">
-    <div class="container">
-        <div class="afspraak-section-inner">
-            <h1>Ook zo'n mooie auto op het oog?</h1>
-            <p>Plan snel een afspraak en stap binnenkort in jouw nieuwe auto.</p>
-             <div class="btn-aanbod">
-                <a href="#footer" class="btn btn-primary">Maak Afspraak</a>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="openingstijden-section">
-    <div class="container">
-        <div class="openingstijden-section-inner">
-            <div class="openingstijden-content">
-                <h1>Openingstijden</h1>
-                <p>Je bent van harte welkom tijdens onze vaste openingstijden. Of je nu komt voor verhuur, een reservering wilt ophalen of iets wilt inleveren: wij staan klaar om je snel en prettig te helpen. We denken graag met je mee, zorgen dat alles vlot geregeld is en laten je niet onnodig wachten. Zo weet je precies waar je aan toe bent en kun je snel weer op weg.</p>
-                <p><strong>Ma–Vr:</strong> 08:30–17:30 · <strong>Za:</strong> 09:00–16:00 · <strong>Zo:</strong> gesloten</p>
-                <p>U bent welkom tijdens onze reguliere openingstijden. Wilt u langskomen buiten deze tijden? <br> Dat kan! Neem gerust contact met ons op om een afspraak te maken.</p>
-                <div class="btn-aanbod"><a href="#footer" class="btn btn-primary">Maak Afspraak</a></div>
-            </div>
-            <div class="openingstijden-image">
-                <img src="{{ asset('images/car-repair-maintenance-theme-mechanic-uniform-working-auto-service.jpg') }}" alt="Handdruk">
-            </div>
-        </div>
-    </div>
-</section>
-
-
-
-<section class="openingstijden-section">
-    <div class="container">
-        <div class="openingstijden-section-inner">
-            <div class="openingstijden-image">
-                <img src="{{ asset('images/car-sale.jpg') }}" alt="Handdruk">
-            </div>
-            <div class="openingstijden-content">
-                <h1>Uw auto snel en betrouwbaar verkopen</h1>
-                <p>Wilt u uw auto verkopen zonder gedoe met online platforms of handelaren?</p>
-                <p>Vul hieronder uw gegevens in en ontvang binnen korte tijd een vrijblijvend bod van Gerritsen Automotive.</p>
-
-
-                @if(session('success'))
-  <div class="alert success" style="margin:10px 0;background:#e8fff0;border:1px solid #b6f0c5;padding:10px;border-radius:8px;">
-    {{ session('success') }}
-  </div>
-@endif
-@if ($errors->any())
-  <div class="alert error" style="margin:10px 0;background:#fff3f3;border:1px solid #f5b5b5;padding:10px;border-radius:8px;">
-    <ul style="margin:0;padding-left:18px;">@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul>
-  </div>
-@endif
-                <button href="#verkopen" class="btn-sell-open" type="button" onclick="SellCar.open()">Auto verkopen</button>
-                <div id="sellcar-overlay" class="sc-overlay" aria-hidden="true" onclick="SellCar.close(event)">
-  <div class="sc-modal" role="dialog" aria-modal="true" aria-labelledby="sellcar-title" onclick="event.stopPropagation()">
-    <button class="sc-close" aria-label="Sluiten" onclick="SellCar.close()">×</button>
-    <h2 id="sellcar-title" class="sc-title">Auto verkopen</h2>
-
-    <form id="sellcar-form" class="sc-form" action="{{ route('sellcar.store') }}" method="POST" enctype="multipart/form-data" novalidate>
-      @csrf
-
-      <h3 class="sc-subtitle">Gegevens van uw auto</h3>
-      <div class="sc-grid">
-        <label class="sc-input">
-          <span>Merk</span>
-          <input name="brand" type="text" placeholder="Merk">
-        </label>
-        <label class="sc-input">
-          <span>Model</span>
-          <input name="model" type="text" placeholder="Model">
-        </label>
-        <label class="sc-input">
-          <span>Kenteken <b>*</b></span>
-          <input name="license_plate" type="text" placeholder="XX-999-X" required>
-        </label>
-        <label class="sc-input">
-          <span>Kilometerstand <b>*</b></span>
-          <input name="mileage" type="number" min="0" step="1" placeholder="bijv. 123456" required>
-        </label>
-      </div>
-
-      <div class="sc-field">
-        <span class="sc-label">Opties</span>
-        <div class="sc-options">
-          @php
-            $opts = [
-              'Airco','Climate control','Cruise control','Elektrische ramen voor','Elektrische ramen achter','Schuifdak',
-              'Panoramadak','Lichtmetalen velgen','Navigatie','Multifunctioneel stuur','Xenon verlichting','Lederen bekleding',
-              'Stoelverwarming','Parkeersensoren','Elektrische stoelverstelling','Metallic lak','Elektrische spiegels'
-            ];
-          @endphp
-          @foreach($opts as $o)
-          <label class="sc-check"><input type="checkbox" name="options[]" value="{{ $o }}"> <span>{{ $o }}</span></label>
-          @endforeach
-        </div>
-      </div>
-
-      <div class="sc-field">
-        <span class="sc-label">Foto's</span>
-        <div id="sc-drop" class="sc-drop" aria-label="Foto upload">
-          <strong>Drag &amp; Drop Files Here</strong>
-          <span>ofwel</span>
-          <label class="sc-browse">Blader door de bestanden
-            <input id="photos" name="photos[]" type="file" accept="image/*" multiple hidden>
-          </label>
-          <div class="sc-count"><span id="sc-count">0</span> van 20</div>
-        </div>
-        <div id="sc-preview" class="sc-preview"></div>
-      </div>
-
-      <label class="sc-input">
-        <span>Overige bijzonderheden, zoals eventuele schade, staat van onderhoud en speciale opties</span>
-        <textarea name="remarks" rows="4" placeholder="Vertel iets over de staat van de auto..."></textarea>
-      </label>
-
-      <h3 class="sc-subtitle">Uw gegevens</h3>
-      <label class="sc-input">
-        <span>Uw naam <b>*</b></span>
-        <input name="name" type="text" required>
-      </label>
-      <label class="sc-input">
-        <span>Telefoonnummer <b>*</b></span>
-        <input name="phone" type="tel" required>
-      </label>
-      <label class="sc-input">
-        <span>E-mailadres <b>*</b></span>
-        <input name="email" type="email" required>
-      </label>
-      <label class="sc-input">
-        <span>Vraag en/of opmerking</span>
-        <textarea name="message" rows="3" placeholder="(optioneel)"></textarea>
-      </label>
-
-      <label class="sc-privacy">
-        <input id="privacy" name="privacy" type="checkbox" required>
-        <span>Door dit formulier te gebruiken gaat u akkoord met onze <a href="/privacy" target="_blank" rel="noopener">privacyverklaring</a></span>
-      </label>
-
-      <button class="sc-submit" type="submit">Verzenden</button>
-    </form>
-  </div>
-</div>
-            </div>
-        </div>
-    </div>
-</section>
-
-
-
-
-<!-- Trigger knop (zet waar je wilt) -->
-
-
-<!-- Modal -->
-
-
-<style>
-
-  .ga-benefits {
-    list-style: none;
-    margin-bottom: 35px;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr); /* 2 kolommen */
-    gap: 10px 30px; /* verticale en horizontale ruimte tussen items */
-}
-
-.ga-benefits li {
-    margin-bottom: 0; /* margin niet nodig meer per item */
-}
-
- .ga-rental-section {
-    background: #0f0f0f;
-    padding: 100px 20px;
-    color: #fff;
-}
-
-.ga-container {
-    max-width: 1400px;
-    margin: 0 auto;
-}
-
-.ga-rental-content {
-    display: flex;
-    align-items: stretch; /* BELANGRIJK */
-    justify-content: space-between;
-    gap: 60px;
-    flex-wrap: wrap;
-}
-
-/* TEXT */
-.ga-rental-text {
-    flex: 1;
-}
-
-.ga-price-badge {
-    display: inline-block;
-    background: #1c1c1c;
-    padding: 10px 18px;
-    margin-bottom: 20px;
-    border: 1px solid #747474;
-    font-size: 18px;
-    color: #fff;
-}
-
-.ga-rental-text h2 {
-    font-size: 42px;
-    margin-bottom: 20px;
-    color: #fff;
-}
-
-.ga-rental-text p {
-    font-size: 18px;
-    line-height: 1.7;
-    margin-bottom: 25px;
-    color: #fff;
-}
-
-.ga-benefits{
-  list-style: none;
-  padding: 0;
-  margin: 0 0 35px 0;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px 30px;
-}
-
-.ga-benefits li{
-  margin: 0;
-  text-align: left;
-}
-
-/* BUTTONS */
-.ga-buttons {
-    display: flex;
-    gap: 15px;
-    margin-top: 0;  /* dit haalt de extra gap weg */
-}
-
-.ga-btn-main {
-    background: #747474;
-    color: #fff;
-    padding: 14px 30px;
-    font-weight: 600;
-    text-decoration: none;
-    transition: 0.3s ease;
-}
-
-.ga-btn-main:hover {
-    background: #5e5e5e;
-    transform: translateY(-3px);
-}
-
-.ga-btn-ghost {
-    border: 2px solid #747474;
-    color: #fff;
-    padding: 14px 30px;
-    font-weight: 600;
-    text-decoration: none;
-    transition: 0.3s ease;
-}
-
-.ga-btn-ghost:hover {
-    background: #747474;
-}
-
-/* Slider container */
-.ga-slider {
-    flex: 1;
-    max-width: 580px;
-    height: 580px;
-    overflow: hidden;
-    border-radius: 15px;
-    position: relative;
-}
-
-.ga-slides {
-    display: flex;
-    height: 100%;
-    transition: transform 0.6s ease-in-out;
-}
-
-.ga-slides img {
-    min-width: 100%;   /* 👈 HEEL BELANGRIJK */
-    height: 100%;
-    object-fit: cover;
-}
-
-.ga-columns {
-    display: flex;
-    gap: 40px;
-    margin: 30px 0;
-    flex-wrap: wrap;
-}
-
-.ga-column {
-    flex: 1;
-    min-width: 250px;
-}
-
-.ga-column h3 {
-    margin-bottom: 15px;
-    color: #fff;
-    font-size: 18px;
-}
-
-.ga-location {
-    margin-top: 15px;   /* was waarschijnlijk groter */
-    margin-bottom: 4px; /* bijna geen ruimte onder */
-    font-weight: 600;
-    font-size: 16px;
-}
-
-
-
-/* ✅ Mobiel: 1 kolom (geen rare sprongen) + links uitlijnen */
-@media (max-width: 768px){
-    .ga-columns {
-        flex-direction: column;
-    }
-
-     .ga-rental-content {
-        flex-direction: column;
-    }
-
-    .ga-slider {
-        order: 2;          /* 👈 foto onder tekst */
-        max-width: 100%;
-        height: 420px;     /* iets kleiner op mobiel */
-        margin-top: 30px;
-    }
-
-    .ga-rental-text {
-        order: 1;
-    }
-}
-
-
-/* Kleine knop */
-.ga-voorwaarden-link {
-    margin-top: 2px;
-    margin-bottom: 15px;   /* kleine ruimte boven knoppen */
-    font-size: 12px;       /* kleiner */
-    color: #747474;
-    cursor: pointer;
-    transition: 0.3s ease;
-    display: inline-block;
-}
-.ga-voorwaarden-link:hover {
-    color: #fff;
-    text-decoration: underline;
-}
-
-/* Reset alle spacing in dit blok */
-.ga-rental-text p {
-    margin: 0;
-}
-
-/* Direct beschikbaar */
-.ga-location {
-    margin-top: 12px;
-    margin-bottom: 2px;
-    font-weight: 600;
-    font-size: 16px;
-}
-
-/* Huurvoorwaarden link */
-.ga-voorwaarden-link {
-    margin: 0;
-    font-size: 12px;
-    color: #747474;
-    cursor: pointer;
-    transition: 0.2s ease;
-    display: inline-block;
-}
-
-.ga-voorwaarden-link:hover {
-    color: #fff;
-}
-
-/* Knoppen direct eronder */
-.ga-buttons {
-    margin-top: 12px;
-}
-
-
-/* Modal overlay */
-.ga-modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    visibility: hidden;
-    transition: 0.3s ease;
-    z-index: 9999;
-}
-
-.ga-modal-overlay.active {
-    opacity: 1;
-    visibility: visible;
-}
-
-/* Modal box */
-.ga-modal {
-    background: #111;
-    padding: 40px;
-    border-radius: 12px;
-    max-width: 400px;
-    width: 90%;
-    color: #fff;
-    position: relative;
-}
-
-.ga-modal h3 {
-    margin-bottom: 20px;
-}
-
-.ga-modal ul {
-    list-style: none;
-    padding: 0;
-}
-
-.ga-modal ul li {
-    margin-bottom: 10px;
-}
-
-/* Close button */
-.ga-modal-close {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    font-size: 22px;
-    cursor: pointer;
-}
-/* --- basic button trigger --- */
-.btn-sell-open{padding: 10px 20px;;border:none;background:#747474;color:#fff;  font-family: 'Play', sans-serif; font-size:16px; font-weight: bold;}
-
-/* --- modal --- */
-.sc-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:16px;z-index:9999}
-.sc-overlay.is-open{display:flex}
-.sc-modal{width:min(860px,100%);background:#fff;border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,.25);position:relative;max-height:90vh;overflow:auto}
-.sc-title{margin:0;padding:18px 22px;background:#747474;color:#fff;border-radius:16px 16px 0 0;font-size:24px;letter-spacing:.2px}
-.sc-close{position:absolute;right:12px;top:10px;width:38px;height:38px;border:none;border-radius:999px;background:#747474;color:#fff;font-size:24px;cursor:pointer}
-.sc-form{padding:18px 22px 24px 22px}
-.sc-subtitle{margin:8px 0 14px 0;font-size:20px}
-.sc-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-@media (max-width:640px){.sc-grid{grid-template-columns:1fr}}
-
-.sc-input{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
-.sc-input > span{font-weight:600}
-.sc-input input,.sc-input textarea{
-  width:100%;padding:12px 14px;border:1px solid #747474;border-radius:10px;font-size:16px;outline:none;
-}
-.sc-input input:focus,.sc-input textarea:focus{border-color:#d0011c;box-shadow:0 0 0 3px rgba(208,1,28,.1)}
-
-.sc-field{margin:12px 0}
-.sc-label{display:block;font-weight:700;margin-bottom:8px}
-.sc-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-@media (max-width:640px){.sc-options{grid-template-columns:1fr}}
-.sc-check{display:flex;align-items:center;gap:8px}
-.sc-check input{width:18px;height:18px}
-
-.sc-drop{
-  border:2px dashed #747474;border-radius:12px;padding:22px;text-align:center;display:flex;flex-direction:column;gap:6px;position:relative
-}
-.sc-drop.dragover{background:#f9fafb;border-color:#747474}
-.sc-browse{color:#d0011c;cursor:pointer;font-weight:700}
-.sc-count{position:absolute;right:12px;bottom:8px;font-size:12px;color:#6b7280}
-
-.sc-preview{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
-@media (max-width:640px){.sc-preview{grid-template-columns:repeat(3,1fr)}}
-.sc-thumb{position:relative;border:1px solid #eee;border-radius:8px;overflow:hidden}
-.sc-thumb img{width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:1/1}
-.sc-thumb button{position:absolute;top:4px;right:4px;border:none;background:#0009;color:#fff;width:24px;height:24px;border-radius:6px;cursor:pointer}
-
-.sc-privacy{display:flex;gap:10px;align-items:flex-start;margin:12px 0}
-.sc-privacy a{color:#d0011c}
-
-.sc-submit{
-  display:inline-block;width:100%;margin-top:4px;border:none;border-radius:10px;background:#747474;color:#fff;
-  font-weight:800;padding:14px 16px;font-size:16px;cursor:pointer
-}
-</style>
-
-
-
+{{-- ====== FOOTER ====== --}}
 <section id="footer" class="footer-section">
+    <div class="footer-bg"></div><div class="footer-overlay"></div>
     <div class="container">
-        <div class="footer-section-inner">
-            <div class="footer-content-left">
-                <h1>Neem contact op</h1>
-                
-                <div class="footer-content-left-info">
-                    <div class="naam">
-                        <img src="{{ asset('images/home.svg') }}" alt="home">
-                        <p>Gerritsen Automotive</p>
-                    </div>
-
-                    <div class="location">
-                        <img src="{{ asset('images/location.svg') }}" alt="home">
-                        <p>Gelderse Rooslaan 14 A, 6841 BE Arnhem</p>
-                    </div> 
-
-                   <div class="phone">
-  <img src="{{ asset('images/telephone.svg') }}" alt="phone">
-  <a href="tel:+31638257987">+31 6 38257987 (Verkoop, Shania)</a>
-</div>
-
-<div class="phone">
-  <img src="{{ asset('images/telephone.svg') }}" alt="phone">
-  <a href="tel:+31649951874">+31 6 49951874 (Werkplaats, Mick)</a>
-</div>
-
-<div class="email">
-  <img src="{{ asset('images/mail.svg') }}" alt="mail">
-  <a href="mailto:Handelsonderneming@mgerritsen.nl">Handelsonderneming@mgerritsen.nl</a>
-</div>  
+        <div class="footer-grid">
+            <div class="footer-left" data-a="left">
+                <h2>Neem contact op</h2>
+                <div class="footer-info">
+                    <div><img src="{{ asset('images/home.svg') }}" alt=""><p>Gerritsen Automotive</p></div>
+                    <div><img src="{{ asset('images/location.svg') }}" alt=""><p>Gelderse Rooslaan 14 A, 6841 BE Arnhem</p></div>
+                    <div><img src="{{ asset('images/telephone.svg') }}" alt=""><a href="tel:+31638257987">+31 6 38257987 (Verkoop)</a></div>
+                    <div><img src="{{ asset('images/telephone.svg') }}" alt=""><a href="tel:+31649951874">+31 6 49951874 (Werkplaats)</a></div>
+                    <div><img src="{{ asset('images/mail.svg') }}" alt=""><a href="mailto:Handelsonderneming@mgerritsen.nl">Handelsonderneming@mgerritsen.nl</a></div>
                 </div>
-
-                <img src="{{ asset('images/Garage-footer.png') }}" alt="keuringen">
-
+                <img src="{{ asset('images/Garage-footer.png') }}" alt="NAP">
             </div>
-
-            <div class="footer-content-right">
-               <form method="POST" action="{{ route('contact.store') }}" class="contact-form" novalidate>
-    @csrf
-
-    {{-- Honeypot (spamprotectie) --}}
-    <input type="text" name="website" style="display:none" tabindex="-1" autocomplete="off">
-
-    <div class="row two">
-        <div class="field">
-            <input class="inputform" 
-                   type="text" 
-                   name="name" 
-                   placeholder="Naam *"
-                   value="{{ old('name') }}"
-                   required>
-            @error('name')
-                <span class="error">{{ $message }}</span>
-            @enderror
-        </div>
-
-        <div class="field">
-            <input class="inputform" 
-                   type="text" 
-                   name="phone" 
-                   placeholder="Telefoonnummer"
-                   value="{{ old('phone') }}">
-            @error('phone')
-                <span class="error">{{ $message }}</span>
-            @enderror
+            <div class="footer-right" data-a="right">
+              <form method="POST" action="{{ route('contact.store') }}" class="contact-form" novalidate>
+                @csrf<input type="text" name="website" style="display:none" tabindex="-1" autocomplete="off">
+                <div class="row two"><div class="field"><input type="text" name="name" placeholder="Naam *" value="{{ old('name') }}" required></div><div class="field"><input type="text" name="phone" placeholder="Telefoon" value="{{ old('phone') }}"></div></div>
+                <div class="field"><input type="email" name="email" placeholder="Email *" value="{{ old('email') }}" required></div>
+                <div class="field"><textarea name="message" rows="4" placeholder="Bericht *" required>{{ old('message') }}</textarea></div>
+                <label class="check"><input type="checkbox" name="privacy" required><span>Ik heb het privacybeleid gelezen.</span></label>
+                <button type="submit" class="submit">Verzenden</button>
+                @if(session('success'))<div id="contactModal" class="gd-modal"><div class="gd-modal-box"><h3>Bedankt!</h3><p>We nemen snel contact op.</p><div class="gd-actions"><button type="button" data-close-modal>Sluiten</button></div></div></div>@endif
+              </form>
+            </div>
         </div>
     </div>
+</section>
 
-    <div class="field">
-        <input class="inputform" 
-               type="email" 
-               name="email" 
-               placeholder="Email *"
-               value="{{ old('email') }}"
-               required>
-        @error('email')
-            <span class="error">{{ $message }}</span>
-        @enderror
-    </div>
+<div class="contact-map"><iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2458.0517541550735!2d5.901556076625399!3d51.96948127192204!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47c7a70883823355%3A0xa6dd7685a8359450!2sGerritsen%20Automotive!5e0!3m2!1sen!2snl!4v1761597008139!5m2!1sen!2snl" width="600" height="450" style="border:0" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+<section class="rechten-section"><div class="container"><div class="rechten-section-inner"><p>&copy; Gerritsen Automotive 2025</p></div></div></section>
 
-    <div class="field">
-        <textarea class="inputform" 
-                  name="message" 
-                  rows="5" 
-                  placeholder="Bericht *" 
-                  required>{{ old('message') }}</textarea>
-        @error('message')
-            <span class="error">{{ $message }}</span>
-        @enderror
-    </div>
-
-    <label class="check">
-        <input type="checkbox" name="privacy" required>
-        <span class="inputform">Ik heb het privacybeleid gelezen en begrepen.</span>
-        @error('privacy')
-            <span class="error">{{ $message }}</span>
-        @enderror
-    </label>
-
-    <button type="submit" class="submit">Verzenden</button>
-
-    {{-- Succes melding --}}
-    @if(session('success'))
-<div id="contactModal" class="gd-modal" role="dialog" aria-modal="true" aria-labelledby="contactModalTitle">
-  <div class="gd-modal-box">
-    <h3 id="contactModalTitle">Bedankt!</h3>
-    <p>Je bericht is verstuurd. We nemen zo snel mogelijk contact met je op.</p>
-    <div class="gd-actions">
-      <button type="button" data-close-modal>Sluiten</button>
-    </div>
-  </div>
-</div>
-@endif
-
-<style>
-.gd-modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.6);z-index:9999;padding:16px;}
-.gd-modal-box{background:#fff;color:#111;max-width:420px;width:100%;border-radius:12px;padding:24px;box-shadow:0 10px 30px rgba(0,0,0,.25);text-align:center}
-.gd-actions{margin-top:16px}
-.gd-actions button{padding:10px 16px;border:0;border-radius:8px;cursor:pointer;background:#111;color:#fff}
-.gd-actions button:hover{opacity:.9}
-</style>
-
+{{-- ====== JS ====== --}}
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded',function(){
+  // Contact modal
+  var m=document.getElementById('contactModal');
+  if(m){function cl(){m.remove()}m.querySelectorAll('[data-close-modal]').forEach(b=>b.addEventListener('click',cl));m.addEventListener('click',e=>{if(e.target===m)cl()});document.addEventListener('keydown',e=>{if(e.key==='Escape')cl()})}
 
-  // (optioneel) bestaand contactModal gedrag — veilig gemaakt
-  var modal = document.getElementById('contactModal');
-  if (modal) {
-    function closeModal(){ modal.remove(); }
-    modal.querySelectorAll('[data-close-modal]').forEach(function(btn){
-      btn.addEventListener('click', closeModal);
-    });
-    modal.addEventListener('click', function(e){ if(e.target === modal){ closeModal(); } });
-    document.addEventListener('keydown', function(e){ if(e.key === 'Escape'){ closeModal(); } });
-  }
+  window.openVoorwaarden=()=>document.getElementById('gaVoorwaardenModal').classList.add('active');
+  window.closeVoorwaarden=()=>document.getElementById('gaVoorwaardenModal').classList.remove('active');
 
-  window.openVoorwaarden = function() {
-    document.getElementById('gaVoorwaardenModal').classList.add('active');
-}
+  // Slider
+  const sl=document.getElementById('gaSlides');
+  if(sl){let i=0;const n=sl.children.length;setInterval(()=>{i=(i+1)%n;sl.style.transform=`translateX(-${i*100}%)`},4000)}
 
-window.closeVoorwaarden = function() {
-    document.getElementById('gaVoorwaardenModal').classList.remove('active');
-}
-
-  const slides = document.getElementById('gaSlides');
-
-if (slides) {
-    const totalSlides = slides.children.length;
-    let index = 0;
-
-    setInterval(() => {
-        index = (index + 1) % totalSlides;
-        slides.style.transform = `translateX(-${index * 100}%)`;
-    }, 4000);
-}
-
-  // ✅ SellCar module
-  window.SellCar = (function () {
-    const overlay   = () => document.getElementById('sellcar-overlay');
-    const drop      = () => document.getElementById('sc-drop');
-    const fileInput = () => document.getElementById('photos');
-    const preview   = () => document.getElementById('sc-preview');
-    const counter   = () => document.getElementById('sc-count');
-    const MAX_FILES = 20;
-
-    let files = [];
-
-    function open(){
-      if (overlay()) {
-        overlay().classList.add('is-open');
-        overlay().setAttribute('aria-hidden','false');
-      }
-    }
-    function close(){
-      if (overlay()) {
-        overlay().classList.remove('is-open');
-        overlay().setAttribute('aria-hidden','true');
-      }
-    }
-
-    function updateCounter(){ if(counter()) counter().textContent = files.length; }
-    function renderPreviews(){
-      if (!preview()) return;
-      preview().innerHTML = '';
-      files.forEach((f, idx) => {
-        const url = URL.createObjectURL(f);
-        const card = document.createElement('div');
-        card.className = 'sc-thumb';
-        card.innerHTML = `<img src="${url}" alt="">
-                          <button type="button" aria-label="Verwijderen" data-i="${idx}">×</button>`;
-        preview().appendChild(card);
-      });
-    }
-    function syncInput(){
-      if (!fileInput()) return;
-      const dt = new DataTransfer();
-      files.forEach(f => dt.items.add(f));
-      fileInput().files = dt.files;
-    }
-    function addFiles(list){
-      for (const f of list){
-        if (files.length >= MAX_FILES) break;
-        if (!f.type || !f.type.startsWith('image/')) continue;
-        files.push(f);
-      }
-      updateCounter(); renderPreviews(); syncInput();
-    }
-
-    function bind(){
-      // browse
-      if (fileInput()) fileInput().addEventListener('change', e => addFiles(e.target.files));
-
-      // drag & drop
-      if (drop()){
-        ['dragenter','dragover'].forEach(ev => {
-          drop().addEventListener(ev, e => { e.preventDefault(); drop().classList.add('dragover'); });
-        });
-        ['dragleave','drop'].forEach(ev => {
-          drop().addEventListener(ev, e => { e.preventDefault(); drop().classList.remove('dragover'); });
-        });
-        drop().addEventListener('drop', e => addFiles(e.dataTransfer.files));
-      }
-
-      // verwijderen
-      if (preview()) preview().addEventListener('click', e => {
-        const btn = e.target.closest('button[data-i]');
-        if (!btn) return;
-        files.splice(+btn.dataset.i, 1);
-        updateCounter(); renderPreviews(); syncInput();
-      });
-
-      // submit-validatie
-      const form = document.getElementById('sellcar-form');
-      if (form) form.addEventListener('submit', e => {
-        if (!form.checkValidity()){
-          e.preventDefault();
-          form.reportValidity();
-        }
-      });
-
-      // Buttons die de popup moeten openen (graceful: mogen ook een href hebben)
-      document.querySelectorAll('[data-sellcar-open]').forEach(el => {
-        el.addEventListener('click', function(ev){
-          // Als het een <a href="#verkopen"> is, laat de hash werken, maar open ook popup
-          open();
-        });
-      });
-    }
-
-    bind();
-    return { open, close };
+  // SellCar
+  window.SellCar=(function(){
+    const ov=()=>document.getElementById('sellcar-overlay'),dr=()=>document.getElementById('sc-drop'),fi=()=>document.getElementById('photos'),pv=()=>document.getElementById('sc-preview'),ct=()=>document.getElementById('sc-count');
+    let files=[];
+    function open(){if(ov()){ov().classList.add('is-open');ov().setAttribute('aria-hidden','false')}}
+    function close(){if(ov()){ov().classList.remove('is-open');ov().setAttribute('aria-hidden','true')}}
+    function upd(){if(ct())ct().textContent=files.length}
+    function ren(){if(!pv())return;pv().innerHTML='';files.forEach((f,i)=>{const u=URL.createObjectURL(f),d=document.createElement('div');d.className='sc-thumb';d.innerHTML=`<img src="${u}"><button type="button" data-i="${i}">&times;</button>`;pv().appendChild(d)})}
+    function syn(){if(!fi())return;const dt=new DataTransfer();files.forEach(f=>dt.items.add(f));fi().files=dt.files}
+    function add(l){for(const f of l){if(files.length>=20)break;if(!f.type?.startsWith('image/'))continue;files.push(f)}upd();ren();syn()}
+    if(fi())fi().addEventListener('change',e=>add(e.target.files));
+    if(dr()){['dragenter','dragover'].forEach(ev=>dr().addEventListener(ev,e=>{e.preventDefault();dr().classList.add('dragover')}));['dragleave','drop'].forEach(ev=>dr().addEventListener(ev,e=>{e.preventDefault();dr().classList.remove('dragover')}));dr().addEventListener('drop',e=>add(e.dataTransfer.files))}
+    if(pv())pv().addEventListener('click',e=>{const b=e.target.closest('button[data-i]');if(!b)return;files.splice(+b.dataset.i,1);upd();ren();syn()});
+    const fm=document.getElementById('sellcar-form');if(fm)fm.addEventListener('submit',e=>{if(!fm.checkValidity()){e.preventDefault();fm.reportValidity()}});
+    return{open,close}
   })();
 
-(function () {
-  // run meteen (script staat onderaan page)
-  const select = document.getElementById('sort');
-  const grid   = document.getElementById('nieuwGrid');
-  const cta    = document.getElementById('aanbodCta');
-  const btn    = document.getElementById('btnBekijkAanbod');
-
-  console.log('FOUND:', { select: !!select, grid: !!grid, cta: !!cta, btn: !!btn });
-
-  if (!select || !grid) return;
-
-  let expanded = false;
-
-  function applyUI() {
-    const cards = Array.from(grid.querySelectorAll('.car-card'));
-    const hasMore = cards.length > 3;
-
-    if (cta) cta.style.display = hasMore ? '' : 'none';
-
-    // als geen knop bestaat, alleen hide logic doen
-    if (!btn) {
-      cards.forEach((c, i) => c.classList.toggle('is-hidden', i > 2));
-      return;
-    }
-
-    if (!expanded) {
-      cards.forEach((c, i) => c.classList.toggle('is-hidden', i > 2));
-      btn.textContent = 'Bekijk Het Aanbod';
-    } else {
-      cards.forEach(c => c.classList.remove('is-hidden'));
-      btn.textContent = 'Toon minder';
-    }
-  }
-
-  // init
-  applyUI();
-
-  // toggle
-  if (btn) {
-    btn.addEventListener('click', () => {
-      expanded = !expanded;
-      applyUI();
-    });
-  }
-
-  // sort
-  select.addEventListener('change', async () => {
-    const sort = select.value;
-    expanded = false;
-
-    const url = `{{ route('occasions.cards') }}?sort=${encodeURIComponent(sort)}`;
-    console.log('FETCH:', url);
-
-    try {
-      const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
-      console.log('RES:', res.status);
-
-      if (!res.ok) {
-        console.error('Fetch failed', res.status, res.statusText);
-        return;
-      }
-
-      const html = await res.text();
-      grid.innerHTML = html;
-
-      applyUI();
-
-      history.replaceState(null, '', `/?sort=${encodeURIComponent(sort)}#aanbod`);
-    } catch (e) {
-      console.error('Fetch error:', e);
-    }
-  });
-})();
-
-
-/**
- * Workshop Wizard - werkt 1-op-1 met jouw HTML
- * Vereist: jouw bestaande CSS classes (wa-show, wa-active, wa-on, wa-open, etc.)
- */
-window.WA = (() => {
-  let step = 1;
-
-  // kalender state
-  let calYear = new Date().getFullYear();
-  let calMonth = new Date().getMonth();
-  let selectedDate = "";
-  let selectedTime = "";
-
-  const monthsNL = [
-    "JANUARI","FEBRUARI","MAART","APRIL","MEI","JUNI",
-    "JULI","AUGUSTUS","SEPTEMBER","OKTOBER","NOVEMBER","DECEMBER"
-  ];
-
-  const qs  = (s, r=document) => r.querySelector(s);
-  const qsa = (s, r=document) => Array.from(r.querySelectorAll(s));
-
-  const pad = (n) => String(n).padStart(2,"0");
-  const ymd = (y,m,d) => `${y}-${pad(m+1)}-${pad(d)}`;
-
-  function fmtDateNL(ymdStr){
-    if(!ymdStr) return "-";
-    const [y,m,d] = ymdStr.split("-");
-    return `${d}-${m}-${y}`;
-  }
-  function normPlate(v){ return (v||"").toString().trim().toUpperCase(); }
-  function fmtKm(v){
-    if(v === "" || v === null || typeof v === "undefined") return "-";
-    const n = Number(v);
-    if(Number.isNaN(n)) return "-";
-    return n.toLocaleString("nl-NL");
-  }
-
-  // ===== step UI =====
-  function showStep(n){
-   step = n;
-
-  // panels
-  qsa(".wa-panel").forEach(p => p.classList.remove("wa-show"));
-  const panel = qs(`.wa-panel[data-panel="${n}"]`);
-  if(panel) panel.classList.add("wa-show");
-
-  // stepper
-  const steps = qsa(".wa-stepper .wa-step");
-  const lines = qsa(".wa-stepper .wa-line");
-
-  steps.forEach(s => {
-    const sNum = Number(s.getAttribute("data-step"));
-    s.classList.toggle("wa-active", sNum === n);
-    const dot = s.querySelector(".wa-dot");
-    if(dot) dot.classList.toggle("wa-on", sNum <= n);
-  });
-
-  lines.forEach((l, idx) => l.classList.toggle("wa-on", n >= (idx + 2)));
-
-  sync();
-
-  // ✅ alleen scrollen als we dat willen
-  if (opts.scroll) {
-    window.scrollTo({ top: qs("#wa")?.offsetTop - 20 || 0, behavior: "smooth" });
-  }
-  }
-
-  function next(){
-    if(!validate(step)) return;
-    if(step < 4) showStep(step + 1);
-  }
-  function prev(){
-    if(step > 1) showStep(step - 1);
-  }
-
-  // ===== accordion =====
-  function acc(btn){
-    const body = btn?.parentElement?.querySelector(".wa-acc-body");
-    if(!body) return;
-    body.classList.toggle("wa-open");
-  }
-
-  // ===== calendar =====
-  function renderCalendar(){
-    const monthEl = qs("#wa-cal-month");
-    const gridEl  = qs("#wa-cal-grid");
-    if(!monthEl || !gridEl) return;
-
-    monthEl.textContent = `${monthsNL[calMonth]} ${calYear}`;
-    gridEl.innerHTML = "";
-
-    const first = new Date(calYear, calMonth, 1);
-    let startDay = first.getDay(); // 0=zo
-    startDay = (startDay === 0) ? 7 : startDay;
-    const blanks = startDay - 1;
-
-    const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
-
-    // lege vakken
-    for(let i=0;i<blanks;i++){
-      const d = document.createElement("div");
-      d.className = "wa-day wa-off";
-      gridEl.appendChild(d);
-    }
-
-    for(let day=1; day<=daysInMonth; day++){
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "wa-day";
-      const value = ymd(calYear, calMonth, day);
-      btn.textContent = day;
-
-      if(selectedDate === value) btn.classList.add("wa-picked");
-
-      btn.addEventListener("click", (e) => pickDate(value, e.currentTarget));
-      gridEl.appendChild(btn);
-    }
-  }
-
-  function calPrev(){
-    calMonth--;
-    if(calMonth < 0){ calMonth = 11; calYear--; }
-    renderCalendar();
-  }
-  function calNext(){
-    calMonth++;
-    if(calMonth > 11){ calMonth = 0; calYear++; }
-    renderCalendar();
-  }
-
-  function pickDate(value, btnEl){
-    selectedDate = value;
-    const hidden = qs("#wa-date");
-    if(hidden) hidden.value = value;
-
-    qsa("#wa-cal-grid .wa-day").forEach(b => b.classList.remove("wa-picked"));
-    if(btnEl) btnEl.classList.add("wa-picked");
-
-    sync();
-  }
-
-  // ===== time =====
-  function pickTime(btn){
-    const t = btn.getAttribute("data-time");
-    selectedTime = t;
-
-    const hidden = qs("#wa-time");
-    if(hidden) hidden.value = t;
-
-    qsa(".wa-time").forEach(b => b.classList.remove("wa-picked"));
-    btn.classList.add("wa-picked");
-
-    sync();
-  }
-
-  // ===== overview sync =====
-  function sync(){
-    const plate = normPlate(qs("#wa-license")?.value);
-    const km    = qs("#wa-mileage")?.value;
-
-    if(qs("#ov-plate")) qs("#ov-plate").textContent = plate || "-";
-    if(qs("#ov-km"))    qs("#ov-km").textContent    = km ? `${fmtKm(km)} km` : "-";
-
-    const maint = qs('input[name="maintenance_option"]:checked')?.value || "";
-    const extras = qsa('input[name="extra_services[]"]:checked').map(x => x.value);
-
-    if(qs("#ov-main"))  qs("#ov-main").textContent  = maint || "-";
-    if(qs("#ov-extra")) qs("#ov-extra").textContent = extras.length ? extras.join(", ") : "-";
-
-    const d = qs("#wa-date")?.value || selectedDate || "";
-    const t = qs("#wa-time")?.value || selectedTime || "";
-    const wait = qs('input[name="wait_while_service"]:checked')?.value;
-    // const rt = qs('input[name="replacement_transport"]:checked')?.value || "";
-
-    if(qs("#ov-date")) qs("#ov-date").textContent = d ? fmtDateNL(d) : "-";
-    if(qs("#ov-time")) qs("#ov-time").textContent = t ? `${t} uur` : "-";
-    if(qs("#ov-wait")) qs("#ov-wait").textContent = (wait === "1") ? "Ja" : (wait === "0" ? "Nee" : "-");
-    if(qs("#ov-rt"))   qs("#ov-rt").textContent   = rt || "-";
-
-    const fn = (qs('input[name="first_name"]')?.value || "").trim();
-    const mn = (qs('input[name="middle_name"]')?.value || "").trim();
-    const ln = (qs('input[name="last_name"]')?.value || "").trim();
-    const email = (qs('input[name="email"]')?.value || "").trim();
-
-    const fullName = [fn, mn, ln].filter(Boolean).join(" ");
-    if(qs("#ov-name"))  qs("#ov-name").textContent  = fullName || "-";
-    if(qs("#ov-email")) qs("#ov-email").textContent = email || "-";
-  }
-
-  // ===== validation =====
-  function error(msg){ alert(msg); }
-
-  function validate(n){
-    if(n === 1){
-      const plate = normPlate(qs("#wa-license")?.value);
-      if(!plate){ error("Vul uw kenteken in."); return false; }
-      return true;
-    }
-
-    if(n === 2){
-      const maint = qs('input[name="maintenance_option"]:checked')?.value || "";
-      const extras = qsa('input[name="extra_services[]"]:checked');
-      if(!maint && extras.length === 0){
-        error("Selecteer minimaal één werkzaamheid (onderhoud of aanvullend).");
-        return false;
-      }
-      return true;
-    }
-
-    if(n === 3){
-      const d = qs("#wa-date")?.value || selectedDate;
-      const t = qs("#wa-time")?.value || selectedTime;
-      if(!d){ error("Selecteer een datum."); return false; }
-      if(!t){ error("Selecteer een tijdstip."); return false; }
-
-      const wait = qs('input[name="wait_while_service"]:checked')?.value;
-      if(wait !== "1" && wait !== "0"){
-        error("Geef aan of u wilt wachten tijdens het onderhoud/reparatie.");
-        return false;
-      }
-
-      // const rt = qs('input[name="replacement_transport"]:checked')?.value;
-      // if(!rt){
-      //   error("Selecteer een vervangend vervoer optie.");
-      //   return false;
-      // }
-      return true;
-    }
-
-    if(n === 4){
-      const fn = (qs('input[name="first_name"]')?.value || "").trim();
-      const ln = (qs('input[name="last_name"]')?.value || "").trim();
-      const em = (qs('input[name="email"]')?.value || "").trim();
-      const terms = qs('input[name="terms_accepted"]');
-
-      if(!fn){ error("Voornaam is verplicht."); return false; }
-      if(!ln){ error("Achternaam is verplicht."); return false; }
-      if(!em){ error("E-mail is verplicht."); return false; }
-      if(terms && !terms.checked){ error("U moet akkoord gaan met de voorwaarden."); return false; }
-
-      return true;
-    }
-
-    return true;
-  }
-
-  function bind(){
-    const liveSelectors = [
-      "#wa-license","#wa-mileage",
-      'input[name="maintenance_option"]',
-      'input[name="extra_services[]"]',
-      'input[name="wait_while_service"]',
-      'input[name="replacement_transport"]',
-      'input[name="first_name"]',
-      'input[name="middle_name"]',
-      'input[name="last_name"]',
-      'input[name="email"]',
-    ];
-
-    liveSelectors.forEach(sel => {
-      qsa(sel).forEach(elm => {
-        elm.addEventListener("input", sync);
-        elm.addEventListener("change", sync);
-      });
-    });
-
-    renderCalendar();
-    sync();
-    showStep(1, { scroll: false });
-  }
-
-  return { next, prev, acc, calPrev, calNext, pickTime, sync, init: bind };
-})();
-
-window.WA.init();
-
-
-
-  // ✳️ Kleine helper: highlight effect voor fallback sectie
-  (function ensureHighlightStyle(){
-    if (document.getElementById('sc-highlight-style')) return;
-    const css = `
-      .sc-highlight { outline: 3px solid rgba(246, 199, 118, .9); box-shadow: 0 0 0 6px rgba(246,199,118,.25); transition: outline-color .6s ease, box-shadow .6s ease; }
-    `;
-    const style = document.createElement('style');
-    style.id = 'sc-highlight-style';
-    style.textContent = css;
-    document.head.appendChild(style);
+  // Occasions
+  (function(){
+    const sel=document.getElementById('sort'),grid=document.getElementById('nieuwGrid'),cta=document.getElementById('aanbodCta'),btn=document.getElementById('btnBekijkAanbod');
+    if(!sel||!grid)return;let exp=false;
+    function ui(){const c=[...grid.querySelectorAll('.car-card')],more=c.length>3;if(cta)cta.style.display=more?'':'none';if(!btn){c.forEach((x,i)=>x.classList.toggle('is-hidden',i>2));return}if(!exp){c.forEach((x,i)=>x.classList.toggle('is-hidden',i>2));btn.textContent='Bekijk alles'}else{c.forEach(x=>x.classList.remove('is-hidden'));btn.textContent='Toon minder'}}
+    ui();if(btn)btn.addEventListener('click',()=>{exp=!exp;ui()});
+    sel.addEventListener('change',async()=>{exp=false;try{const r=await fetch(`{{ route('occasions.cards') }}?sort=${encodeURIComponent(sel.value)}`,{headers:{'X-Requested-With':'XMLHttpRequest'}});if(!r.ok)return;grid.innerHTML=await r.text();ui();history.replaceState(null,'',`/?sort=${encodeURIComponent(sel.value)}#aanbod`)}catch(e){console.error(e)}});
   })();
 
-  // 🔗 Deep-link handler: opent popup bij #verkopen, of scrolt/markeert sectie als fallback
-  function handleDeepLink(){
-    if (location.hash === '#verkopen') {
-      // Probeer popup te openen
-      if (window.SellCar && typeof window.SellCar.open === 'function') {
-        window.SellCar.open();
-      }
-      // Fallback: scroll + highlight naar sectie (alleen als geen overlay bestaat)
-      const overlayEl = document.getElementById('sellcar-overlay');
-      if (!overlayEl) {
-        const section = document.getElementById('sellcar-section') || document.querySelector('[data-sellcar-section]');
-        if (section) {
-          section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          section.classList.add('sc-highlight');
-          setTimeout(() => section.classList.remove('sc-highlight'), 2000);
-        }
-      }
-    }
-  }
-
-  // Run nu en op hash-wijziging
-  handleDeepLink();
-  window.addEventListener('hashchange', handleDeepLink);
+  // Workshop Wizard
+  window.WA=(()=>{
+    let step=1,cY=new Date().getFullYear(),cM=new Date().getMonth(),sD='',sT='';
+    const M=["JANUARI","FEBRUARI","MAART","APRIL","MEI","JUNI","JULI","AUGUSTUS","SEPTEMBER","OKTOBER","NOVEMBER","DECEMBER"];
+    const q=(s,r=document)=>r.querySelector(s),qa=(s,r=document)=>[...r.querySelectorAll(s)];
+    const pad=n=>String(n).padStart(2,'0'),ymd=(y,m,d)=>`${y}-${pad(m+1)}-${pad(d)}`;
+    function fN(s){if(!s)return'-';const[y,m,d]=s.split('-');return`${d}-${m}-${y}`}
+    function nP(v){return(v||'').toString().trim().toUpperCase()}
+    function fK(v){if(v===''||v==null)return'-';const n=Number(v);return isNaN(n)?'-':n.toLocaleString('nl-NL')}
+    function show(n,o){o=o||{};step=n;qa('.wa-panel').forEach(p=>p.classList.remove('wa-show'));const p=q(`.wa-panel[data-panel="${n}"]`);if(p)p.classList.add('wa-show');qa('.wa-stepper .wa-step').forEach(s=>{const sn=+s.dataset.step;s.classList.toggle('wa-active',sn===n);const d=s.querySelector('.wa-dot');if(d)d.classList.toggle('wa-on',sn<=n)});qa('.wa-stepper .wa-line').forEach((l,i)=>l.classList.toggle('wa-on',n>=(i+2)));sync();if(o.scroll!==false)window.scrollTo({top:q('#wa')?.offsetTop-20||0,behavior:'smooth'})}
+    function next(){if(!val(step))return;if(step<4)show(step+1)}
+    function prev(){if(step>1)show(step-1)}
+    function acc(b){const bd=b?.parentElement?.querySelector('.wa-acc-body');if(bd)bd.classList.toggle('wa-open')}
+    function renderCal(){const mE=q('#wa-cal-month'),gE=q('#wa-cal-grid');if(!mE||!gE)return;mE.textContent=`${M[cM]} ${cY}`;gE.innerHTML='';let sd=new Date(cY,cM,1).getDay();sd=sd===0?7:sd;for(let i=0;i<sd-1;i++){const d=document.createElement('div');d.className='wa-day wa-off';gE.appendChild(d)}const dm=new Date(cY,cM+1,0).getDate();for(let day=1;day<=dm;day++){const b=document.createElement('button');b.type='button';b.className='wa-day';const v=ymd(cY,cM,day);b.textContent=day;if(sD===v)b.classList.add('wa-picked');b.addEventListener('click',e=>pickD(v,e.currentTarget));gE.appendChild(b)}}
+    function calPrev(){cM--;if(cM<0){cM=11;cY--}renderCal()}
+    function calNext(){cM++;if(cM>11){cM=0;cY++}renderCal()}
+    function pickD(v,el){sD=v;const h=q('#wa-date');if(h)h.value=v;qa('#wa-cal-grid .wa-day').forEach(b=>b.classList.remove('wa-picked'));if(el)el.classList.add('wa-picked');sync()}
+    function pickTime(b){const t=b.dataset.time;sT=t;const h=q('#wa-time');if(h)h.value=t;qa('.wa-time').forEach(b=>b.classList.remove('wa-picked'));b.classList.add('wa-picked');sync()}
+    function sync(){const pl=nP(q('#wa-license')?.value),km=q('#wa-mileage')?.value;if(q('#ov-plate'))q('#ov-plate').textContent=pl||'-';if(q('#ov-km'))q('#ov-km').textContent=km?`${fK(km)} km`:'-';const mt=q('input[name="maintenance_option"]:checked')?.value||'';const ex=qa('input[name="extra_services[]"]:checked').map(x=>x.value);if(q('#ov-main'))q('#ov-main').textContent=mt||'-';if(q('#ov-extra'))q('#ov-extra').textContent=ex.length?ex.join(', '):'-';const d=q('#wa-date')?.value||sD||'',t=q('#wa-time')?.value||sT||'';const w=q('input[name="wait_while_service"]:checked')?.value;if(q('#ov-date'))q('#ov-date').textContent=d?fN(d):'-';if(q('#ov-time'))q('#ov-time').textContent=t?t+' uur':'-';if(q('#ov-wait'))q('#ov-wait').textContent=w==='1'?'Ja':w==='0'?'Nee':'-';const fn=(q('input[name="first_name"]')?.value||'').trim(),mn=(q('input[name="middle_name"]')?.value||'').trim(),ln=(q('input[name="last_name"]')?.value||'').trim(),em=(q('input[name="email"]')?.value||'').trim();if(q('#ov-name'))q('#ov-name').textContent=[fn,mn,ln].filter(Boolean).join(' ')||'-';if(q('#ov-email'))q('#ov-email').textContent=em||'-'}
+    function err(m){alert(m)}
+    function val(n){if(n===1)return nP(q('#wa-license')?.value)?(true):(err('Vul uw kenteken in.'),false);if(n===2){if(!q('input[name="maintenance_option"]:checked')?.value&&!qa('input[name="extra_services[]"]:checked').length)return err('Selecteer minimaal 1 werkzaamheid.'),false;return true}if(n===3){if(!(q('#wa-date')?.value||sD))return err('Selecteer een datum.'),false;if(!(q('#wa-time')?.value||sT))return err('Selecteer een tijdstip.'),false;const w=q('input[name="wait_while_service"]:checked')?.value;if(w!=='1'&&w!=='0')return err('Geef aan of u wilt wachten.'),false;return true}if(n===4){if(!(q('input[name="first_name"]')?.value||'').trim())return err('Voornaam is verplicht.'),false;if(!(q('input[name="last_name"]')?.value||'').trim())return err('Achternaam is verplicht.'),false;if(!(q('input[name="email"]')?.value||'').trim())return err('E-mail is verplicht.'),false;const t=q('input[name="terms_accepted"]');if(t&&!t.checked)return err('Accepteer de voorwaarden.'),false;return true}return true}
+    function bind(){['#wa-license','#wa-mileage','input[name="maintenance_option"]','input[name="extra_services[]"]','input[name="wait_while_service"]','input[name="first_name"]','input[name="middle_name"]','input[name="last_name"]','input[name="email"]'].forEach(s=>qa(s).forEach(el=>{el.addEventListener('input',sync);el.addEventListener('change',sync)}));renderCal();sync();show(1,{scroll:false})}
+    return{next,prev,acc,calPrev,calNext,pickTime,sync,init:bind}
+  })();
+  window.WA.init();
+  function dl(){if(location.hash==='#verkopen'&&window.SellCar)SellCar.open()}dl();window.addEventListener('hashchange',dl);
 });
 </script>
-
-
-
-</form>
-
-            </div>
-        </div>
-    </div>
-
-</section>
-
-<div class="contact-map">
-<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2458.0517541550735!2d5.901556076625399!3d51.96948127192204!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47c7a70883823355%3A0xa6dd7685a8359450!2sGerritsen%20Automotive!5e0!3m2!1sen!2snl!4v1761597008139!5m2!1sen!2snl" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-
-<section class="rechten-section">
-    <div class="container">
-        <div class="rechten-section-inner">
-            <p>© Gerritsen Automotive 2025 Alle Rechten Voorbehouden</p>
-        </div>
-    </div>
-</section>
 
 @endsection
