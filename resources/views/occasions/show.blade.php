@@ -763,7 +763,7 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 {{-- WhatsApp floating button --}}
-<a href="https://wa.me/31649951874?text={{ urlencode('Hoi! Ik heb interesse in de ' . trim(($occasion->merk ?? '') . ' ' . ($occasion->model ?? '')) . (!empty($occasion->bouwjaar) ? ' (' . $occasion->bouwjaar . ')' : '') . '. Is deze nog beschikbaar?') }}" target="_blank" rel="noopener" aria-label="WhatsApp" style="
+<a href="https://wa.me/31649951874?text={{ urlencode('Hoi! Ik heb interesse in de ' . ucfirst(mb_strtolower(trim(($occasion->merk ?? '') . ' ' . ($occasion->model ?? '')))) . (!empty($occasion->bouwjaar) ? ' (' . $occasion->bouwjaar . ')' : '') . '. Is deze nog beschikbaar?') }}" target="_blank" rel="noopener" aria-label="WhatsApp" style="
   position:fixed;bottom:24px;right:24px;z-index:999;
   width:56px;height:56px;border-radius:50%;
   background:#25D366;color:#fff;
