@@ -9,8 +9,8 @@
 
     <link rel="icon" type="image/png" href="{{ asset('images/FAVICON-GERRITSEN.png') }}">
 
-    <link rel="stylesheet" href="{{ asset('css/occasions.css') }}">
-    <script src="{{ asset('js/occasions.js') }}" defer></script>
+    <link rel="stylesheet" href="{{ asset('css/occasions.css') }}?v={{ filemtime(public_path('css/occasions.css')) }}">
+    <script src="{{ asset('js/occasions.js') }}?v={{ filemtime(public_path('js/occasions.js')) }}" defer></script>
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Play:wght@400;700&display=swap" rel="stylesheet">
@@ -19,7 +19,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
 
     <!-- Stylesheet -->
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}?v={{ filemtime(public_path('css/app.css')) }}">
 </head>
 <body>
 <header class="navbar" x-data>
