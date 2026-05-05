@@ -82,7 +82,7 @@
     <nav id="mainNav" class="nav-desktop" aria-label="Hoofdmenu">
       <a href="/">HOME</a>
       <a href="/#info">OVER ONS</a>
-      <a href="{{ route('occasions.index') }}">AANBOD</a>
+      <a href="/#aanbod">AANBOD</a>
       <a href="{{ route('occasions.binnenkort') }}" class="active">BINNENKORT</a>
       <a href="/#footer">CONTACT</a>
     </nav>
@@ -104,7 +104,7 @@
         <h2 id="mobileNavTitle" class="sr-only">Hoofdmenu</h2>
         <a href="/">HOME</a>
         <a href="/#info">OVER ONS</a>
-        <a href="{{ route('occasions.index') }}">AANBOD</a>
+        <a href="/#aanbod">AANBOD</a>
         <a href="{{ route('occasions.binnenkort') }}">BINNENKORT</a>
         <a href="/#footer">CONTACT</a>
       </nav>
