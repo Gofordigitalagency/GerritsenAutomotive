@@ -265,8 +265,21 @@ body.menu-open { overflow: hidden; }
   margin:16px 0 20px; padding-bottom:18px; border-bottom:1px solid #eee;
 }
 .oc-detail .ocd-price{ color:#000; font-weight:800; font-size:24px; letter-spacing:.2px; }
+.oc-detail .ocd-price-old{
+  color:#999; font-weight:600; font-size:18px;
+  text-decoration:line-through; letter-spacing:.2px;
+}
+.oc-detail .ocd-price-sale{ color:#c1121f; }
+.oc-detail .ocd-sale-badge{
+  display:inline-block; padding:6px 12px; border-radius:6px;
+  background:#c1121f; color:#fff;
+  font-weight:700; font-size:13px; letter-spacing:.3px;
+  text-transform:uppercase;
+}
 .oc-detail .badge{ display:inline-block; padding:2px 8px; border-radius:12px; font-weight:800; font-size:12px; line-height:1; }
 .oc-detail .badge-green{ background:#10a365; color:#fff; }
+html.dark .oc-detail .ocd-price-sale{ color:#ff5566; }
+html.dark .oc-detail .ocd-price-old{ color:#777; }
 
 /* Kleine tegel-specs rij */
 .oc-detail .ocd-specgrid{

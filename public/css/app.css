@@ -274,6 +274,40 @@ a.btn { text-decoration: none; }
   margin-top: 6px; background: #747474; color: #fff; padding: 10px 14px; font-weight: 700; letter-spacing: .2px;
 }
 
+/* Aanbieding / korting */
+.car-photo { position: relative; }
+.car-sale-badge {
+  position: absolute;
+  top: 12px; left: 12px;
+  background: #c1121f;
+  color: #fff;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(0,0,0,.2);
+}
+.car-price-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  margin-top: 6px;
+}
+.car-price-old {
+  font-size: 14px;
+  color: #999;
+  text-decoration: line-through;
+  font-weight: 600;
+}
+.car-price.car-price-sale {
+  background: #c1121f;
+  color: #fff;
+  margin-top: 0;
+}
+
 
 
 .occasions-topbar{

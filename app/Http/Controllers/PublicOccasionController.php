@@ -10,6 +10,7 @@ class PublicOccasionController extends Controller
 public function home()
 {
     $nieuw = Occasion::query()
+        ->where('binnenkort', false)
         ->orderByRaw("CASE WHEN model LIKE '%(VERKOCHT)%' THEN 1 ELSE 0 END ASC")
         ->latest()
         ->get();
@@ -17,11 +18,21 @@ public function home()
     return view('home', compact('nieuw'));
 }
 
+public function binnenkort()
+{
+    $nieuw = Occasion::query()
+        ->where('binnenkort', true)
+        ->latest()
+        ->get();
+
+    return view('occasions.binnenkort', compact('nieuw'));
+}
+
 public function index(Request $request)
 {
     $sort = $request->get('sort', 'best');
 
-    $q = Occasion::query();
+    $q = Occasion::query()->where('binnenkort', false);
 
     // ✅ Verkocht altijd onderaan houden
     $q->orderByRaw("CASE WHEN model LIKE '%(VERKOCHT)%' THEN 1 ELSE 0 END ASC");
@@ -84,7 +95,7 @@ public function index(Request $request)
 {
     $sort = $request->get('sort', 'best');
 
-    $q = Occasion::query();
+    $q = Occasion::query()->where('binnenkort', false);
     $q->orderByRaw("CASE WHEN model LIKE '%(VERKOCHT)%' THEN 1 ELSE 0 END ASC");
 
     switch ($sort) {

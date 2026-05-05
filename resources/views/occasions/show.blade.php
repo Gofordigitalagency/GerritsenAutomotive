@@ -234,7 +234,16 @@
         @endif
 
         <div class="ocd-price-row">
-          <div class="ocd-price">€ {{ number_format($occasion->prijs ?? 0, 0, ',', '.') }},-</div>
+          @if(!empty($occasion->oude_prijs) && $occasion->oude_prijs > $occasion->prijs)
+            <div class="ocd-price-old">€ {{ number_format($occasion->oude_prijs, 0, ',', '.') }},-</div>
+            <div class="ocd-price ocd-price-sale">€ {{ number_format($occasion->prijs ?? 0, 0, ',', '.') }},-</div>
+            <span class="ocd-sale-badge">
+              @php $korting = $occasion->oude_prijs - $occasion->prijs; @endphp
+              €{{ number_format($korting, 0, ',', '.') }} korting
+            </span>
+          @else
+            <div class="ocd-price">€ {{ number_format($occasion->prijs ?? 0, 0, ',', '.') }},-</div>
+          @endif
         </div>
 
         <!-- Compacte spec-tegelrij zoals eerder gewenst -->

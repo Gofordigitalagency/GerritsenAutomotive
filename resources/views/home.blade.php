@@ -74,6 +74,43 @@
   </div>
 </section>
 
+{{-- TikTok Feed --}}
+<section class="tiktok-section">
+  <div class="container">
+    <div class="tiktok-header">
+      <h2>Volg ons op TikTok</h2>
+      <p>De nieuwste auto's, achter-de-schermen en meer</p>
+    </div>
+    <!-- Elfsight TikTok Feed | Untitled TikTok Feed -->
+    <script src="https://elfsightcdn.com/platform.js" async></script>
+    <div class="elfsight-app-14c6b9c2-fe22-4aa6-8bde-30574ec5f2b5" data-elfsight-app-lazy></div>
+  </div>
+</section>
+
+<style>
+  .tiktok-section {
+    padding: 80px 0;
+    background: #f8f8f8;
+  }
+  html.dark .tiktok-section { background: #0a0a0a; }
+  .tiktok-header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .tiktok-header h2 {
+    font-size: clamp(28px, 4vw, 42px);
+    color: #111;
+    margin: 0 0 8px;
+    font-weight: 700;
+  }
+  html.dark .tiktok-header h2 { color: #fff; }
+  .tiktok-header p {
+    font-size: 16px;
+    color: #666;
+    margin: 0;
+  }
+  html.dark .tiktok-header p { color: #aaa; }
+</style>
 
 <div class="wa-wrap" id="wa">
   <h1 class="wa-title">Plan gemakkelijk en snel een werkplaatsafspraak</h1>

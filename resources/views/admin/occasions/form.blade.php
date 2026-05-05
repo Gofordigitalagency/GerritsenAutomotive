@@ -103,6 +103,33 @@
       <small class="hint" id="prijsPreview"></small>
     </label>
 
+    <label class="input-row">
+      <span>Oude prijs (voor korting) <small style="color:#888;font-weight:400">— optioneel</small></span>
+      <div class="with-addon">
+        <span class="addon">€</span>
+        <input type="number" name="oude_prijs" step="1" min="0" value="{{ old('oude_prijs', $occasion->oude_prijs) }}" placeholder="Laat leeg als geen korting">
+      </div>
+      <small class="hint">Vul in om een aanbieding te tonen (oude prijs met streep erdoor)</small>
+    </label>
+
+    <label class="input-row" style="grid-column: 1 / -1;">
+      <div style="display:flex; align-items:center; gap:12px; padding:14px; background:#fff8e1; border:1px solid #ffd54f; border-radius:8px;">
+        <input type="checkbox" name="binnenkort" value="1" {{ old('binnenkort', $occasion->binnenkort) ? 'checked' : '' }} style="width:18px; height:18px;">
+        <div style="flex:1;">
+          <strong>Binnenkort beschikbaar</strong>
+          <div style="font-size:13px; color:#666; margin-top:2px;">Toon deze auto op de "Binnenkort"-pagina i.p.v. het reguliere aanbod</div>
+        </div>
+      </div>
+    </label>
+
+    <label class="input-row">
+      <span>Verwachte prijs <small style="color:#888;font-weight:400">— alleen voor "binnenkort"</small></span>
+      <div class="with-addon">
+        <span class="addon">€</span>
+        <input type="number" name="verwachte_prijs" step="1" min="0" value="{{ old('verwachte_prijs', $occasion->verwachte_prijs) }}" placeholder="Verwachte verkoopprijs">
+      </div>
+    </label>
+
       <label class="input-row" style="grid-column: 1 / -1;">
         <span>Kenteken</span>
 

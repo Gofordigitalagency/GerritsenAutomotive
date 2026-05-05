@@ -5,6 +5,9 @@
         src="{{ $car->hoofdfoto_path ? asset('storage/'.$car->hoofdfoto_path) : asset('images/placeholder-car.jpg') }}"
         alt="{{ $car->titel }}"
       >
+      @if(!empty($car->oude_prijs) && $car->oude_prijs > $car->prijs)
+        <span class="car-sale-badge">Aanbieding</span>
+      @endif
     </div>
 
     <div class="car-info">
@@ -22,6 +25,8 @@
         if ($merkModel === '') {
           $merkModel = $car->titel ?? '';
         }
+
+        $hasDiscount = !empty($car->oude_prijs) && $car->oude_prijs > $car->prijs;
       @endphp
 
       <h3 class="car-title">{{ $merkModel }}</h3>
@@ -37,7 +42,14 @@
         <span>{{ number_format($car->tellerstand ?? 0, 0, ',', '.') }} km</span>
       </div>
 
-      <div class="car-price">€ {{ number_format($car->prijs ?? 0, 0, ',', '.') }},-</div>
+      @if($hasDiscount)
+        <div class="car-price-block">
+          <span class="car-price-old">€ {{ number_format($car->oude_prijs, 0, ',', '.') }},-</span>
+          <span class="car-price car-price-sale">€ {{ number_format($car->prijs ?? 0, 0, ',', '.') }},-</span>
+        </div>
+      @else
+        <div class="car-price">€ {{ number_format($car->prijs ?? 0, 0, ',', '.') }},-</div>
+      @endif
     </div>
   </a>
 @endforeach

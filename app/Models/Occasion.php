@@ -15,6 +15,7 @@ class Occasion extends Model
     'vermogen_pk',
     // nieuw:
     'exterieur_options','interieur_options','veiligheid_options','overige_options','omschrijving',
+    'binnenkort','verwachte_prijs','oude_prijs',
 ];
 
 
@@ -26,6 +27,9 @@ protected $casts = [
     'interieur_options' => 'array',
     'veiligheid_options' => 'array',
     'overige_options' => 'array',
+    'binnenkort' => 'boolean',
+    'verwachte_prijs' => 'decimal:2',
+    'oude_prijs' => 'decimal:2',
 ];
 
     protected static function booted()

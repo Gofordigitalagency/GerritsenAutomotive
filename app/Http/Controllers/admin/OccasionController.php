@@ -65,6 +65,9 @@ public function edit(Occasion $occasion)
         $data['veiligheid_options'] = array_values($request->input('veiligheid_options', [])) ?: null;
         $data['overige_options']    = array_values($request->input('overige_options', [])) ?: null;
 
+        // Checkbox: als niet aangevinkt, op false zetten
+        $data['binnenkort'] = (bool) $request->input('binnenkort', false);
+
         // oude textarea fields (als ze nog in request zitten) negeren
         unset(
             $data['exterieur_options_text'],
@@ -115,6 +118,9 @@ public function edit(Occasion $occasion)
         $data['interieur_options']  = array_values($request->input('interieur_options', [])) ?: null;
         $data['veiligheid_options'] = array_values($request->input('veiligheid_options', [])) ?: null;
         $data['overige_options']    = array_values($request->input('overige_options', [])) ?: null;
+
+        // Checkbox: als niet aangevinkt, op false zetten
+        $data['binnenkort'] = (bool) $request->input('binnenkort', false);
 
         // oude textarea fields (als ze nog in request zitten) negeren
         unset(

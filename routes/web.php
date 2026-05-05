@@ -18,6 +18,7 @@ use App\Http\Controllers\admin\ReclameController;
 Route::get('/', [PublicOccasionController::class, 'home'])->name('home');
 Route::get('/occasions', [PublicOccasionController::class, 'index'])->name('occasions.index');
 Route::get('/occasions/cards', [PublicOccasionController::class, 'cards'])->name('occasions.cards');
+Route::get('/binnenkort', [PublicOccasionController::class, 'binnenkort'])->name('occasions.binnenkort');
 
 Route::get('/occasions/{slug}', [PublicOccasionController::class, 'show'])->name('occasions.show');
 

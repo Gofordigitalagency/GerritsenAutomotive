@@ -66,6 +66,7 @@
       <a href="/"       class="{{ request()->is('/') ? 'active' : '' }}">HOME</a>
       <a href="#info"   class="{{ request()->is('over-ons') ? 'active' : '' }}">OVER ONS</a>
       <a href="#aanbod" class="{{ request()->is('aanbod') ? 'active' : '' }}">AANBOD</a>
+      <a href="{{ route('occasions.binnenkort') }}" class="{{ request()->is('binnenkort') ? 'active' : '' }}">BINNENKORT</a>
       <a href="#footer" class="{{ request()->is('contact') ? 'active' : '' }}">CONTACT</a>
 
       <!-- Dark mode toggle (DESKTOP – naast CONTACT) -->
@@ -97,6 +98,7 @@
         <a href="/">HOME</a>
         <a href="#info">OVER ONS</a>
         <a href="#aanbod">AANBOD</a>
+        <a href="{{ route('occasions.binnenkort') }}">BINNENKORT</a>
         <a href="#footer">CONTACT</a>
       </nav>
 
