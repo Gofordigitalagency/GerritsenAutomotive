@@ -202,22 +202,52 @@ public function priceSuggest(\Illuminate\Http\Request $request)
         return response()->json(['message' => 'merk vereist'], 422);
     }
 
-    $q = Occasion::query()
-        ->whereNotNull('prijs')
-        ->where('prijs', '>', 0)
-        ->where('merk', $merk);
+    // Strip merk-prefix uit model (RDW geeft soms "VOLKSWAGEN POLO", soms "POLO")
+    $modelClean = trim(preg_replace('/^' . preg_quote($merk, '/') . '\s+/i', '', $model));
 
-    if ($model !== '') {
-        $q->where('model', 'like', $model . '%');
+    // Helper: bouw query met case-insensitive merk-match (LIKE met % aan einde
+    // zodat "PEUGEOT" ook "Peugeot" matcht via LOWER)
+    $build = function () use ($merk) {
+        return Occasion::query()
+            ->whereNotNull('prijs')
+            ->where('prijs', '>', 0)
+            ->whereRaw('LOWER(merk) LIKE ?', [strtolower($merk) . '%']);
+    };
+
+    // Probeer 1: merk + model + bouwjaar (±3 jaar)
+    $q = $build();
+    if ($modelClean !== '') {
+        $q->where(function ($w) use ($modelClean) {
+            $w->whereRaw('LOWER(model) LIKE ?', [strtolower($modelClean) . '%']);
+        });
     }
     if ($bouwjaar > 0) {
-        $q->whereBetween('bouwjaar', [$bouwjaar - 2, $bouwjaar + 2]);
+        $q->whereBetween('bouwjaar', [$bouwjaar - 3, $bouwjaar + 3]);
+    }
+    $rows = $q->limit(50)->pluck('prijs')->map(fn ($p) => (int) $p)->all();
+    $usedFilter = 'merk + model + bouwjaar';
+
+    // Fallback 1: drop bouwjaar
+    if (empty($rows) && $bouwjaar > 0) {
+        $q = $build();
+        if ($modelClean !== '') {
+            $q->whereRaw('LOWER(model) LIKE ?', [strtolower($modelClean) . '%']);
+        }
+        $rows = $q->limit(50)->pluck('prijs')->map(fn ($p) => (int) $p)->all();
+        $usedFilter = 'merk + model';
     }
 
-    $rows = $q->limit(50)->pluck('prijs')->map(fn($p) => (int) $p)->all();
+    // Fallback 2: drop model — alleen merk
+    if (empty($rows)) {
+        $rows = $build()->limit(50)->pluck('prijs')->map(fn ($p) => (int) $p)->all();
+        $usedFilter = 'merk';
+    }
 
     if (empty($rows)) {
-        return response()->json(['count' => 0, 'message' => 'Geen vergelijkbare data — stel zelf een prijs in.']);
+        return response()->json([
+            'count'   => 0,
+            'message' => 'Nog geen vergelijkbare ' . $merk . '-data — stel zelf een prijs in.',
+        ]);
     }
 
     sort($rows);
@@ -227,10 +257,11 @@ public function priceSuggest(\Illuminate\Http\Request $request)
     $avg = (int) round(array_sum($rows) / $count);
 
     return response()->json([
-        'count' => $count,
-        'min'   => $min,
-        'max'   => $max,
-        'avg'   => $avg,
+        'count'  => $count,
+        'min'    => $min,
+        'max'    => $max,
+        'avg'    => $avg,
+        'filter' => $usedFilter,
     ]);
 }
 

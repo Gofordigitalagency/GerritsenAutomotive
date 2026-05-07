@@ -429,7 +429,14 @@
 
       lastSuggest = data;
       priceTit.textContent = `Vergelijkbaar: € ${data.min.toLocaleString('nl-NL')} – € ${data.max.toLocaleString('nl-NL')}`;
-      priceDet.textContent = `Op basis van ${data.count} vergelijkbare ${data.count === 1 ? 'auto' : 'auto\'s'} in jullie aanbod · gemiddelde € ${data.avg.toLocaleString('nl-NL')}`;
+
+      // Geef context welke filter gebruikt is — eerlijk voor de gebruiker
+      let filterTekst = '';
+      if (data.filter === 'merk + model + bouwjaar') filterTekst = 'merk, model én bouwjaar';
+      else if (data.filter === 'merk + model')       filterTekst = 'merk en model (alle bouwjaren)';
+      else                                            filterTekst = 'alleen merk (geen exacte match op model)';
+
+      priceDet.textContent = `${data.count} ${data.count === 1 ? 'auto' : 'auto\'s'} in jullie aanbod, op basis van ${filterTekst} · gemiddelde € ${data.avg.toLocaleString('nl-NL')}`;
       priceBtn.style.display = 'inline-block';
       priceBox.hidden = false;
     } catch (err) {
