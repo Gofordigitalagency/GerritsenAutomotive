@@ -17,6 +17,8 @@ use App\Http\Controllers\admin\WorkshopAppointmentController as AdminWorkshopApp
 
 // --- Publiek ---
 Route::get('/', [PublicOccasionController::class, 'home'])->name('home');
+Route::get('/preview', [PublicOccasionController::class, 'preview'])->name('home.preview');
+Route::get('/api/rdw/{kenteken}', [PublicOccasionController::class, 'rdwPublic'])->name('rdw.public');
 Route::get('/occasions', [PublicOccasionController::class, 'index'])->name('occasions.index');
 Route::get('/occasions/cards', [PublicOccasionController::class, 'cards'])->name('occasions.cards');
 Route::get('/binnenkort', [PublicOccasionController::class, 'binnenkort'])->name('occasions.binnenkort');
