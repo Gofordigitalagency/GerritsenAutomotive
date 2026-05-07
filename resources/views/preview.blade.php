@@ -211,7 +211,7 @@
     </div>
 
     <div class="px-grid" id="pxGrid">
-      @foreach($nieuw->take(12) as $car)
+      @foreach($nieuw->take(6) as $car)
         @php
           $merkModel = trim(($car->merk ?? '').' '.($car->model ?? ''));
           if ($merkModel === '' && !empty($car->titel)) $merkModel = $car->titel;
