@@ -118,12 +118,13 @@
   }
 
   /* =========================================================
-     CUSTOM CURSOR DOT (subtle)
+     CUSTOM CURSOR DOT (subtle, hides native cursor)
      ========================================================= */
   if (isFinePointer && !reduceMotion) {
     const cursor = document.createElement('div');
     cursor.className = 'px-cursor';
     document.body.appendChild(cursor);
+    document.body.classList.add('px-cursor-on');   // hide native cursor (CSS)
 
     let cx = window.innerWidth / 2, cy = window.innerHeight / 2;
     let tx = cx, ty = cy;
@@ -133,8 +134,8 @@
     });
 
     const tick = () => {
-      cx += (tx - cx) * 0.18;
-      cy += (ty - cy) * 0.18;
+      cx += (tx - cx) * 0.22;
+      cy += (ty - cy) * 0.22;
       cursor.style.transform = `translate(${cx}px, ${cy}px) translate(-50%, -50%)`;
       requestAnimationFrame(tick);
     };
@@ -147,6 +148,46 @@
     document.addEventListener('mouseout', (e) => {
       if (e.target.closest(hoverables)) cursor.classList.remove('is-hover');
     });
+
+    // Restore native cursor when leaving the document (e.g. devtools)
+    document.addEventListener('mouseleave', () => cursor.style.opacity = '0');
+    document.addEventListener('mouseenter', () => cursor.style.opacity = '1');
+  }
+
+  /* =========================================================
+     SCROLL PROGRESS BAR
+     ========================================================= */
+  const progressBar = document.createElement('div');
+  progressBar.className = 'px-scroll-progress';
+  document.body.appendChild(progressBar);
+
+  const updateScrollProgress = () => {
+    const h = document.documentElement;
+    const total = h.scrollHeight - h.clientHeight;
+    if (total <= 0) return;
+    const pct = (h.scrollTop / total) * 100;
+    progressBar.style.transform = `scaleX(${pct / 100})`;
+  };
+  window.addEventListener('scroll', updateScrollProgress, { passive: true });
+  updateScrollProgress();
+
+  /* =========================================================
+     HERO SCROLL PARALLAX (content drifts up + fades)
+     ========================================================= */
+  if (!reduceMotion) {
+    const heroContent = $('.px-hero-content');
+    const heroBg = $('.px-hero-bg');
+    if (heroContent || heroBg) {
+      window.addEventListener('scroll', () => {
+        const y = window.scrollY;
+        const vh = window.innerHeight;
+        if (y > vh) return;
+        if (heroContent) {
+          heroContent.style.transform = `translateY(${y * 0.25}px)`;
+          heroContent.style.opacity   = String(Math.max(0, 1 - y / (vh * 0.7)));
+        }
+      }, { passive: true });
+    }
   }
 
   /* =========================================================
