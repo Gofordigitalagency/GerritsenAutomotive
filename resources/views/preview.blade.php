@@ -113,12 +113,11 @@
 
     <div class="px-chips" id="pxChips">
       <button type="button" class="px-chip px-chip-active" data-filter="all">Alle <span>{{ count($nieuw) }}</span></button>
-      <button type="button" class="px-chip" data-filter="price:0-5000">Tot € 5k</button>
-      <button type="button" class="px-chip" data-filter="price:5000-10000">€ 5–10k</button>
-      <button type="button" class="px-chip" data-filter="price:10000-15000">€ 10–15k</button>
-      <button type="button" class="px-chip" data-filter="price:15000-99999999">€ 15k+</button>
-      <button type="button" class="px-chip" data-filter="brandstof:Benzine">Benzine</button>
-      <button type="button" class="px-chip" data-filter="brandstof:Diesel">Diesel</button>
+      <button type="button" class="px-chip" data-filter="price:0-1500">Tot € 1.500</button>
+      <button type="button" class="px-chip" data-filter="price:1500-2500">€ 1.500 – 2.500</button>
+      <button type="button" class="px-chip" data-filter="price:2500-4000">€ 2.500 – 4.000</button>
+      <button type="button" class="px-chip" data-filter="price:4000-99999999">€ 4.000+</button>
+      <button type="button" class="px-chip" data-filter="trans:auto">Automaat</button>
       <button type="button" class="px-chip" data-filter="sale">Aanbieding</button>
     </div>
 
