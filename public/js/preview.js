@@ -540,6 +540,7 @@
       service: '',
       slotDay: null,    // ISO date
       slotTime: null,
+      slotLabel: null,
     };
 
     // Auto-uppercase kenteken
@@ -687,32 +688,14 @@
     sNext.addEventListener('click', () => {
       if (!smartState.service) return;
 
-      // Vul samenvatting
-      const parts = [];
-      parts.push(`<span><strong>${smartState.naam}</strong></span>`);
-      parts.push('<span class="px-smart-summary-divider">·</span>');
-      parts.push(`<span>${smartState.service}</span>`);
-      sSummary.innerHTML = parts.join('');
+      // Samenvatting
+      sSummary.innerHTML = `<span><strong>${smartState.naam}</strong></span>
+        <span class="px-smart-summary-divider">·</span>
+        <span>${smartState.service}</span>`;
 
-      // Genereer eerstvolgende werkdag (di–vr) met tijd 10:00
-      const next = nextWorkshopSlot();
-      smartState.slotDay  = next.iso;
-      smartState.slotTime = next.time;
-      sSlotDay.textContent = next.label;
-      sSlotTime.textContent = next.time;
-
-      // Bouw query-params voor redirect
-      const url = new URL(sConfirm.href, window.location.origin);
-      url.searchParams.set('kenteken', smartState.kenteken);
-      url.searchParams.set('service',  smartState.service);
-      url.searchParams.set('datum',    smartState.slotDay);
-      url.searchParams.set('tijd',     smartState.slotTime);
-      sConfirm.href = url.pathname + url.search;
-
-      const url2 = new URL(sCustom.href, window.location.origin);
-      url2.searchParams.set('kenteken', smartState.kenteken);
-      url2.searchParams.set('service',  smartState.service);
-      sCustom.href = url2.pathname + url2.search;
+      // Genereer day-strip + time-strip (eerste keer)
+      buildDayStrip();
+      buildTimeStrip();
 
       smartGoTo(3);
     });
@@ -724,21 +707,159 @@
       smartGoTo(Math.max(1, n - 1));
     }));
 
-    // Volgende werkplaats-slot: eerstvolgende di–vr om 10:00
-    function nextWorkshopSlot() {
-      const d = new Date();
-      d.setHours(10, 0, 0, 0);
-      // Als het al na 10:00 vandaag is, of weekend, schuif door
-      if (new Date() > d) d.setDate(d.getDate() + 1);
-      // Skip zondag (0) en maandag (1) — werkplaats start dinsdag in de fictieve agenda
-      while (d.getDay() === 0 || d.getDay() === 1) {
-        d.setDate(d.getDate() + 1);
+    /* ---- Day-strip: 14 werkdagen vooruit ---- */
+    const dayShort   = ['Zo','Ma','Di','Wo','Do','Vr','Za'];
+    const monthShort = ['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
+    const dayLong    = ['Zondag','Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag','Zaterdag'];
+    const monthLong  = ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
+
+    const dayStrip   = $('#pxDayStrip');
+    const timeStrip  = $('#pxTimeStrip');
+    const selDateLbl = $('#pxSelectedDate');
+
+    function buildDayStrip() {
+      if (!dayStrip) return;
+      // Genereer eerstvolgende 14 werkdagen (skip zondag + maandag — werkplaats di–za)
+      const today = new Date(); today.setHours(0,0,0,0);
+      const cursor = new Date(today);
+      const now = new Date();
+
+      // Als het al na 16:00 is, begin morgen
+      if (now.getHours() >= 16) cursor.setDate(cursor.getDate() + 1);
+
+      const items = [];
+      while (items.length < 14) {
+        if (cursor.getDay() !== 0 && cursor.getDay() !== 1) {
+          items.push(new Date(cursor));
+        }
+        cursor.setDate(cursor.getDate() + 1);
       }
-      const days = ['Zondag','Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag','Zaterdag'];
-      const months = ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
-      const label = `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]}`;
-      const iso = d.toISOString().slice(0, 10);
-      return { iso, time: '10:00', label };
+
+      dayStrip.innerHTML = items.map((d, i) => {
+        const iso = d.toISOString().slice(0,10);
+        const labelLong = `${dayLong[d.getDay()]} ${d.getDate()} ${monthLong[d.getMonth()]}`;
+        return `<button type="button" class="px-day${i === 0 ? ' selected' : ''}"
+          data-iso="${iso}"
+          data-label="${labelLong}">
+          <span class="px-day-name">${dayShort[d.getDay()]}</span>
+          <span class="px-day-num">${d.getDate()}</span>
+          <span class="px-day-month">${monthShort[d.getMonth()]}</span>
+        </button>`;
+      }).join('');
+
+      // Default selectie = eerste dag
+      const first = items[0];
+      smartState.slotDay   = first.toISOString().slice(0,10);
+      smartState.slotLabel = `${dayLong[first.getDay()]} ${first.getDate()} ${monthLong[first.getMonth()]}`;
+      if (selDateLbl) selDateLbl.textContent = smartState.slotLabel;
+
+      // Click handlers
+      $$('.px-day', dayStrip).forEach(d => d.addEventListener('click', () => {
+        $$('.px-day', dayStrip).forEach(x => x.classList.remove('selected'));
+        d.classList.add('selected');
+        smartState.slotDay   = d.dataset.iso;
+        smartState.slotLabel = d.dataset.label;
+        if (selDateLbl) selDateLbl.textContent = smartState.slotLabel;
+      }));
+    }
+
+    function buildTimeStrip() {
+      if (!timeStrip) return;
+      const slots = ['08:00','09:00','09:30','10:00','11:00','13:00','14:00','15:00'];
+      timeStrip.innerHTML = slots.map(t =>
+        `<button type="button" class="px-time-btn${t === '10:00' ? ' selected' : ''}" data-time="${t}">${t}</button>`
+      ).join('');
+      smartState.slotTime = '10:00';
+
+      $$('.px-time-btn', timeStrip).forEach(t => t.addEventListener('click', () => {
+        $$('.px-time-btn', timeStrip).forEach(x => x.classList.remove('selected'));
+        t.classList.add('selected');
+        smartState.slotTime = t.dataset.time;
+      }));
+    }
+
+    /* ---- Form submit naar /contact ---- */
+    const sContactForm = $('#pxSmartContactForm');
+    const sFormError   = $('#pxSmartFormError');
+    const sMessageInp  = $('#pxSmartMessage');
+    const sSuccessSum  = $('#pxSmartSuccessSummary');
+    const sReset       = $('#pxSmartReset');
+
+    if (sContactForm) {
+      sContactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        sFormError.hidden = true;
+
+        if (!smartState.kenteken || !smartState.service || !smartState.slotDay || !smartState.slotTime) {
+          sFormError.textContent = 'Vul eerst kenteken, werkzaamheden, datum en tijd in.';
+          sFormError.hidden = false;
+          return;
+        }
+
+        // Compose message body
+        const apkLine = smartState.apkTot ? `\nAPK-vervaldatum: ${smartState.apkTot}` : '';
+        sMessageInp.value =
+          `Werkplaatsafspraak (via homepage)\n` +
+          `\nKenteken: ${smartState.kenteken}` +
+          `\nAuto: ${smartState.naam}` +
+          (smartState.bouwjaar ? `\nBouwjaar: ${smartState.bouwjaar}` : '') +
+          apkLine +
+          `\n\nWerkzaamheden: ${smartState.service}` +
+          `\nGewenste datum: ${smartState.slotLabel} (${smartState.slotDay})` +
+          `\nGewenste tijd: ${smartState.slotTime}`;
+
+        sConfirm.classList.add('loading');
+        sConfirm.disabled = true;
+
+        try {
+          const res = await fetch(sContactForm.action, {
+            method: 'POST',
+            body: new FormData(sContactForm),
+            headers: { 'Accept': 'text/html, application/json' },
+            redirect: 'follow',
+          });
+
+          // Laravel back() returns 302 → followed → 200 op preview-pagina
+          if (res.ok || res.status === 302) {
+            // Toon success state
+            if (sSuccessSum) {
+              sSuccessSum.innerHTML =
+                `<div><span class="px-smart-success-label">Auto</span><span>${smartState.naam}</span></div>` +
+                `<div><span class="px-smart-success-label">Werkzaamheden</span><span>${smartState.service}</span></div>` +
+                `<div><span class="px-smart-success-label">Datum</span><span>${smartState.slotLabel} · ${smartState.slotTime}</span></div>`;
+            }
+            const successPanel = $('.px-smart-step-body[data-step="success"]');
+            $$('.px-smart-step-body', sCard).forEach(s => s.classList.remove('px-active'));
+            if (successPanel) successPanel.classList.add('px-active');
+            // Update progress bar
+            smartLbls.forEach(l => { l.classList.remove('active'); l.classList.add('done'); });
+          } else {
+            sFormError.textContent = 'Verzenden mislukt. Probeer het later nog eens of bel ons.';
+            sFormError.hidden = false;
+          }
+        } catch (err) {
+          sFormError.textContent = 'Verbinding mislukt. Probeer opnieuw.';
+          sFormError.hidden = false;
+        } finally {
+          sConfirm.classList.remove('loading');
+          sConfirm.disabled = false;
+        }
+      });
+    }
+
+    if (sReset) {
+      sReset.addEventListener('click', () => {
+        // Reset state and go back to step 1
+        smartState = {
+          kenteken: '', naam: '', bouwjaar: null, apkTot: null,
+          service: '', slotDay: null, slotTime: null, slotLabel: null,
+        };
+        sPlate.value = '';
+        services.forEach(s => s.classList.remove('selected', 'px-service-suggested'));
+        sNext.disabled = true;
+        if (sContactForm) sContactForm.reset();
+        smartGoTo(1);
+      });
     }
   }
 

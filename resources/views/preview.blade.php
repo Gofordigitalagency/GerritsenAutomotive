@@ -575,33 +575,62 @@
         <h3 class="px-smart-q">Wanneer komt het uit?</h3>
         <div class="px-smart-summary" id="pxSmartSummary"></div>
 
-        <div class="px-smart-slots">
-          <div class="px-smart-slot-suggested">
-            <div class="px-smart-slot-eyebrow"><span class="px-eyebrow-dot"></span>Eerstvolgende vrije plek</div>
-            <div class="px-smart-slot-when">
-              <span class="px-smart-slot-day" id="pxSmartSlotDay">—</span>
-              <span class="px-smart-slot-time" id="pxSmartSlotTime">—</span>
-            </div>
-            <p class="px-smart-slot-note">Bevestiging direct in je mailbox. Geen aanbetaling nodig.</p>
+        <div class="px-smart-pick-label">
+          <span>Kies een dag</span>
+          <span class="px-smart-pick-hint">Werkplaats geopend di–za</span>
+        </div>
+        <div class="px-day-strip" id="pxDayStrip"></div>
+
+        <div class="px-smart-pick-label">
+          <span>Kies een tijd</span>
+          <span class="px-smart-pick-hint" id="pxSelectedDate">—</span>
+        </div>
+        <div class="px-time-strip" id="pxTimeStrip"></div>
+
+        <form class="px-smart-contact" id="pxSmartContactForm" method="POST" action="{{ route('contact.store') }}">
+          @csrf
+          <input type="text" name="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;" aria-hidden="true">
+          <input type="hidden" name="message" id="pxSmartMessage">
+          <input type="hidden" name="privacy" value="1">
+
+          <div class="px-input-wrap">
+            <label for="pxContactName">Voornaam</label>
+            <input type="text" id="pxContactName" name="name" required maxlength="120">
+          </div>
+          <div class="px-input-wrap">
+            <label for="pxContactPhone">Telefoon</label>
+            <input type="tel" id="pxContactPhone" name="phone" maxlength="40">
+          </div>
+          <div class="px-input-wrap">
+            <label for="pxContactEmail">E-mail</label>
+            <input type="email" id="pxContactEmail" name="email" required maxlength="190">
           </div>
 
-          <div class="px-smart-or">of</div>
-
-          <div class="px-smart-slot-custom">
-            <div class="px-smart-slot-eyebrow">Liever zelf kiezen?</div>
-            <p>Open de volledige agenda met alle beschikbare dagen en tijden.</p>
+          <div class="px-smart-actions">
+            <button type="button" class="px-btn px-btn-ghost" data-prev>← Terug</button>
+            <button type="submit" class="px-btn px-btn-primary px-btn-lg" id="pxSmartConfirm" data-magnetic>
+              <span class="px-smart-btn-label">Bevestig afspraak →</span>
+              <span class="px-spinner" aria-hidden="true"></span>
+            </button>
           </div>
-        </div>
+        </form>
 
-        <div class="px-smart-actions">
-          <button type="button" class="px-btn px-btn-ghost" data-prev>← Terug</button>
-          <a href="{{ route('workshop.step1') }}" class="px-btn px-btn-ghost px-btn-lg" id="pxSmartCustom">Open agenda</a>
-          <a href="{{ route('workshop.step1') }}" class="px-btn px-btn-primary px-btn-lg" id="pxSmartConfirm" data-magnetic>Plan deze afspraak →</a>
-        </div>
+        <div class="px-smart-form-error" id="pxSmartFormError" hidden></div>
 
         <p class="px-smart-fallback">
           Liever even bellen? <a href="tel:+31638257987">06 38 25 79 87</a>
         </p>
+      </div>
+
+      {{-- SUCCESS state — na succesvolle submit --}}
+      <div class="px-smart-step-body px-smart-success" data-step="success">
+        <div class="px-smart-success-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg>
+        </div>
+        <h3 class="px-smart-q">Aanvraag verzonden.</h3>
+        <p class="px-smart-success-text">We bevestigen je afspraak binnen 1 werkdag per e-mail.</p>
+        <div class="px-smart-success-summary" id="pxSmartSuccessSummary"></div>
+        <button type="button" class="px-btn px-btn-ghost" id="pxSmartReset">Nog een afspraak plannen</button>
       </div>
     </div>
   </div>
