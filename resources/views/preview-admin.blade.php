@@ -75,7 +75,9 @@
         <div class="adm-plate-error" id="admPlateError" hidden></div>
         <div class="adm-plate-success" id="admPlateSuccess" hidden>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5L20 7"/></svg>
-          <span id="admFilledCount">0</span> velden automatisch ingevuld in <span id="admFilledTime">0</span>ms
+          <strong id="admFoundName">—</strong>
+          <span class="adm-plate-success-sep">·</span>
+          <span><b id="admFilledCount">0</b> velden ingevuld</span>
         </div>
       </section>
 
@@ -139,11 +141,9 @@
       {{-- FOTO'S --}}
       <section class="adm-section">
         <div class="adm-section-head">
-          <span class="adm-section-num">03</span>
-          <div>
-            <h2>Foto's</h2>
-            <p>Sleep meerdere foto's tegelijk. Sleep om de volgorde te wijzigen — eerste foto wordt cover.</p>
-          </div>
+          <div class="adm-eyebrow"><span class="adm-dot"></span>Hoofdstuk 03 · Beelden</div>
+          <h2 class="adm-h2">Foto's</h2>
+          <p class="adm-section-sub">Sleep meerdere foto's tegelijk. Sleep om de volgorde te wijzigen — eerste foto wordt cover.</p>
         </div>
 
         <div class="adm-dropzone" id="admDropzone">
@@ -167,16 +167,14 @@
       {{-- BESCHRIJVING --}}
       <section class="adm-section">
         <div class="adm-section-head">
-          <span class="adm-section-num">04</span>
-          <div>
-            <h2>Verkoopbeschrijving</h2>
-            <p>Schrijf zelf, of laat AI een eerste versie genereren op basis van de auto-data.</p>
-          </div>
+          <div class="adm-eyebrow"><span class="adm-dot"></span>Hoofdstuk 04 · Verhaal</div>
+          <h2 class="adm-h2">Verkoopbeschrijving</h2>
+          <p class="adm-section-sub">Schrijf zelf, of laat AI een eerste versie genereren op basis van de auto-data.</p>
         </div>
 
         <div class="adm-ai-tools">
-          <button type="button" class="adm-btn adm-btn-ai" id="admAiGenerate" data-magnetic>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+          <button type="button" class="adm-btn adm-btn-primary adm-btn-ai" id="admAiGenerate" data-magnetic>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l2.4 7.6L22 11l-7.6 2.4L12 21l-2.4-7.6L2 11l7.6-2.4L12 1z"/></svg>
             <span class="adm-btn-label">Genereer met AI</span>
             <span class="adm-spinner"></span>
           </button>
@@ -209,11 +207,9 @@
       {{-- PRIJS --}}
       <section class="adm-section">
         <div class="adm-section-head">
-          <span class="adm-section-num">05</span>
-          <div>
-            <h2>Prijs</h2>
-            <p>We helpen je de prijs te bepalen op basis van je eigen verkoophistorie.</p>
-          </div>
+          <div class="adm-eyebrow"><span class="adm-dot"></span>Hoofdstuk 05 · Prijsbepaling</div>
+          <h2 class="adm-h2">Prijs</h2>
+          <p class="adm-section-sub">We helpen je de prijs te bepalen op basis van je eigen verkoophistorie.</p>
         </div>
 
         <div class="adm-price-row">

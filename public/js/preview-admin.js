@@ -10,12 +10,12 @@
   /* =========================================================
      KENTEKEN LOOKUP — vult ~16 velden in een halve seconde
      ========================================================= */
-  const plate    = $('#admPlate');
-  const lookupBtn= $('#admLookup');
-  const errBox   = $('#admPlateError');
-  const sucBox   = $('#admPlateSuccess');
-  const filledN  = $('#admFilledCount');
-  const filledT  = $('#admFilledTime');
+  const plate     = $('#admPlate');
+  const lookupBtn = $('#admLookup');
+  const errBox    = $('#admPlateError');
+  const sucBox    = $('#admPlateSuccess');
+  const filledN   = $('#admFilledCount');
+  const foundName = $('#admFoundName');
 
   if (plate) {
     plate.addEventListener('input', () => {
@@ -32,12 +32,12 @@
 
   async function doLookup() {
     hideError();
+    sucBox.hidden = true;
     const raw = (plate.value || '').replace(/[^A-Z0-9]/gi, '').toUpperCase();
     if (raw.length < 4) return showError('Vul een geldig kenteken in.');
 
     lookupBtn.classList.add('loading');
     lookupBtn.disabled = true;
-    const t0 = performance.now();
 
     try {
       const res = await fetch(`/api/rdw-full/${encodeURIComponent(raw)}`, {
@@ -50,16 +50,18 @@
         return;
       }
       const data = await res.json();
+      const filledCount = countFilled(data) - 1; // -1 want kenteken is geen "ingevuld" veld
       await fillFieldsAnimated(data);
 
-      const elapsed = Math.round(performance.now() - t0);
-      filledN.textContent = countFilled(data);
-      filledT.textContent = elapsed;
+      // Naam mooi formatten
+      const naam = [data.merk, data.model].filter(Boolean).join(' ').toLowerCase()
+        .replace(/\b\w/g, c => c.toUpperCase());
+      const jaar = data.bouwjaar ? ` · ${data.bouwjaar}` : '';
+      foundName.textContent = (naam || raw) + jaar;
+      filledN.textContent = filledCount;
       sucBox.hidden = false;
 
-      // Update preview
       updatePreview();
-      // Probeer prijs-suggestie
       maybeSuggestPrice();
     } catch (err) {
       showError('Verbinding mislukt. Probeer opnieuw.');
