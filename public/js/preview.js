@@ -150,6 +150,17 @@
   }
 
   /* =========================================================
+     FINDER STATE (declared early — slider reads from it)
+     ========================================================= */
+  const finderState = {
+    minBudget: 5000,
+    maxBudget: 15000,
+    brandstof: '',
+    type: '',
+    minYear: 0,
+  };
+
+  /* =========================================================
      BUDGET SLIDER (dual-range, vanaf → tot)
      ========================================================= */
   const minR = $('#pxBudgetMin');
@@ -220,14 +231,6 @@
   /* =========================================================
      FINDER WIZARD
      ========================================================= */
-  const finderState = {
-    minBudget: 5000,
-    maxBudget: 15000,
-    brandstof: '',
-    type: '',
-    minYear: 0,
-  };
-
   const stepEls = $$('.px-finder-step');
   const stepLabels = $$('.px-finder-steps span');
   const progressBar = $('#pxFinderBar');
