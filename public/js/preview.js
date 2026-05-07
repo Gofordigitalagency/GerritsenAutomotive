@@ -194,8 +194,8 @@
      FINDER STATE (declared early — slider reads from it)
      ========================================================= */
   const finderState = {
-    minBudget: 5000,
-    maxBudget: 15000,
+    minBudget: 1500,
+    maxBudget: 3000,
     brandstof: '',
     type: '',
     minYear: 0,
@@ -323,11 +323,11 @@
     finderState.brandstof = '';
     finderState.type = '';
     finderState.minYear = 0;
-    finderState.minBudget = 5000;
-    finderState.maxBudget = 15000;
+    finderState.minBudget = 1500;
+    finderState.maxBudget = 3000;
     $$('.px-opt').forEach(o => o.classList.remove('selected'));
     if (minR && maxR) {
-      minR.value = 5000; maxR.value = 15000; updateRange();
+      minR.value = 1500; maxR.value = 3000; updateRange();
     }
     goToStep(1);
   });
@@ -341,15 +341,14 @@
   function scoreOccasion(o) {
     let score = 100;
 
-    if (o.prijs < finderState.minBudget) {
-      const under = finderState.minBudget - o.prijs;
-      const pen = Math.min(50, Math.round((under / 1000) * 6));
-      score -= pen;
+    // Percentage-based budget penalty (werkt op elke schaal: €1k of €100k segment)
+    if (o.prijs < finderState.minBudget && finderState.minBudget > 0) {
+      const underPct = ((finderState.minBudget - o.prijs) / finderState.minBudget) * 100;
+      score -= Math.min(50, Math.round(underPct * 0.5));
     }
-    if (o.prijs > finderState.maxBudget) {
-      const over = o.prijs - finderState.maxBudget;
-      const pen = Math.min(70, Math.round((over / 1000) * 8));
-      score -= pen;
+    if (o.prijs > finderState.maxBudget && finderState.maxBudget > 0) {
+      const overPct = ((o.prijs - finderState.maxBudget) / finderState.maxBudget) * 100;
+      score -= Math.min(70, Math.round(overPct * 0.8));
     }
 
     if (finderState.brandstof && o.brandstof) {
@@ -457,6 +456,12 @@
         } else if (activeFilter.startsWith('brandstof:')) {
           const want = activeFilter.split(':')[1].toLowerCase();
           pass = (c.dataset.brandstof || '').toLowerCase() === want;
+        } else if (activeFilter.startsWith('trans:')) {
+          const want = activeFilter.split(':')[1].toLowerCase(); // 'auto' of 'hand'
+          const t = (c.dataset.trans || '').toLowerCase();
+          pass = want === 'auto'
+            ? t.includes('auto')
+            : (t.includes('hand') || t.includes('schakel'));
         } else if (activeFilter.startsWith('price:')) {
           const [lo, hi] = activeFilter.split(':')[1].split('-').map(Number);
           const p = parseInt(c.dataset.prijs || '0', 10);

@@ -132,6 +132,7 @@
         <a class="px-card {{ $sold ? 'px-card-sold' : '' }}"
            href="{{ route('occasions.show', $car->slug) }}"
            data-brandstof="{{ $car->brandstof ?? '' }}"
+           data-trans="{{ strtolower($car->transmissie ?? '') }}"
            data-prijs="{{ $car->prijs ?? 0 }}"
            data-bouwjaar="{{ $car->bouwjaar ?? 0 }}"
            data-merk="{{ strtolower($car->merk ?? '') }}"
@@ -197,10 +198,8 @@
 </section>
 
 @php
+  // Spotlight: eerste niet-verkochte auto met foto (geen prijs-cap)
   $spotlight = $nieuw->first(function($c){
-      $sold = stripos($c->model ?? '', '(VERKOCHT)') !== false;
-      return !$sold && !empty($c->hoofdfoto_path) && (int)($c->prijs ?? 0) <= 15000;
-  }) ?? $nieuw->first(function($c){
       $sold = stripos($c->model ?? '', '(VERKOCHT)') !== false;
       return !$sold && !empty($c->hoofdfoto_path);
   });
@@ -368,29 +367,29 @@
           <div class="px-budget-display">
             <div class="px-budget-pair">
               <span class="px-budget-prefix">Vanaf</span>
-              <span class="px-budget-value">€ <span id="pxBudgetMinVal">5.000</span></span>
+              <span class="px-budget-value">€ <span id="pxBudgetMinVal">1.500</span></span>
             </div>
             <span class="px-budget-arrow">→</span>
             <div class="px-budget-pair">
               <span class="px-budget-prefix">Tot</span>
-              <span class="px-budget-value">€ <span id="pxBudgetMaxVal">15.000</span></span>
+              <span class="px-budget-value">€ <span id="pxBudgetMaxVal">3.000</span></span>
             </div>
           </div>
           <div class="px-range-dual">
             <div class="px-range-bg"></div>
             <div class="px-range-fill" id="pxRangeFill"></div>
-            <input type="range" id="pxBudgetMin" min="0" max="30000" step="250" value="5000" aria-label="Minimum budget">
-            <input type="range" id="pxBudgetMax" min="0" max="30000" step="250" value="15000" aria-label="Maximum budget">
+            <input type="range" id="pxBudgetMin" min="500" max="7500" step="100" value="1500" aria-label="Minimum budget">
+            <input type="range" id="pxBudgetMax" min="500" max="7500" step="100" value="3000" aria-label="Maximum budget">
           </div>
           <div class="px-range-ticks">
-            <span>€ 0</span>
-            <span>€ 30.000</span>
+            <span>€ 500</span>
+            <span>€ 7.500</span>
           </div>
           <div class="px-budget-presets">
-            <button type="button" data-min="0"     data-max="5000">Tot € 5k</button>
-            <button type="button" data-min="5000"  data-max="10000">€ 5–10k</button>
-            <button type="button" data-min="10000" data-max="15000">€ 10–15k</button>
-            <button type="button" data-min="15000" data-max="30000">€ 15k+</button>
+            <button type="button" data-min="500"  data-max="1500">Tot € 1.500</button>
+            <button type="button" data-min="1500" data-max="2500">€ 1.500 – 2.500</button>
+            <button type="button" data-min="2500" data-max="4000">€ 2.500 – 4.000</button>
+            <button type="button" data-min="4000" data-max="7500">€ 4.000+</button>
           </div>
         </div>
         <div class="px-finder-actions"><button type="button" class="px-btn px-btn-primary" data-next>Volgende →</button></div>
