@@ -451,28 +451,58 @@ ul { list-style: none; padding: 0; margin: 0; }
 }
 
 /* =========================================================
-   OVER ONS
+   OVER ONS — compact strip (eind van pagina)
    ========================================================= */
-.px-over {
+.px-over-strip {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 64px;
+  grid-template-columns: 120px 1fr auto;
+  gap: 28px;
   align-items: center;
-}
-.px-over-image {
+  padding: 24px;
+  background: var(--px-surface);
+  border: 1px solid var(--px-border);
   border-radius: var(--px-radius-lg);
-  overflow: hidden;
-  position: relative;
-  aspect-ratio: 4/3;
-  box-shadow: var(--px-shadow);
 }
-.px-over-image img { width: 100%; height: 100%; object-fit: cover; }
-.px-over-content p { font-size: 15px; color: var(--px-fg-2); margin: 16px 0 0; }
-.px-over-content .px-btn { margin-top: 24px; }
+.px-over-strip-img {
+  width: 120px;
+  height: 120px;
+  border-radius: var(--px-radius);
+  overflow: hidden;
+  flex: 0 0 auto;
+}
+.px-over-strip-img img {
+  width: 100%; height: 100%; object-fit: cover;
+}
+.px-over-strip-body {
+  min-width: 0;
+}
+.px-over-strip-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  margin: 8px 0 4px;
+  color: #fff;
+}
+.px-over-strip-body p {
+  font-size: 14px;
+  color: var(--px-fg-muted);
+  margin: 0;
+  line-height: 1.55;
+}
 
-@media (max-width: 900px) {
-  .px-over { grid-template-columns: 1fr; gap: 32px; }
-  .px-over-image { aspect-ratio: 16/10; }
+@media (max-width: 700px) {
+  .px-over-strip {
+    grid-template-columns: 80px 1fr;
+    gap: 16px;
+  }
+  .px-over-strip-img {
+    width: 80px; height: 80px;
+  }
+  .px-over-strip > .px-btn {
+    grid-column: 1 / -1;
+    justify-self: stretch;
+  }
 }
 
 /* =========================================================

@@ -28,7 +28,7 @@
 
     <nav class="px-nav-links" aria-label="Hoofdmenu">
       <a href="#aanbod" class="px-link">Aanbod</a>
-      <a href="#over" class="px-link">Over ons</a>
+      <a href="#waarom" class="px-link">Waarom</a>
       <a href="#finder" class="px-link">Auto-zoeker</a>
       <a href="#werkplaats" class="px-link">Werkplaats</a>
       <a href="#contact" class="px-link">Contact</a>
@@ -46,7 +46,7 @@
 
   <div class="px-mobile-menu" id="pxMobileMenu" aria-hidden="true">
     <a href="#aanbod">Aanbod</a>
-    <a href="#over">Over ons</a>
+    <a href="#waarom">Waarom Gerritsen</a>
     <a href="#finder">Auto-zoeker</a>
     <a href="#werkplaats">Werkplaats</a>
     <a href="#contact">Contact</a>
@@ -54,7 +54,7 @@
   </div>
 </header>
 
-{{-- ============ HERO ============ --}}
+{{-- ============ 1 · HERO ============ --}}
 <section class="px-hero">
   <div class="px-hero-bg" style="background-image: url('{{ asset('images/backgroundhome.jpg') }}');"></div>
   <div class="px-hero-overlay"></div>
@@ -97,95 +97,7 @@
   </div>
 </section>
 
-{{-- ============ OVER ONS ============ --}}
-<section class="px-section" id="over">
-  <div class="px-container">
-    <div class="px-over">
-      <div class="px-over-image">
-        <img src="{{ asset('images/handshake.jpg') }}" alt="Persoonlijke service bij Gerritsen Automotive">
-      </div>
-      <div class="px-over-content">
-        <div class="px-eyebrow"><span class="px-eyebrow-dot"></span>Over ons</div>
-        <h2 class="px-h2">Persoonlijk, helder en zonder gedoe.</h2>
-        <p>Bij Gerritsen Automotive in Arnhem ben je aan het juiste adres voor advies, verkoop van geselecteerde occasions en praktische verhuur.</p>
-        <p>Duidelijke prijzen, transparante informatie en snel schakelen — of je nu vandaag wil proefrijden of iets wil huren, we regelen het zonder gedoe.</p>
-        <a href="#aanbod" class="px-btn px-btn-primary" data-magnetic>Bekijk ons aanbod</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-@php
-  $spotlight = $nieuw->first(function($c){
-      $sold = stripos($c->model ?? '', '(VERKOCHT)') !== false;
-      return !$sold && !empty($c->hoofdfoto_path) && (int)($c->prijs ?? 0) <= 15000;
-  }) ?? $nieuw->first(function($c){
-      $sold = stripos($c->model ?? '', '(VERKOCHT)') !== false;
-      return !$sold && !empty($c->hoofdfoto_path);
-  });
-@endphp
-
-@if($spotlight)
-{{-- ============ SPOTLIGHT OCCASION ============ --}}
-<section class="px-section">
-  <div class="px-container">
-    @php
-      $smm = trim(($spotlight->merk ?? '').' '.($spotlight->model ?? ''));
-      if ($smm === '' && !empty($spotlight->titel)) $smm = $spotlight->titel;
-      $sDiscount = !empty($spotlight->oude_prijs) && $spotlight->oude_prijs > $spotlight->prijs;
-    @endphp
-
-    <a href="{{ route('occasions.show', $spotlight->slug) }}" class="px-spotlight px-reveal">
-      <div class="px-spotlight-image">
-        <img src="{{ asset('storage/'.$spotlight->hoofdfoto_path) }}" alt="{{ $smm }}">
-        <span class="px-spotlight-tag">In de spotlight</span>
-      </div>
-      <div class="px-spotlight-body">
-        <div class="px-eyebrow"><span class="px-eyebrow-dot"></span>Uitgelicht</div>
-        <h2 class="px-spotlight-title">{{ $smm }}</h2>
-        @if(!empty($spotlight->type))
-          <div class="px-spotlight-type">{{ $spotlight->type }}</div>
-        @endif
-
-        <ul class="px-spotlight-meta">
-          <li>
-            <span class="px-meta-label">Bouwjaar</span>
-            <span class="px-meta-value">{{ $spotlight->bouwjaar ?? '—' }}</span>
-          </li>
-          <li>
-            <span class="px-meta-label">Tellerstand</span>
-            <span class="px-meta-value">{{ number_format($spotlight->tellerstand ?? 0, 0, ',', '.') }} km</span>
-          </li>
-          <li>
-            <span class="px-meta-label">Brandstof</span>
-            <span class="px-meta-value">{{ ucfirst($spotlight->brandstof ?? '—') }}</span>
-          </li>
-          @if(!empty($spotlight->transmissie))
-          <li>
-            <span class="px-meta-label">Transmissie</span>
-            <span class="px-meta-value">{{ ucfirst($spotlight->transmissie) }}</span>
-          </li>
-          @endif
-        </ul>
-
-        <div class="px-spotlight-foot">
-          @if($sDiscount)
-            <div>
-              <span class="px-spotlight-old">€ {{ number_format($spotlight->oude_prijs, 0, ',', '.') }}</span>
-              <span class="px-spotlight-price px-accent">€ {{ number_format($spotlight->prijs ?? 0, 0, ',', '.') }}</span>
-            </div>
-          @else
-            <span class="px-spotlight-price">€ {{ number_format($spotlight->prijs ?? 0, 0, ',', '.') }}</span>
-          @endif
-          <span class="px-btn px-btn-primary" data-magnetic>Bekijk auto</span>
-        </div>
-      </div>
-    </a>
-  </div>
-</section>
-@endif
-
-{{-- ============ AANBOD SHOWCASE ============ --}}
+{{-- ============ 2 · AANBOD SHOWCASE ============ --}}
 <section class="px-section px-section-alt" id="aanbod">
   <div class="px-container">
     <div class="px-section-head px-section-head-row">
@@ -200,14 +112,14 @@
     </div>
 
     <div class="px-chips" id="pxChips">
-      <button class="px-chip px-chip-active" data-filter="all">Alle <span>{{ count($nieuw) }}</span></button>
-      <button class="px-chip" data-filter="price:0-5000">Tot € 5k</button>
-      <button class="px-chip" data-filter="price:5000-10000">€ 5–10k</button>
-      <button class="px-chip" data-filter="price:10000-15000">€ 10–15k</button>
-      <button class="px-chip" data-filter="price:15000-99999999">€ 15k+</button>
-      <button class="px-chip" data-filter="brandstof:Benzine">Benzine</button>
-      <button class="px-chip" data-filter="brandstof:Diesel">Diesel</button>
-      <button class="px-chip" data-filter="sale">Aanbieding</button>
+      <button type="button" class="px-chip px-chip-active" data-filter="all">Alle <span>{{ count($nieuw) }}</span></button>
+      <button type="button" class="px-chip" data-filter="price:0-5000">Tot € 5k</button>
+      <button type="button" class="px-chip" data-filter="price:5000-10000">€ 5–10k</button>
+      <button type="button" class="px-chip" data-filter="price:10000-15000">€ 10–15k</button>
+      <button type="button" class="px-chip" data-filter="price:15000-99999999">€ 15k+</button>
+      <button type="button" class="px-chip" data-filter="brandstof:Benzine">Benzine</button>
+      <button type="button" class="px-chip" data-filter="brandstof:Diesel">Diesel</button>
+      <button type="button" class="px-chip" data-filter="sale">Aanbieding</button>
     </div>
 
     <div class="px-grid" id="pxGrid">
@@ -275,7 +187,7 @@
       <button type="button" class="px-btn px-btn-ghost" id="pxClearFilters">Filters wissen</button>
     </div>
 
-    @if(count($nieuw) > 12)
+    @if(count($nieuw) > 6)
       <div class="px-grid-more">
         <a href="{{ route('occasions.index') }}" class="px-btn px-btn-ghost px-btn-lg">
           Bekijk alle {{ count($nieuw) }} occasions →
@@ -285,8 +197,153 @@
   </div>
 </section>
 
-{{-- ============ AUTO-ZOEKER ============ --}}
-<section class="px-section" id="finder">
+@php
+  $spotlight = $nieuw->first(function($c){
+      $sold = stripos($c->model ?? '', '(VERKOCHT)') !== false;
+      return !$sold && !empty($c->hoofdfoto_path) && (int)($c->prijs ?? 0) <= 15000;
+  }) ?? $nieuw->first(function($c){
+      $sold = stripos($c->model ?? '', '(VERKOCHT)') !== false;
+      return !$sold && !empty($c->hoofdfoto_path);
+  });
+@endphp
+
+@if($spotlight)
+{{-- ============ 3 · SPOTLIGHT OCCASION ============ --}}
+<section class="px-section">
+  <div class="px-container">
+    @php
+      $smm = trim(($spotlight->merk ?? '').' '.($spotlight->model ?? ''));
+      if ($smm === '' && !empty($spotlight->titel)) $smm = $spotlight->titel;
+      $sDiscount = !empty($spotlight->oude_prijs) && $spotlight->oude_prijs > $spotlight->prijs;
+    @endphp
+
+    <a href="{{ route('occasions.show', $spotlight->slug) }}" class="px-spotlight px-reveal">
+      <div class="px-spotlight-image">
+        <img src="{{ asset('storage/'.$spotlight->hoofdfoto_path) }}" alt="{{ $smm }}">
+        <span class="px-spotlight-tag">In de spotlight</span>
+      </div>
+      <div class="px-spotlight-body">
+        <div class="px-eyebrow"><span class="px-eyebrow-dot"></span>Uitgelicht</div>
+        <h2 class="px-spotlight-title">{{ $smm }}</h2>
+        @if(!empty($spotlight->type))
+          <div class="px-spotlight-type">{{ $spotlight->type }}</div>
+        @endif
+
+        <ul class="px-spotlight-meta">
+          <li>
+            <span class="px-meta-label">Bouwjaar</span>
+            <span class="px-meta-value">{{ $spotlight->bouwjaar ?? '—' }}</span>
+          </li>
+          <li>
+            <span class="px-meta-label">Tellerstand</span>
+            <span class="px-meta-value">{{ number_format($spotlight->tellerstand ?? 0, 0, ',', '.') }} km</span>
+          </li>
+          <li>
+            <span class="px-meta-label">Brandstof</span>
+            <span class="px-meta-value">{{ ucfirst($spotlight->brandstof ?? '—') }}</span>
+          </li>
+          @if(!empty($spotlight->transmissie))
+          <li>
+            <span class="px-meta-label">Transmissie</span>
+            <span class="px-meta-value">{{ ucfirst($spotlight->transmissie) }}</span>
+          </li>
+          @endif
+        </ul>
+
+        <div class="px-spotlight-foot">
+          @if($sDiscount)
+            <div>
+              <span class="px-spotlight-old">€ {{ number_format($spotlight->oude_prijs, 0, ',', '.') }}</span>
+              <span class="px-spotlight-price px-accent">€ {{ number_format($spotlight->prijs ?? 0, 0, ',', '.') }}</span>
+            </div>
+          @else
+            <span class="px-spotlight-price">€ {{ number_format($spotlight->prijs ?? 0, 0, ',', '.') }}</span>
+          @endif
+          <span class="px-btn px-btn-primary" data-magnetic>Bekijk auto</span>
+        </div>
+      </div>
+    </a>
+  </div>
+</section>
+@endif
+
+{{-- ============ 4 · WAAROM GERRITSEN ============ --}}
+<section class="px-section px-section-alt" id="waarom">
+  <div class="px-container">
+    <div class="px-section-head">
+      <div class="px-eyebrow"><span class="px-eyebrow-dot"></span>Waarom Gerritsen</div>
+      <h2 class="px-h2">Geen verrassingen. Alleen vertrouwen.</h2>
+    </div>
+
+    <div class="px-why-grid">
+      <div class="px-why-card">
+        <div class="px-why-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3>BOVAG-zekerheid</h3>
+        <p>Volledige BOVAG-garantie, NAP-controle en eerlijke historie.</p>
+      </div>
+      <div class="px-why-card">
+        <div class="px-why-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-6 0v4"/><rect x="3" y="9" width="18" height="12" rx="2"/></svg>
+        </div>
+        <h3>Eigen werkplaats</h3>
+        <p>Onderhoud, APK en reparaties direct bij ons. Geen tussenpartijen.</p>
+      </div>
+      <div class="px-why-card">
+        <div class="px-why-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        </div>
+        <h3>Persoonlijk advies</h3>
+        <p>Geen verkooppraatjes. We luisteren en denken met je mee.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{{-- ============ 5 · REVIEWS ============ --}}
+<section class="px-section" id="reviews">
+  <div class="px-container">
+    <div class="px-section-head">
+      <div class="px-eyebrow"><span class="px-eyebrow-dot"></span>Reviews</div>
+      <h2 class="px-h2">Wat klanten over ons zeggen.</h2>
+      <div class="px-reviews-head">
+        <div class="px-stars" aria-label="4.9 sterren">
+          @for($i=0;$i<5;$i++)<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>@endfor
+        </div>
+        <span class="px-reviews-score"><b>4.9</b> gemiddeld · gebaseerd op Google reviews</span>
+      </div>
+    </div>
+
+    <div class="px-reviews-track" id="pxReviews">
+      @php
+        $reviews = [
+          ['n' => 'Mark',   'l' => 'Arnhem', 'r' => 5, 't' => 'Snelle service, eerlijke prijs en goede communicatie. Auto reed direct lekker en de afhandeling was strak. Aanrader.'],
+          ['n' => 'Linda',  'l' => 'Velp',   'r' => 5, 't' => 'Persoonlijk advies zonder gedoe. Geen verkooppraatjes, gewoon eerlijk. Vond een goede tweedehands binnen mijn budget.'],
+          ['n' => 'Jeroen', 'l' => 'Duiven', 'r' => 5, 't' => 'Werkplaats top — APK en kleine reparatie binnen één dag, prijs klopte met de afspraak. Niets meer, niets minder.'],
+        ];
+      @endphp
+      @foreach($reviews as $rv)
+        <article class="px-review">
+          <div class="px-stars" aria-label="{{ $rv['r'] }} sterren">
+            @for($i=0;$i<$rv['r'];$i++)<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>@endfor
+          </div>
+          <p class="px-review-text">"{{ $rv['t'] }}"</p>
+          <div class="px-review-author">
+            <span class="px-review-avatar">{{ substr($rv['n'], 0, 1) }}</span>
+            <div>
+              <div class="px-review-name">{{ $rv['n'] }}</div>
+              <div class="px-review-loc">{{ $rv['l'] }}</div>
+            </div>
+          </div>
+        </article>
+      @endforeach
+    </div>
+  </div>
+</section>
+
+{{-- ============ 6 · AUTO-ZOEKER ============ --}}
+<section class="px-section px-section-alt" id="finder">
   <div class="px-container">
     <div class="px-section-head">
       <div class="px-eyebrow"><span class="px-eyebrow-dot"></span>Auto-zoeker</div>
@@ -403,85 +460,7 @@
   </div>
 </section>
 
-{{-- ============ WAAROM ============ --}}
-<section class="px-section px-section-alt" id="waarom">
-  <div class="px-container">
-    <div class="px-section-head">
-      <div class="px-eyebrow"><span class="px-eyebrow-dot"></span>Waarom Gerritsen</div>
-      <h2 class="px-h2">Geen verrassingen. Alleen vertrouwen.</h2>
-    </div>
-
-    <div class="px-why-grid">
-      <div class="px-why-card">
-        <div class="px-why-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        </div>
-        <h3>BOVAG-zekerheid</h3>
-        <p>Volledige BOVAG-garantie, NAP-controle en eerlijke historie.</p>
-      </div>
-      <div class="px-why-card">
-        <div class="px-why-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-6 0v4"/><rect x="3" y="9" width="18" height="12" rx="2"/></svg>
-        </div>
-        <h3>Eigen werkplaats</h3>
-        <p>Onderhoud, APK en reparaties direct bij ons. Geen tussenpartijen.</p>
-      </div>
-      <div class="px-why-card">
-        <div class="px-why-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-        </div>
-        <h3>Persoonlijk advies</h3>
-        <p>Geen verkooppraatjes. We luisteren en denken met je mee.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-{{-- ============ REVIEWS ============ --}}
-<section class="px-section" id="reviews">
-  <div class="px-container">
-    <div class="px-section-head">
-      <div class="px-eyebrow"><span class="px-eyebrow-dot"></span>Reviews</div>
-      <h2 class="px-h2">Wat klanten over ons zeggen.</h2>
-      <div class="px-reviews-head">
-        <div class="px-stars" aria-label="4.9 sterren">
-          @for($i=0;$i<5;$i++)<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>@endfor
-        </div>
-        <span class="px-reviews-score"><b>4.9</b> gemiddeld · gebaseerd op Google reviews</span>
-      </div>
-    </div>
-
-    <div class="px-reviews-track" id="pxReviews">
-      @php
-        $reviews = [
-          ['n' => 'Mark', 'l' => 'Arnhem',     'r' => 5, 't' => 'Snelle service, eerlijke prijs en goede communicatie. Auto reed direct lekker en de afhandeling was strak. Aanrader.'],
-          ['n' => 'Linda', 'l' => 'Velp',      'r' => 5, 't' => 'Persoonlijk advies zonder gedoe. Geen verkooppraatjes, gewoon eerlijk. Vond een goede tweedehands binnen mijn budget.'],
-          ['n' => 'Jeroen','l' => 'Duiven',    'r' => 5, 't' => 'Werkplaats top — APK en kleine reparatie binnen één dag, prijs klopte met de afspraak. Niets meer, niets minder.'],
-          ['n' => 'Sandra','l' => 'Westervoort','r' => 5, 't' => 'Heel vriendelijk team en alles helder uitgelegd. Hadden zelfs een proefrit zonder druk om te kopen. Echt een fijn adres.'],
-          ['n' => 'Patrick','l' => 'Arnhem',   'r' => 5, 't' => 'Tweede auto die ik bij Gerritsen koop. Dat zegt eigenlijk alles. Geen verrassingen achteraf.'],
-          ['n' => 'Esra',  'l' => 'Elst',      'r' => 5, 't' => 'Auto netjes rijklaar gemaakt, fijne mensen. Wat afgesproken is wordt nagekomen. Top.'],
-        ];
-      @endphp
-      @foreach($reviews as $rv)
-        <article class="px-review">
-          <div class="px-stars" aria-label="{{ $rv['r'] }} sterren">
-            @for($i=0;$i<$rv['r'];$i++)<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>@endfor
-          </div>
-          <p class="px-review-text">"{{ $rv['t'] }}"</p>
-          <div class="px-review-author">
-            <span class="px-review-avatar">{{ substr($rv['n'], 0, 1) }}</span>
-            <div>
-              <div class="px-review-name">{{ $rv['n'] }}</div>
-              <div class="px-review-loc">{{ $rv['l'] }}</div>
-            </div>
-          </div>
-        </article>
-      @endforeach
-    </div>
-  </div>
-</section>
-
-{{-- ============ WERKPLAATS CTA ============ --}}
+{{-- ============ 7 · WERKPLAATS CTA ============ --}}
 <section class="px-werkplaats" id="werkplaats" style="--bg: url('{{ asset('images/afspraak-banner.jpg') }}');">
   <div class="px-werkplaats-overlay"></div>
   <div class="px-container">
@@ -493,6 +472,23 @@
         <a href="{{ route('workshop.step1') }}" class="px-btn px-btn-primary px-btn-lg" data-magnetic>Plan een afspraak</a>
         <a href="tel:+31638257987" class="px-btn px-btn-ghost px-btn-lg">Of bel direct</a>
       </div>
+    </div>
+  </div>
+</section>
+
+{{-- ============ 8 · OVER ONS (compact strip) ============ --}}
+<section class="px-section px-section-alt" id="over">
+  <div class="px-container">
+    <div class="px-over-strip">
+      <div class="px-over-strip-img">
+        <img src="{{ asset('images/handshake.jpg') }}" alt="Gerritsen Automotive">
+      </div>
+      <div class="px-over-strip-body">
+        <div class="px-eyebrow"><span class="px-eyebrow-dot"></span>Over ons</div>
+        <h3 class="px-over-strip-title">Gerritsen Automotive — Arnhem</h3>
+        <p>Persoonlijk, helder en zonder gedoe. Auto's, werkplaats en verhuur — onder één dak.</p>
+      </div>
+      <a href="tel:+31638257987" class="px-btn px-btn-ghost">Neem contact op</a>
     </div>
   </div>
 </section>
@@ -519,9 +515,9 @@
         <h4>Navigeer</h4>
         <ul class="px-footer-list">
           <li><a href="#aanbod">Aanbod</a></li>
+          <li><a href="#waarom">Waarom Gerritsen</a></li>
           <li><a href="#finder">Auto-zoeker</a></li>
           <li><a href="#werkplaats">Werkplaats</a></li>
-          <li><a href="{{ route('occasions.binnenkort') }}">Binnenkort</a></li>
         </ul>
       </div>
 
@@ -531,7 +527,7 @@
           <li><a href="{{ route('booking.show', ['type' => 'aanhanger']) }}">Aanhanger huren</a></li>
           <li><a href="{{ route('booking.show', ['type' => 'stofzuiger']) }}">Stofzuiger</a></li>
           <li><a href="{{ route('booking.show', ['type' => 'koplampen']) }}">Koplampen polish</a></li>
-          <li><a href="{{ route('workshop.step1') }}">Werkplaatsafspraak</a></li>
+          <li><a href="{{ route('occasions.binnenkort') }}">Binnenkort</a></li>
         </ul>
       </div>
     </div>
