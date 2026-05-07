@@ -411,6 +411,17 @@ ul { list-style: none; padding: 0; margin: 0; }
   margin: 18px 0 18px;
   color: #fff;
 }
+.px-hero-title.px-reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  filter: blur(8px);
+  transition: opacity 1.1s var(--px-ease), transform 1.1s var(--px-ease), filter 1.1s var(--px-ease);
+}
+.px-hero-title.px-reveal.shown {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
 
 .px-hero-sub {
   font-size: clamp(15px, 1.4vw, 17px);
@@ -649,6 +660,7 @@ ul { list-style: none; padding: 0; margin: 0; }
 @media (max-width: 600px) { .px-grid { grid-template-columns: 1fr; } }
 
 .px-card {
+  position: relative;
   display: flex;
   flex-direction: column;
   background: var(--px-surface);
@@ -659,6 +671,19 @@ ul { list-style: none; padding: 0; margin: 0; }
   transform: translateY(14px);
   transition: opacity .6s var(--px-ease), transform .6s var(--px-ease), border-color .25s, box-shadow .25s;
 }
+.px-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--px-accent), var(--px-accent-soft));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .5s var(--px-ease);
+  z-index: 3;
+  pointer-events: none;
+}
+.px-card:hover::before { transform: scaleX(1); }
 .px-card.in {
   opacity: 1;
   transform: translateY(0);
@@ -1333,25 +1358,46 @@ ul { list-style: none; padding: 0; margin: 0; }
 }
 
 /* =========================================================
+   SCROLL PROGRESS BAR
+   ========================================================= */
+.px-scroll-progress {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--px-accent), var(--px-accent-soft));
+  box-shadow: 0 0 12px var(--px-accent-glow);
+  transform: scaleX(0);
+  transform-origin: left;
+  z-index: 200;
+  pointer-events: none;
+  transition: transform .08s linear;
+}
+
+/* =========================================================
    CUSTOM CURSOR DOT (subtle)
    ========================================================= */
 @media (hover: hover) and (pointer: fine) {
+  /* Hide native cursor everywhere when custom dot is active */
+  body.px-cursor-on,
+  body.px-cursor-on * { cursor: none !important; }
+
   .px-cursor {
     position: fixed;
     top: 0; left: 0;
-    width: 6px; height: 6px;
+    width: 8px; height: 8px;
     border-radius: 50%;
-    background: rgba(255,255,255,.55);
+    background: rgba(255,255,255,.7);
     pointer-events: none;
     z-index: 9999;
-    transition: width .2s var(--px-ease), height .2s var(--px-ease), background .2s, border-color .2s;
+    transition: width .2s var(--px-ease), height .2s var(--px-ease), background .2s, border-color .2s, opacity .2s;
     will-change: transform;
-    border: 1px solid transparent;
+    border: 1.5px solid transparent;
+    mix-blend-mode: difference;
   }
   .px-cursor.is-hover {
-    width: 36px; height: 36px;
+    width: 40px; height: 40px;
     background: transparent;
-    border-color: rgba(255,255,255,.5);
+    border-color: rgba(255,255,255,.7);
   }
 }
 
