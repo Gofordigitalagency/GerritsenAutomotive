@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\WorkshopAppointmentMail;
+use App\Mail\WorkshopAppointmentConfirmation;
 use App\Models\WorkshopAppointment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -201,11 +202,20 @@ class WorkshopAppointmentController extends Controller
         $appointment = WorkshopAppointment::create($data);
 
         // Mail naar Gerritsen Automotive (volgens jouw .env)
-        $to = env('BOOKING_ADMIN_EMAIL') ?: env('CONTACT_TO_EMAIL');
+        $to = config('booking.admin_email') ?: config('services.to_email');
 
-       if ($to) {
-         Mail::to($to)->send(new WorkshopAppointmentMail($appointment->toArray()));
-}
+        if ($to) {
+            Mail::to($to)->send(new WorkshopAppointmentMail($appointment->toArray()));
+        }
+
+        // Bevestigingsmail naar de klant
+        if (!empty($data['email'])) {
+            try {
+                Mail::to($data['email'])->send(new WorkshopAppointmentConfirmation($appointment->toArray()));
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Workshop confirmation mail failed: '.$e->getMessage(), ['exception' => $e]);
+            }
+        }
 
         session()->forget('workshop_wizard');
 

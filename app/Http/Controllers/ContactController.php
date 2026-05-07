@@ -35,7 +35,7 @@ class ContactController extends Controller
     ];
 
     try {
-        Mail::to(env('CONTACT_TO_EMAIL'))->send(
+        Mail::to(config('services.to_email'))->send(
             new \App\Mail\ContactSubmitted($data)
         );
     } catch (\Throwable $e) {

@@ -37,7 +37,7 @@ class SellCarController extends Controller
 
         // Mail verzenden (pas e-mailadres aan)
 Mail::send('mail.sellcar', ['data' => $data, 'photos' => $stored], function ($m) {
-    $m->to(env('CONTACT_TO_EMAIL'))
+    $m->to(config('services.to_email'))
       ->subject('Nieuwe inkoop-aanmelding (Auto verkopen)');
 });
 

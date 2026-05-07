@@ -137,7 +137,7 @@ try {
     $label = self::LABELS[$type] ?? ucfirst($type);
 
     // ----------- ADMIN MAIL -----------
-    Mail::to(env('BOOKING_ADMIN_EMAIL'))->send(
+    Mail::to(config('booking.admin_email'))->send(
         new BookingSubmitted([
             'type'       => $type,
             'type_label' => $label,
