@@ -298,7 +298,7 @@ a { color: inherit; text-decoration: none; }
   border-radius: var(--px-radius-lg);
   padding: 32px;
   margin-bottom: 18px;
-  overflow: hidden;
+  /* GEEN overflow:hidden — anders worden native <select> dropdowns geknipt in Firefox */
   transition: border-color .25s, box-shadow .25s;
 }
 .adm-section::before {
@@ -311,6 +311,9 @@ a { color: inherit; text-decoration: none; }
   transform-origin: left;
   transition: transform .5s var(--px-ease);
   z-index: 1;
+  /* Top corners ronden zodat de lijn niet uit de afgeronde sectie steekt */
+  border-top-left-radius: var(--px-radius-lg);
+  border-top-right-radius: var(--px-radius-lg);
 }
 .adm-section:hover { border-color: var(--px-border-2); }
 .adm-section:hover::before { transform: scaleX(1); }
@@ -337,6 +340,8 @@ a { color: inherit; text-decoration: none; }
     radial-gradient(600px 300px at 100% 0%, rgba(230,57,70,.10), transparent 60%),
     radial-gradient(400px 250px at 0% 100%, rgba(91,62,255,.06), transparent 60%);
   z-index: 0;
+  /* Matched met section border-radius — anders steekt de gradient uit de afgeronde hoeken */
+  border-radius: var(--px-radius-lg);
 }
 .adm-hero > * { position: relative; z-index: 1; }
 .adm-hero::before {
