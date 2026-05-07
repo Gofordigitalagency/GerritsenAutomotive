@@ -157,16 +157,16 @@
   /* =========================================================
      SCROLL PROGRESS BAR
      ========================================================= */
-  const progressBar = document.createElement('div');
-  progressBar.className = 'px-scroll-progress';
-  document.body.appendChild(progressBar);
+  const scrollProgress = document.createElement('div');
+  scrollProgress.className = 'px-scroll-progress';
+  document.body.appendChild(scrollProgress);
 
   const updateScrollProgress = () => {
     const h = document.documentElement;
     const total = h.scrollHeight - h.clientHeight;
     if (total <= 0) return;
     const pct = (h.scrollTop / total) * 100;
-    progressBar.style.transform = `scaleX(${pct / 100})`;
+    scrollProgress.style.transform = `scaleX(${pct / 100})`;
   };
   window.addEventListener('scroll', updateScrollProgress, { passive: true });
   updateScrollProgress();
