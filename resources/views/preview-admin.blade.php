@@ -6,7 +6,7 @@
     <meta name="robots" content="noindex,nofollow">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Admin · Auto toevoegen — Preview</title>
+    <title>Admin · Auto toevoegen · Preview</title>
 
     <link rel="icon" type="image/png" href="{{ asset('images/FAVICON-GERRITSEN.png') }}">
 
@@ -55,7 +55,7 @@
         <div class="adm-section-head">
           <div class="adm-eyebrow"><span class="adm-dot"></span>Hoofdstuk 01 · Identificatie</div>
           <h2 class="adm-h2">Voertuig <span class="adm-italic-accent">identificeren</span></h2>
-          <p class="adm-section-sub">Vul het kenteken in — wij halen de rest automatisch op uit de RDW-database.</p>
+          <p class="adm-section-sub">Vul het kenteken in. Wij halen de rest automatisch op uit de RDW-database.</p>
         </div>
 
         <div class="adm-plate-row">
@@ -75,7 +75,7 @@
         <div class="adm-plate-error" id="admPlateError" hidden></div>
         <div class="adm-plate-success" id="admPlateSuccess" hidden>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5L20 7"/></svg>
-          <strong id="admFoundName">—</strong>
+          <strong id="admFoundName"></strong>
           <span class="adm-plate-success-sep">·</span>
           <span><b id="admFilledCount">0</b> velden ingevuld</span>
         </div>
@@ -143,7 +143,7 @@
         <div class="adm-section-head">
           <div class="adm-eyebrow"><span class="adm-dot"></span>Hoofdstuk 03 · Beelden</div>
           <h2 class="adm-h2">Foto's</h2>
-          <p class="adm-section-sub">Sleep meerdere foto's tegelijk. Sleep om de volgorde te wijzigen — eerste foto wordt cover.</p>
+          <p class="adm-section-sub">Sleep meerdere foto's tegelijk. Sleep om de volgorde te wijzigen, de eerste foto wordt automatisch cover.</p>
         </div>
 
         <div class="adm-dropzone" id="admDropzone">
@@ -234,8 +234,8 @@
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-5"/></svg>
           </div>
           <div class="adm-price-suggest-body">
-            <strong id="admPriceSuggestTitle">—</strong>
-            <span id="admPriceSuggestDetail">—</span>
+            <strong id="admPriceSuggestTitle"></strong>
+            <span id="admPriceSuggestDetail"></span>
           </div>
           <button type="button" class="adm-link" id="admPriceApply">Pak gemiddelde</button>
         </div>
@@ -269,7 +269,7 @@
             <h3 class="adm-preview-title" id="admPreviewTitle">Auto titel</h3>
             <div class="adm-preview-type" id="admPreviewType">Type / uitvoering</div>
             <ul class="adm-preview-meta" id="admPreviewMeta">
-              <li>—</li><li>—</li><li>—</li>
+              <li>·</li><li>·</li><li>·</li>
             </ul>
             <div class="adm-preview-foot">
               <span class="adm-preview-price" id="admPreviewPrice">€ 0</span>

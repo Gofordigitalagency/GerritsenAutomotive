@@ -160,7 +160,7 @@
     if (trans)       meta.push(trans);
     pMeta.innerHTML = meta.length
       ? meta.map(m => `<li>${m}</li>`).join('')
-      : '<li>—</li><li>—</li><li>—</li>';
+      : '<li>·</li><li>·</li><li>·</li>';
 
     pPrice.textContent = prijs
       ? '€ ' + Number(prijs).toLocaleString('nl-NL')

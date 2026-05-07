@@ -534,7 +534,7 @@
     const display = usingFallback ? scored.slice(0, 6) : top;
 
     titleEl.textContent = usingFallback
-      ? `Geen perfecte match — ${scored.length} alternatieven`
+      ? `Geen perfecte match · ${scored.length} alternatieven`
       : `${top.length} top match${top.length === 1 ? '' : 'es'} voor jou`;
 
     grid.innerHTML = '';
@@ -556,9 +556,9 @@
         <div class="px-card-body">
           <h3 class="px-card-title">${o.title}</h3>
           <ul class="px-card-meta">
-            <li>${o.bouwjaar || '—'}</li>
+            <li>${o.bouwjaar || '·'}</li>
             <li>${o.km.toLocaleString('nl-NL')} km</li>
-            <li>${o.brandstof || '—'}</li>
+            <li>${o.brandstof || '·'}</li>
             ${o.transmissie ? `<li>${o.transmissie}</li>` : ''}
           </ul>
           <div class="px-card-foot">

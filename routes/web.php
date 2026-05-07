@@ -9,7 +9,6 @@ use App\Http\Controllers\admin\ReservationController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\SellCarController;
 use App\Http\Controllers\WorkshopAppointmentController;
-use App\Http\Controllers\OccasionPdfController;
 use App\Http\Controllers\admin\ReclameController;
 use App\Http\Controllers\admin\WorkshopAppointmentController as AdminWorkshopAppointmentController;
 
@@ -17,8 +16,19 @@ use App\Http\Controllers\admin\WorkshopAppointmentController as AdminWorkshopApp
 
 // --- Publiek ---
 Route::get('/', [PublicOccasionController::class, 'home'])->name('home');
-Route::get('/preview', [PublicOccasionController::class, 'preview'])->name('home.preview');
+// --- Preview area (hidden URLs voor klant-demo) ---
+Route::get('/preview', [PublicOccasionController::class, 'preview'])->name('preview.home');
 Route::get('/preview-admin', [PublicOccasionController::class, 'previewAdmin'])->name('preview.admin');
+
+// Placeholder routes — vervang straks door echte controllers wanneer de pagina's gemaakt worden.
+// Voor nu redirecten ze naar de homepage met de juiste anchor zodat de header alvast werkt.
+Route::get('/preview/aanbod',     fn () => redirect('/preview#aanbod'))->name('preview.aanbod');
+Route::get('/preview/werkplaats', fn () => redirect('/preview#werkplaats'))->name('preview.werkplaats');
+Route::get('/preview/diensten',   fn () => redirect('/preview#diensten'))->name('preview.diensten');
+Route::get('/preview/over',       fn () => redirect('/preview#over'))->name('preview.over');
+Route::get('/preview/contact',    fn () => redirect('/preview#contact'))->name('preview.contact');
+
+// Public APIs gebruikt door /preview en /preview-admin
 Route::get('/api/rdw/{kenteken}', [PublicOccasionController::class, 'rdwPublic'])->name('rdw.public');
 Route::get('/api/rdw-full/{kenteken}', [PublicOccasionController::class, 'rdwFull'])->name('rdw.full');
 Route::post('/api/preview/ai-describe', [PublicOccasionController::class, 'aiDescribe'])->name('preview.ai');

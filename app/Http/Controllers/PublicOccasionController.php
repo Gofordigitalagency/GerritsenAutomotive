@@ -135,18 +135,18 @@ public function aiDescribe(\Illuminate\Http\Request $request)
     $intros = [
         'feitelijk' => [
             "{$auto}" . ($jaar ? " uit {$jaar}" : '') . ($km ? " met {$km} km op de teller." : '.'),
-            ($jaar ? "Bouwjaar {$jaar}: " : '') . "{$auto}" . ($km ? " — {$km} km gereden." : '.'),
+            ($jaar ? "Bouwjaar {$jaar}: " : '') . "{$auto}" . ($km ? ". {$km} km gereden." : '.'),
             "Aangeboden: {$auto}" . ($jaar ? " ({$jaar})" : '') . ".",
         ],
         'verkooppunt' => [
-            "Een betrouwbare {$auto}" . ($jaar ? " uit {$jaar}" : '') . ($km ? ", met slechts {$km} km" : '') . " — klaar voor de volgende eigenaar.",
+            "Een betrouwbare {$auto}" . ($jaar ? " uit {$jaar}" : '') . ($km ? ", met slechts {$km} km" : '') . ", klaar voor de volgende eigenaar.",
             "Maak kennis met deze {$auto}" . ($jaar ? " uit {$jaar}" : '') . ": " . ($brand ? "een zuinige " . strtolower($brand) . "-rijder" : 'een fijne dagelijkse auto') . " met karakter.",
             "Op zoek naar comfort en zekerheid? Deze {$auto}" . ($jaar ? " ({$jaar})" : '') . " biedt het allebei.",
         ],
         'premium' => [
-            "Onderhouden {$auto}" . ($jaar ? " ({$jaar})" : '') . " — een tijdloze keuze voor wie kwaliteit boven hype stelt.",
+            "Onderhouden {$auto}" . ($jaar ? " ({$jaar})" : '') . ". Een tijdloze keuze voor wie kwaliteit boven hype stelt.",
             "Stijlvolle {$auto}" . ($jaar ? " uit {$jaar}" : '') . " met aandacht voor detail. " . ($km ? "{$km} km, " : '') . "in nette staat.",
-            "Klassieke {$auto}" . ($jaar ? " uit {$jaar}" : '') . " — een auto die zijn waarde behoudt.",
+            "Klassieke {$auto}" . ($jaar ? " uit {$jaar}" : '') . ". Een auto die zijn waarde behoudt.",
         ],
     ];
 
@@ -159,7 +159,7 @@ public function aiDescribe(\Illuminate\Http\Request $request)
         'verkooppunt' => [
             $brand ? "Met " . strtolower($brand) . "-motor is hij zuinig en betrouwbaar in dagelijks gebruik." : null,
             "Volledig onderhouden, NAP-controleerbaar en BOVAG-zekerheid.",
-            "Direct rijklaar mee te nemen — geen verrassingen achteraf.",
+            "Direct rijklaar mee te nemen, geen verrassingen achteraf.",
         ],
         'premium' => [
             $kleur ? "Uitgevoerd in een tijdloze " . strtolower($kleur) . "e tint." : null,
@@ -170,7 +170,7 @@ public function aiDescribe(\Illuminate\Http\Request $request)
 
     $afsluitend = [
         'feitelijk'   => "Interesse? Plan een proefrit via de site of kom langs.",
-        'verkooppunt' => "Maak een afspraak voor een proefrit — je voelt direct het verschil.",
+        'verkooppunt' => "Maak een afspraak voor een proefrit, je voelt direct het verschil.",
         'premium'     => "Bezoek onze showroom in Arnhem voor een persoonlijk advies.",
     ];
 
@@ -246,7 +246,7 @@ public function priceSuggest(\Illuminate\Http\Request $request)
     if (empty($rows)) {
         return response()->json([
             'count'   => 0,
-            'message' => 'Nog geen vergelijkbare ' . $merk . '-data — stel zelf een prijs in.',
+            'message' => 'Nog geen vergelijkbare ' . $merk . '-data. Stel zelf een prijs in.',
         ]);
     }
 

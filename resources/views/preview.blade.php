@@ -7,7 +7,7 @@
     <meta name="robots" content="noindex,nofollow">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Gerritsen Automotive — Preview</title>
+    <title>Gerritsen Automotive · Preview</title>
 
     <link rel="icon" type="image/png" href="{{ asset('images/FAVICON-GERRITSEN.png') }}">
 
@@ -19,40 +19,8 @@
 </head>
 <body class="px-body">
 
-{{-- ============ NAV ============ --}}
-<header class="px-nav" id="pxNav">
-  <div class="px-nav-inner">
-    <a href="/" class="px-logo" aria-label="Gerritsen Automotive">
-      <img src="{{ asset('images/logo.png') }}" alt="Gerritsen Automotive">
-    </a>
-
-    <nav class="px-nav-links" aria-label="Hoofdmenu">
-      <a href="#aanbod" class="px-link">Aanbod</a>
-      <a href="#waarom" class="px-link">Waarom</a>
-      <a href="#finder" class="px-link">Auto-zoeker</a>
-      <a href="#werkplaats" class="px-link">Werkplaats</a>
-      <a href="#contact" class="px-link">Contact</a>
-    </nav>
-
-    <div class="px-nav-actions">
-      <a href="tel:+31638257987" class="px-btn px-btn-ghost px-phone-pill">06 38 25 79 87</a>
-      <a href="#aanbod" class="px-btn px-btn-primary" data-magnetic>Bekijk aanbod</a>
-
-      <button class="px-menu-btn" id="pxMenuBtn" aria-label="Menu" aria-expanded="false">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
-  </div>
-
-  <div class="px-mobile-menu" id="pxMobileMenu" aria-hidden="true">
-    <a href="#aanbod">Aanbod</a>
-    <a href="#waarom">Waarom Gerritsen</a>
-    <a href="#finder">Auto-zoeker</a>
-    <a href="#werkplaats">Werkplaats</a>
-    <a href="#contact">Contact</a>
-    <a href="tel:+31638257987" class="px-mobile-call">Bel ons — 06 38 25 79 87</a>
-  </div>
-</header>
+{{-- ============ NAV (gedeelde partial — werkt cross-page) ============ --}}
+@include('preview.partials.header')
 
 {{-- ============ 1 · HERO ============ --}}
 <section class="px-hero" id="pxHero">
@@ -159,9 +127,9 @@
             @endif
 
             <ul class="px-card-meta">
-              <li>{{ $car->bouwjaar ?? '—' }}</li>
+              <li>{{ $car->bouwjaar ?? '·' }}</li>
               <li>{{ number_format($car->tellerstand ?? 0, 0, ',', '.') }} km</li>
-              <li>{{ ucfirst($car->brandstof ?? '—') }}</li>
+              <li>{{ ucfirst($car->brandstof ?? '·') }}</li>
               @if(!empty($car->transmissie))
                 <li>{{ ucfirst($car->transmissie) }}</li>
               @endif
@@ -231,7 +199,7 @@
         <ul class="px-spotlight-meta">
           <li>
             <span class="px-meta-label">Bouwjaar</span>
-            <span class="px-meta-value">{{ $spotlight->bouwjaar ?? '—' }}</span>
+            <span class="px-meta-value">{{ $spotlight->bouwjaar ?? '·' }}</span>
           </li>
           <li>
             <span class="px-meta-label">Tellerstand</span>
@@ -239,7 +207,7 @@
           </li>
           <li>
             <span class="px-meta-label">Brandstof</span>
-            <span class="px-meta-value">{{ ucfirst($spotlight->brandstof ?? '—') }}</span>
+            <span class="px-meta-value">{{ ucfirst($spotlight->brandstof ?? '·') }}</span>
           </li>
           @if(!empty($spotlight->transmissie))
           <li>
@@ -319,7 +287,7 @@
         $reviews = [
           ['n' => 'Mark',   'l' => 'Arnhem', 'r' => 5, 't' => 'Snelle service, eerlijke prijs en goede communicatie. Auto reed direct lekker en de afhandeling was strak. Aanrader.'],
           ['n' => 'Linda',  'l' => 'Velp',   'r' => 5, 't' => 'Persoonlijk advies zonder gedoe. Geen verkooppraatjes, gewoon eerlijk. Vond een goede tweedehands binnen mijn budget.'],
-          ['n' => 'Jeroen', 'l' => 'Duiven', 'r' => 5, 't' => 'Werkplaats top — APK en kleine reparatie binnen één dag, prijs klopte met de afspraak. Niets meer, niets minder.'],
+          ['n' => 'Jeroen', 'l' => 'Duiven', 'r' => 5, 't' => 'Werkplaats top. APK en kleine reparatie binnen één dag, prijs klopte met de afspraak. Niets meer, niets minder.'],
         ];
       @endphp
       @foreach($reviews as $rv)
@@ -347,7 +315,7 @@
     <div class="px-section-head">
       <div class="px-eyebrow"><span class="px-eyebrow-dot"></span>Auto-zoeker</div>
       <h2 class="px-h2">Niet zoeken. Vinden.</h2>
-      <p class="px-section-sub">Beantwoord 4 korte vragen — wij matchen je met de meest geschikte occasions uit ons aanbod.</p>
+      <p class="px-section-sub">Beantwoord 4 korte vragen. Wij matchen je met de meest geschikte occasions uit ons aanbod.</p>
     </div>
 
     <div class="px-finder">
@@ -452,7 +420,7 @@
         </div>
         <div class="px-result-grid" id="pxResultGrid"></div>
         <div class="px-result-empty" id="pxResultEmpty" hidden>
-          <p>Geen perfecte match. <a href="#contact">Neem contact op</a> — we helpen je persoonlijk verder.</p>
+          <p>Geen perfecte match. <a href="#contact">Neem contact op</a>, we helpen je persoonlijk verder.</p>
         </div>
       </div>
     </div>
@@ -467,7 +435,7 @@
   <div class="px-container">
     <div class="px-section-head">
       <div class="px-eyebrow"><span class="px-eyebrow-dot"></span>Werkplaats</div>
-      <h2 class="px-h2">APK, beurt of reparatie?<br>Vul je kenteken — wij doen de rest.</h2>
+      <h2 class="px-h2">APK, beurt of reparatie?<br>Vul je kenteken, wij doen de rest.</h2>
     </div>
 
     <div class="px-smart-card px-reveal" id="pxSmartCard">
@@ -507,14 +475,14 @@
           <div class="px-smart-found-head">
             <div>
               <div class="px-smart-found-label">Gevonden</div>
-              <div class="px-smart-found-name" id="pxSmartName">—</div>
+              <div class="px-smart-found-name" id="pxSmartName"></div>
               <div class="px-smart-found-meta" id="pxSmartMeta"></div>
             </div>
             <button type="button" class="px-smart-edit" id="pxSmartEdit">Wijzig</button>
           </div>
           <div class="px-smart-apk" id="pxSmartApk" hidden>
             <span class="px-smart-apk-label">APK-vervaldatum</span>
-            <span class="px-smart-apk-value" id="pxSmartApkValue">—</span>
+            <span class="px-smart-apk-value" id="pxSmartApkValue"></span>
             <span class="px-smart-apk-badge" id="pxSmartApkBadge"></span>
           </div>
         </div>
@@ -584,7 +552,7 @@
 
         <div class="px-smart-pick-label">
           <span>Kies een tijd</span>
-          <span class="px-smart-pick-hint" id="pxSelectedDate">—</span>
+          <span class="px-smart-pick-hint" id="pxSelectedDate"></span>
         </div>
         <div class="px-time-strip" id="pxTimeStrip"></div>
 
@@ -637,19 +605,122 @@
   </div>
 </section>
 
-{{-- ============ 8 · OVER ONS (compact strip) ============ --}}
+{{-- ============ 8 · DIENSTEN ============ --}}
+<section class="px-section" id="diensten">
+  <div class="px-container">
+    <div class="px-section-head">
+      <div class="px-eyebrow"><span class="px-eyebrow-dot"></span>Ook bij ons</div>
+      <h2 class="px-h2">Méér dan alleen verkoop.</h2>
+      <p class="px-section-sub">Naast verkoop en werkplaats verhuren we praktische spullen voor thuis &amp; rondom de auto. Direct online te reserveren.</p>
+    </div>
+
+    <div class="px-services-grid">
+      <a href="{{ route('booking.show', ['type' => 'aanhanger']) }}" class="px-service-card">
+        <div class="px-service-photo">
+          <img loading="lazy" src="{{ asset('images/cargo-trailers-passenger-car-parked-spacious-lot.jpg') }}" alt="Aanhanger huren">
+          <span class="px-service-tag">Verhuur</span>
+        </div>
+        <div class="px-service-body">
+          <h3 class="px-service-name">Aanhanger</h3>
+          <p class="px-service-desc">Veilig, schoon en direct beschikbaar. 130 × 250 cm laadbak.</p>
+          <div class="px-service-foot">
+            <div class="px-service-prijs">
+              <span class="px-service-prijs-label">vanaf</span>
+              <span class="px-service-prijs-amt">€ 15</span>
+              <span class="px-service-prijs-meta">/ 4 uur</span>
+            </div>
+            <span class="px-service-arrow">→</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="{{ route('booking.show', ['type' => 'stofzuiger']) }}" class="px-service-card">
+        <div class="px-service-photo">
+          <img loading="lazy" src="{{ asset('images/1200x810.jpg') }}" alt="Tapijtreiniger huren">
+          <span class="px-service-tag">Verhuur</span>
+        </div>
+        <div class="px-service-body">
+          <h3 class="px-service-name">Numatic George</h3>
+          <p class="px-service-desc">Krachtige tapijtreiniger voor meubels, vloerkleden en interieur.</p>
+          <div class="px-service-foot">
+            <div class="px-service-prijs">
+              <span class="px-service-prijs-label">vanaf</span>
+              <span class="px-service-prijs-amt">€ 25</span>
+              <span class="px-service-prijs-meta">/ dag</span>
+            </div>
+            <span class="px-service-arrow">→</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="{{ route('booking.show', ['type' => 'koplampen']) }}" class="px-service-card">
+        <div class="px-service-photo">
+          <img loading="lazy" src="{{ asset('images/head-lights-car.jpg') }}" alt="Koplampen polijsten">
+          <span class="px-service-tag">Service</span>
+        </div>
+        <div class="px-service-body">
+          <h3 class="px-service-name">Koplampen polijsten</h3>
+          <p class="px-service-desc">Doffe of vergeelde koplampen weer helder. Resultaat binnen één behandeling.</p>
+          <div class="px-service-foot">
+            <div class="px-service-prijs">
+              <span class="px-service-prijs-label">op afspraak</span>
+            </div>
+            <span class="px-service-arrow">→</span>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+{{-- ============ 9 · OVER ONS ============ --}}
 <section class="px-section px-section-alt" id="over">
   <div class="px-container">
-    <div class="px-over-strip">
-      <div class="px-over-strip-img">
-        <img class="px-parallax-img" src="{{ asset('images/handshake.jpg') }}" alt="Gerritsen Automotive">
+    <div class="px-over">
+      <div class="px-over-image">
+        <img class="px-parallax-img" src="{{ asset('images/handshake.jpg') }}" alt="Gerritsen Automotive in Arnhem">
       </div>
-      <div class="px-over-strip-body">
+
+      <div class="px-over-content">
         <div class="px-eyebrow"><span class="px-eyebrow-dot"></span>Over ons</div>
-        <h3 class="px-over-strip-title">Gerritsen Automotive — Arnhem</h3>
-        <p>Persoonlijk, helder en zonder gedoe. Auto's, werkplaats en verhuur — onder één dak.</p>
+        <h2 class="px-h2">Een klein team. Een hele garage.</h2>
+
+        <p>Bij Gerritsen Automotive in Arnhem ben je geen klantnummer. Je hebt direct contact met de mensen die de auto kennen, repareren en verkopen.</p>
+        <p>Persoonlijk advies, duidelijke prijzen en alles op één locatie: verkoop, werkplaats en verhuur. Loop binnen, bel of stuur een berichtje, we helpen je graag.</p>
+
+        <div class="px-people">
+          <a href="tel:+31638257987" class="px-person">
+            <div class="px-person-avatar">S</div>
+            <div class="px-person-body">
+              <div class="px-person-role">Verkoop</div>
+              <div class="px-person-name">Shania</div>
+              <div class="px-person-phone">06 38 25 79 87</div>
+            </div>
+          </a>
+          <a href="tel:+31649951874" class="px-person">
+            <div class="px-person-avatar">M</div>
+            <div class="px-person-body">
+              <div class="px-person-role">Werkplaats</div>
+              <div class="px-person-name">Mick</div>
+              <div class="px-person-phone">06 49 95 18 74</div>
+            </div>
+          </a>
+        </div>
+
+        <div class="px-over-meta">
+          <div class="px-over-meta-item">
+            <span class="px-over-meta-label">Adres</span>
+            <a href="https://www.google.com/maps/search/?api=1&query=Gelderse+Rooslaan+14A+Arnhem" target="_blank" rel="noopener" class="px-over-meta-value">
+              Gelderse Rooslaan 14 A, 6841 BE Arnhem
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+            </a>
+          </div>
+          <div class="px-over-meta-item">
+            <span class="px-over-meta-label">Openingstijden</span>
+            <span class="px-over-meta-value">Ma t/m vr 08:30 – 17:30 · Za 09:00 – 16:00 · Zo gesloten</span>
+          </div>
+        </div>
       </div>
-      <a href="tel:+31638257987" class="px-btn px-btn-ghost">Neem contact op</a>
     </div>
   </div>
 </section>
