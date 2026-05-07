@@ -51,6 +51,53 @@
   });
 
   /* =========================================================
+     WORD-SPLIT (voor word-stagger reveals)
+     ========================================================= */
+  function splitWords(el) {
+    if (!el || el.dataset.split) return;
+    el.dataset.split = '1';
+
+    let wordIndex = 0;
+    const stagger = 0.05; // 50ms per woord
+
+    const processNode = (node) => {
+      const children = Array.from(node.childNodes);
+      children.forEach(child => {
+        if (child.nodeType === 3) { // tekstknoop
+          const text = child.textContent;
+          if (!text.trim()) return;
+          const frag = document.createDocumentFragment();
+          // Split op spaties, behoud witruimte als losse nodes
+          const parts = text.split(/(\s+)/);
+          parts.forEach(p => {
+            if (!p) return;
+            if (/^\s+$/.test(p)) {
+              frag.appendChild(document.createTextNode(p));
+            } else {
+              const span = document.createElement('span');
+              span.className = 'px-word-anim';
+              span.textContent = p;
+              span.style.setProperty('--wd', (wordIndex * stagger).toFixed(2) + 's');
+              wordIndex++;
+              frag.appendChild(span);
+            }
+          });
+          child.parentNode.replaceChild(frag, child);
+        } else if (child.nodeType === 1 && child.tagName !== 'BR') {
+          // Recurse in elementen (behalve <br>)
+          processNode(child);
+        }
+      });
+    };
+    processNode(el);
+  }
+
+  // Splits hero h1 + alle section h2's
+  const heroTitleEl = $('.px-hero-title');
+  if (heroTitleEl) splitWords(heroTitleEl);
+  $$('.px-h2').forEach(splitWords);
+
+  /* =========================================================
      SCROLL REVEAL (sections, hero text, cards)
      ========================================================= */
   const revealObserver = new IntersectionObserver((entries) => {
@@ -63,6 +110,10 @@
   }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
 
   $$('.px-reveal').forEach(el => revealObserver.observe(el));
+  // h2's apart observeren — niet alle hebben .px-reveal
+  $$('.px-h2').forEach(h2 => {
+    if (!h2.classList.contains('shown')) revealObserver.observe(h2);
+  });
 
   // staggered card reveal
   const cardObserver = new IntersectionObserver((entries) => {
@@ -152,6 +203,96 @@
     // Restore native cursor when leaving the document (e.g. devtools)
     document.addEventListener('mouseleave', () => cursor.style.opacity = '0');
     document.addEventListener('mouseenter', () => cursor.style.opacity = '1');
+  }
+
+  /* =========================================================
+     MOUSE SPOTLIGHT IN HERO (soft red glow follows cursor)
+     ========================================================= */
+  if (isFinePointer && !reduceMotion) {
+    const heroEl = $('#pxHero');
+    const heroLight = $('#pxHeroCursor');
+    if (heroEl && heroLight) {
+      let lx = 0, ly = 0, tx = 0, ty = 0, raf = null;
+
+      const tickHero = () => {
+        lx += (tx - lx) * 0.12;
+        ly += (ty - ly) * 0.12;
+        heroLight.style.transform = `translate(${lx}px, ${ly}px) translate(-50%, -50%)`;
+        raf = requestAnimationFrame(tickHero);
+      };
+
+      heroEl.addEventListener('mouseenter', () => {
+        heroEl.classList.add('cursor-active');
+        if (!raf) tickHero();
+      });
+      heroEl.addEventListener('mousemove', (e) => {
+        const r = heroEl.getBoundingClientRect();
+        tx = e.clientX - r.left;
+        ty = e.clientY - r.top;
+      });
+      heroEl.addEventListener('mouseleave', () => {
+        heroEl.classList.remove('cursor-active');
+        if (raf) { cancelAnimationFrame(raf); raf = null; }
+      });
+    }
+  }
+
+  /* =========================================================
+     COUNTER ANIMATION (hero CTA: "Bekijk X occasions")
+     ========================================================= */
+  function animateCounter(el) {
+    const target = parseInt(el.dataset.target, 10);
+    if (!target || target <= 0) { el.textContent = '0'; return; }
+    const duration = 1600;
+    const start = performance.now();
+    const tick = (t) => {
+      const elapsed = t - start;
+      const progress = Math.min(1, elapsed / duration);
+      const eased = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+      el.textContent = Math.round(target * eased);
+      if (progress < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
+  // Trigger counter wanneer hero CTA in beeld komt (= bij page load)
+  const counterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(en => {
+      if (en.isIntersecting) {
+        animateCounter(en.target);
+        counterObserver.unobserve(en.target);
+      }
+    });
+  }, { threshold: 0.5 });
+  $$('.px-counter').forEach(c => counterObserver.observe(c));
+
+  /* =========================================================
+     IMAGE PARALLAX (spotlight + over-ons foto's)
+     ========================================================= */
+  if (!reduceMotion) {
+    const parallaxImgs = $$('.px-parallax-img');
+    if (parallaxImgs.length) {
+      let parallaxRaf = null;
+      const updateParallax = () => {
+        const vh = window.innerHeight;
+        parallaxImgs.forEach(img => {
+          const r = img.getBoundingClientRect();
+          if (r.bottom < -100 || r.top > vh + 100) return;
+          // Distance from viewport center, normalized -1..1
+          const center = r.top + r.height / 2;
+          const norm = (center - vh / 2) / (vh / 2);
+          const offset = norm * 30; // ±30px
+          img.style.transform = `translateY(${-offset}px) scale(1.18)`;
+        });
+        parallaxRaf = null;
+      };
+      const onScrollParallax = () => {
+        if (!parallaxRaf) parallaxRaf = requestAnimationFrame(updateParallax);
+      };
+      window.addEventListener('scroll', onScrollParallax, { passive: true });
+      window.addEventListener('resize', onScrollParallax);
+      updateParallax();
+    }
   }
 
   /* =========================================================

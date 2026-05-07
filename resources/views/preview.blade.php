@@ -55,10 +55,11 @@
 </header>
 
 {{-- ============ 1 · HERO ============ --}}
-<section class="px-hero">
+<section class="px-hero" id="pxHero">
   <div class="px-hero-bg" style="background-image: url('{{ asset('images/backgroundhome.jpg') }}');"></div>
   <div class="px-hero-overlay"></div>
   <div class="px-hero-grain"></div>
+  <div class="px-hero-cursor-light" id="pxHeroCursor" aria-hidden="true"></div>
 
   <div class="px-hero-inner">
     <div class="px-hero-content">
@@ -72,7 +73,7 @@
         Alles onder één dak in Arnhem.
       </p>
       <div class="px-hero-cta px-reveal" style="--rd: .3s">
-        <a href="#aanbod" class="px-btn px-btn-primary px-btn-lg" data-magnetic>Bekijk {{ count($nieuw) }} occasions</a>
+        <a href="#aanbod" class="px-btn px-btn-primary px-btn-lg" data-magnetic>Bekijk <span class="px-counter" data-target="{{ count($nieuw) }}">0</span> occasions</a>
         <a href="#contact" class="px-btn px-btn-ghost px-btn-lg">Contact</a>
       </div>
 
@@ -217,7 +218,7 @@
 
     <a href="{{ route('occasions.show', $spotlight->slug) }}" class="px-spotlight px-reveal">
       <div class="px-spotlight-image">
-        <img src="{{ asset('storage/'.$spotlight->hoofdfoto_path) }}" alt="{{ $smm }}">
+        <img class="px-parallax-img" src="{{ asset('storage/'.$spotlight->hoofdfoto_path) }}" alt="{{ $smm }}">
         <span class="px-spotlight-tag">In de spotlight</span>
       </div>
       <div class="px-spotlight-body">
@@ -641,7 +642,7 @@
   <div class="px-container">
     <div class="px-over-strip">
       <div class="px-over-strip-img">
-        <img src="{{ asset('images/handshake.jpg') }}" alt="Gerritsen Automotive">
+        <img class="px-parallax-img" src="{{ asset('images/handshake.jpg') }}" alt="Gerritsen Automotive">
       </div>
       <div class="px-over-strip-body">
         <div class="px-eyebrow"><span class="px-eyebrow-dot"></span>Over ons</div>
