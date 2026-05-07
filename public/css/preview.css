@@ -1257,31 +1257,468 @@ ul { list-style: none; padding: 0; margin: 0; }
 .px-review-loc { font-size: 12px; color: var(--px-fg-muted); }
 
 /* =========================================================
-   WERKPLAATS CTA
+   WERKPLAATS — SMART BOOKING CARD
    ========================================================= */
-.px-werkplaats {
+.px-werkplaats-smart {
   position: relative;
-  padding: 100px 0;
-  background-image: var(--bg);
-  background-size: cover;
-  background-position: center;
+  padding: 96px 0;
   overflow: hidden;
 }
-.px-werkplaats-overlay {
+.px-werkplaats-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: blur(2px) brightness(.5);
+  transform: scale(1.05);
+}
+.px-werkplaats-bg-overlay {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(90deg, rgba(11,12,16,.92) 0%, rgba(11,12,16,.6) 100%);
+    radial-gradient(800px 500px at 50% 0%, rgba(230,57,70,.12), transparent 70%),
+    linear-gradient(180deg, rgba(11,12,16,.85), rgba(11,12,16,.95));
 }
-.px-werkplaats .px-container {
+.px-werkplaats-smart .px-container { position: relative; z-index: 1; }
+
+/* Smart card */
+.px-smart-card {
+  background: rgba(255,255,255,.03);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--px-border-2);
+  border-radius: 24px;
+  padding: 40px;
+  max-width: 880px;
+  margin: 48px auto 0;
+  box-shadow: var(--px-shadow-lg);
+}
+
+.px-smart-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--px-border);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--px-fg-dim);
+  flex-wrap: wrap;
+}
+.px-smart-step {
+  transition: color .25s;
+}
+.px-smart-step.active { color: var(--px-fg); }
+.px-smart-step.done { color: var(--px-accent); }
+.px-smart-divider {
+  flex: 1;
+  height: 1px;
+  background: var(--px-border);
+  min-width: 12px;
+}
+
+.px-smart-step-body { display: none; animation: pxStepIn .35s var(--px-ease) both; }
+.px-smart-step-body.px-active { display: block; }
+
+.px-smart-q {
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(22px, 2.6vw, 30px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 8px;
+  color: #fff;
+}
+.px-smart-help {
+  font-size: 14px;
+  color: var(--px-fg-muted);
+  margin: 0 0 24px;
+}
+
+/* Plate input — big, prominent */
+.px-smart-plate-form {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+.px-plate-big {
+  display: flex;
+  align-items: stretch;
+  background: #ffd61f;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid rgba(0,0,0,.3);
+  box-shadow: 0 6px 18px rgba(255,214,31,.18), inset 0 0 0 1px rgba(255,255,255,.6);
+  flex: 1;
+  min-width: 240px;
+  cursor: text;
+  transition: box-shadow .2s;
+}
+.px-plate-big:focus-within {
+  box-shadow: 0 0 0 4px rgba(255,214,31,.25), 0 8px 22px rgba(255,214,31,.25), inset 0 0 0 1px rgba(255,255,255,.6);
+}
+.px-plate-nl-big {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: #1f4ad9;
+  color: #fff;
+  padding: 12px 16px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: 0.1em;
+}
+.px-plate-stars {
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: #ffd61f;
+  line-height: 1;
+}
+.px-plate-big input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 14px 18px;
+  font-family: 'Inter', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  color: #111;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  min-width: 0;
+}
+.px-plate-big input::placeholder { color: rgba(0,0,0,.35); font-weight: 700; }
+
+#pxSmartLookup {
+  flex: 0 0 auto;
+}
+
+.px-smart-error {
+  margin-top: 14px;
+  padding: 10px 14px;
+  background: rgba(230,57,70,.1);
+  border: 1px solid rgba(230,57,70,.4);
+  border-radius: 10px;
+  color: var(--px-accent-soft);
+  font-size: 13px;
+}
+
+/* Found state */
+.px-smart-found {
+  background: rgba(255,255,255,.03);
+  border: 1px solid var(--px-border);
+  border-radius: 14px;
+  padding: 20px 22px;
+  margin-bottom: 28px;
+}
+.px-smart-found-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.px-smart-found-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--px-fg-muted);
+  margin-bottom: 4px;
+}
+.px-smart-found-name {
+  font-family: 'Inter', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #fff;
+}
+.px-smart-found-meta {
+  font-size: 13px;
+  color: var(--px-fg-2);
+  margin-top: 4px;
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.px-smart-found-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.px-smart-found-meta span:not(:last-child)::after {
+  content: '';
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: var(--px-fg-dim);
+  margin-left: 14px;
+}
+.px-smart-edit {
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--px-border);
+  color: var(--px-fg-2);
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .15s;
+}
+.px-smart-edit:hover { color: #fff; border-color: var(--px-line-2); }
+
+/* APK badge */
+.px-smart-apk {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--px-border);
+  flex-wrap: wrap;
+  font-size: 13px;
+}
+.px-smart-apk-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--px-fg-muted);
+}
+.px-smart-apk-value {
+  color: #fff;
+  font-weight: 600;
+}
+.px-smart-apk-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.px-smart-apk-badge::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.px-apk-ok       { background: rgba(34,197,94,.12);  color: #4ade80; border: 1px solid rgba(34,197,94,.3); }
+.px-apk-warn     { background: rgba(245,196,81,.12); color: #f5c451; border: 1px solid rgba(245,196,81,.3); }
+.px-apk-urgent   { background: rgba(230,57,70,.15);  color: var(--px-accent-soft); border: 1px solid rgba(230,57,70,.4); }
+
+/* Service tegels */
+.px-smart-services {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.px-service {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 18px 18px 16px;
+  background: rgba(255,255,255,.03);
+  border: 1px solid var(--px-border);
+  border-radius: 14px;
+  text-align: left;
+  transition: all .2s var(--px-ease);
+  cursor: pointer;
+  overflow: hidden;
+}
+.px-service:hover {
+  background: rgba(255,255,255,.06);
+  border-color: var(--px-line-2);
+  transform: translateY(-2px);
+}
+.px-service.selected {
+  background: rgba(230,57,70,.1);
+  border-color: var(--px-accent);
+  box-shadow: 0 6px 20px -4px var(--px-accent-glow);
+}
+.px-service.selected::after {
+  content: '✓';
+  position: absolute;
+  top: 12px; right: 12px;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--px-accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.px-service-icon {
+  width: 36px; height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: rgba(230,57,70,.12);
+  color: var(--px-accent-soft);
+  margin-bottom: 8px;
+}
+.px-service.selected .px-service-icon {
+  background: var(--px-accent);
+  color: #fff;
+}
+.px-service-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.01em;
+}
+.px-service-hint {
+  font-size: 12px;
+  color: var(--px-fg-muted);
+}
+
+/* "Smart suggestion" — when APK is auto-suggested */
+.px-service-suggested {
+  position: relative;
+}
+.px-service-suggested::before {
+  content: 'Aanbevolen';
+  position: absolute;
+  top: -8px; left: 14px;
+  padding: 2px 8px;
+  background: var(--px-accent);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: 999px;
   z-index: 1;
 }
-.px-werkplaats-content { max-width: 600px; }
-.px-werkplaats p { font-size: 16px; color: var(--px-fg-2); margin-top: 16px; }
-.px-werkplaats-cta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 28px; }
 
-@media (max-width: 768px) { .px-werkplaats { padding: 64px 0; } }
+@media (max-width: 700px) {
+  .px-smart-card { padding: 28px 22px; }
+  .px-smart-services { grid-template-columns: 1fr 1fr; }
+  .px-plate-big input { font-size: 22px; }
+}
+@media (max-width: 460px) {
+  .px-smart-services { grid-template-columns: 1fr; }
+}
+
+/* Step 3 — slots */
+.px-smart-summary {
+  padding: 14px 18px;
+  background: rgba(255,255,255,.03);
+  border: 1px solid var(--px-border);
+  border-radius: 12px;
+  margin-bottom: 24px;
+  font-size: 13px;
+  color: var(--px-fg-2);
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.px-smart-summary strong { color: #fff; font-weight: 700; }
+.px-smart-summary-divider { color: var(--px-fg-dim); }
+
+.px-smart-slots {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 24px;
+  align-items: stretch;
+  margin-bottom: 28px;
+}
+.px-smart-slot-suggested,
+.px-smart-slot-custom {
+  background: rgba(255,255,255,.03);
+  border: 1px solid var(--px-border);
+  border-radius: 14px;
+  padding: 24px;
+}
+.px-smart-slot-suggested {
+  border-color: var(--px-accent);
+  background: rgba(230,57,70,.06);
+}
+.px-smart-slot-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--px-fg-muted);
+  margin-bottom: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.px-smart-slot-when {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.px-smart-slot-day {
+  font-family: 'Inter', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+.px-smart-slot-time {
+  font-family: 'Inter', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--px-accent-soft);
+}
+.px-smart-slot-note,
+.px-smart-slot-custom p {
+  font-size: 13px;
+  color: var(--px-fg-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+.px-smart-or {
+  align-self: center;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--px-fg-dim);
+  padding: 0 4px;
+}
+@media (max-width: 700px) {
+  .px-smart-slots { grid-template-columns: 1fr; }
+  .px-smart-or { padding: 6px 0; }
+}
+
+.px-smart-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--px-border);
+}
+
+.px-smart-fallback {
+  text-align: center;
+  font-size: 13px;
+  color: var(--px-fg-muted);
+  margin: 18px 0 0;
+}
+.px-smart-fallback a {
+  color: var(--px-accent-soft);
+  border-bottom: 1px solid currentColor;
+}
 
 /* =========================================================
    FOOTER

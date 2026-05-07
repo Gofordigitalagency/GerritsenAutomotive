@@ -506,4 +506,240 @@
     applyGridFilter();
   });
 
+  /* =========================================================
+     SMART WORKSHOP BOOKING — kenteken → service → plan
+     ========================================================= */
+  const sCard      = $('#pxSmartCard');
+  if (sCard) {
+    const sForm    = $('#pxSmartForm');
+    const sPlate   = $('#pxSmartPlate');
+    const sLookup  = $('#pxSmartLookup');
+    const sError   = $('#pxSmartError');
+    const sName    = $('#pxSmartName');
+    const sMeta    = $('#pxSmartMeta');
+    const sApkBox  = $('#pxSmartApk');
+    const sApkVal  = $('#pxSmartApkValue');
+    const sApkBdg  = $('#pxSmartApkBadge');
+    const sEdit    = $('#pxSmartEdit');
+    const sNext    = $('#pxSmartNext');
+    const sConfirm = $('#pxSmartConfirm');
+    const sCustom  = $('#pxSmartCustom');
+    const sSummary = $('#pxSmartSummary');
+    const sSlotDay = $('#pxSmartSlotDay');
+    const sSlotTime= $('#pxSmartSlotTime');
+
+    const smartSteps = $$('.px-smart-step-body', sCard);
+    const smartLbls  = $$('.px-smart-step', sCard);
+    const services   = $$('.px-service', sCard);
+
+    let smartState = {
+      kenteken: '',
+      naam: '',
+      bouwjaar: null,
+      apkTot: null,
+      service: '',
+      slotDay: null,    // ISO date
+      slotTime: null,
+    };
+
+    // Auto-uppercase kenteken
+    sPlate.addEventListener('input', () => {
+      sPlate.value = sPlate.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
+    });
+
+    function smartGoTo(n) {
+      smartSteps.forEach(s => s.classList.toggle('px-active', parseInt(s.dataset.step, 10) === n));
+      smartLbls.forEach(l => {
+        const k = parseInt(l.dataset.s, 10);
+        l.classList.toggle('active', k === n);
+        l.classList.toggle('done', k < n);
+      });
+    }
+
+    function showError(msg) {
+      sError.textContent = msg;
+      sError.hidden = false;
+    }
+    function hideError() { sError.hidden = true; }
+
+    // RDW lookup on submit
+    sForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideError();
+      const raw = (sPlate.value || '').replace(/[^A-Z0-9]/gi, '').toUpperCase();
+      if (raw.length < 4) { showError('Vul een geldig kenteken in.'); return; }
+
+      sLookup.classList.add('loading');
+      sLookup.disabled = true;
+
+      try {
+        const res = await fetch(`/api/rdw/${encodeURIComponent(raw)}`, {
+          headers: { 'Accept': 'application/json' }
+        });
+
+        if (!res.ok) {
+          if (res.status === 404)      showError('Kenteken niet gevonden bij RDW.');
+          else if (res.status === 422) showError('Ongeldig kenteken-formaat.');
+          else                         showError('RDW even niet bereikbaar. Probeer opnieuw.');
+          return;
+        }
+
+        const data = await res.json();
+        smartState.kenteken = raw;
+        smartState.bouwjaar = data.bouwjaar;
+        smartState.apkTot   = data.apk_tot;
+
+        // Naam mooi formatten
+        const titel = [data.merk, data.model].filter(Boolean).join(' ').toLowerCase()
+          .replace(/\b\w/g, c => c.toUpperCase());
+        smartState.naam = titel || `Kenteken ${raw}`;
+        sName.textContent = smartState.naam;
+
+        // Meta
+        const metaParts = [];
+        if (data.bouwjaar)    metaParts.push(`<span>${data.bouwjaar}</span>`);
+        if (data.brandstof)   metaParts.push(`<span>${data.brandstof}</span>`);
+        if (data.kleur)       metaParts.push(`<span>${data.kleur.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())}</span>`);
+        sMeta.innerHTML = metaParts.join('');
+
+        // APK badge
+        applyApkBadge(data.apk_tot);
+
+        // Auto-suggest APK indien <= 60 dagen of verlopen
+        suggestServiceFromApk(data.apk_tot);
+
+        // Door naar stap 2
+        smartGoTo(2);
+      } catch (err) {
+        showError('Verbinding mislukt. Probeer opnieuw.');
+      } finally {
+        sLookup.classList.remove('loading');
+        sLookup.disabled = false;
+      }
+    });
+
+    function applyApkBadge(apkTot) {
+      if (!apkTot) {
+        sApkBox.hidden = true;
+        return;
+      }
+      sApkBox.hidden = false;
+      const d = new Date(apkTot);
+      const today = new Date(); today.setHours(0,0,0,0);
+      const days = Math.round((d - today) / (1000*60*60*24));
+
+      // Format Nederlands
+      const fmt = d.toLocaleDateString('nl-NL', { day: '2-digit', month: 'long', year: 'numeric' });
+      sApkVal.textContent = fmt;
+
+      sApkBdg.classList.remove('px-apk-ok', 'px-apk-warn', 'px-apk-urgent');
+      if (days < 0) {
+        sApkBdg.textContent = `${Math.abs(days)} dagen verlopen`;
+        sApkBdg.classList.add('px-apk-urgent');
+      } else if (days === 0) {
+        sApkBdg.textContent = 'Verloopt vandaag';
+        sApkBdg.classList.add('px-apk-urgent');
+      } else if (days <= 30) {
+        sApkBdg.textContent = `Over ${days} dag${days === 1 ? '' : 'en'}`;
+        sApkBdg.classList.add('px-apk-urgent');
+      } else if (days <= 60) {
+        sApkBdg.textContent = `Over ${days} dagen`;
+        sApkBdg.classList.add('px-apk-warn');
+      } else {
+        sApkBdg.textContent = `Over ${days} dagen`;
+        sApkBdg.classList.add('px-apk-ok');
+      }
+    }
+
+    function suggestServiceFromApk(apkTot) {
+      // Reset
+      services.forEach(s => s.classList.remove('selected', 'px-service-suggested'));
+      smartState.service = '';
+      sNext.disabled = true;
+
+      if (!apkTot) return;
+      const d = new Date(apkTot);
+      const today = new Date(); today.setHours(0,0,0,0);
+      const days = Math.round((d - today) / (1000*60*60*24));
+
+      if (days <= 60) {
+        // Mark APK als aanbevolen, maar niet auto-selecteren — laat gebruiker bevestigen
+        const apkBtn = services.find(s => s.dataset.key === 'apk');
+        if (apkBtn) apkBtn.classList.add('px-service-suggested');
+      }
+    }
+
+    // Service selecteren
+    services.forEach(btn => btn.addEventListener('click', () => {
+      services.forEach(s => s.classList.remove('selected'));
+      btn.classList.add('selected');
+      smartState.service = btn.dataset.svc;
+      sNext.disabled = false;
+    }));
+
+    // Wijzigen → terug naar stap 1
+    sEdit.addEventListener('click', () => {
+      smartGoTo(1);
+      sPlate.focus();
+    });
+
+    // Stap 2 → 3
+    sNext.addEventListener('click', () => {
+      if (!smartState.service) return;
+
+      // Vul samenvatting
+      const parts = [];
+      parts.push(`<span><strong>${smartState.naam}</strong></span>`);
+      parts.push('<span class="px-smart-summary-divider">·</span>');
+      parts.push(`<span>${smartState.service}</span>`);
+      sSummary.innerHTML = parts.join('');
+
+      // Genereer eerstvolgende werkdag (di–vr) met tijd 10:00
+      const next = nextWorkshopSlot();
+      smartState.slotDay  = next.iso;
+      smartState.slotTime = next.time;
+      sSlotDay.textContent = next.label;
+      sSlotTime.textContent = next.time;
+
+      // Bouw query-params voor redirect
+      const url = new URL(sConfirm.href, window.location.origin);
+      url.searchParams.set('kenteken', smartState.kenteken);
+      url.searchParams.set('service',  smartState.service);
+      url.searchParams.set('datum',    smartState.slotDay);
+      url.searchParams.set('tijd',     smartState.slotTime);
+      sConfirm.href = url.pathname + url.search;
+
+      const url2 = new URL(sCustom.href, window.location.origin);
+      url2.searchParams.set('kenteken', smartState.kenteken);
+      url2.searchParams.set('service',  smartState.service);
+      sCustom.href = url2.pathname + url2.search;
+
+      smartGoTo(3);
+    });
+
+    // Vorige
+    $$('.px-smart-step-body [data-prev]').forEach(b => b.addEventListener('click', () => {
+      const cur = b.closest('.px-smart-step-body');
+      const n = parseInt(cur.dataset.step, 10);
+      smartGoTo(Math.max(1, n - 1));
+    }));
+
+    // Volgende werkplaats-slot: eerstvolgende di–vr om 10:00
+    function nextWorkshopSlot() {
+      const d = new Date();
+      d.setHours(10, 0, 0, 0);
+      // Als het al na 10:00 vandaag is, of weekend, schuif door
+      if (new Date() > d) d.setDate(d.getDate() + 1);
+      // Skip zondag (0) en maandag (1) — werkplaats start dinsdag in de fictieve agenda
+      while (d.getDay() === 0 || d.getDay() === 1) {
+        d.setDate(d.getDate() + 1);
+      }
+      const days = ['Zondag','Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag','Zaterdag'];
+      const months = ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
+      const label = `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]}`;
+      const iso = d.toISOString().slice(0, 10);
+      return { iso, time: '10:00', label };
+    }
+  }
+
 })();

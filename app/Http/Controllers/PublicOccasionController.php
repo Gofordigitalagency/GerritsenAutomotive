@@ -64,6 +64,13 @@ public function rdwPublic(string $kenteken)
         $bouwjaar = (int) substr($v['datum_eerste_toelating'], 0, 4);
     }
 
+    // APK-vervaldatum (RDW levert YYYYMMDD)
+    $apkTot = null;
+    if (!empty($v['vervaldatum_apk']) && strlen($v['vervaldatum_apk']) === 8) {
+        $s = (string) $v['vervaldatum_apk'];
+        $apkTot = substr($s, 0, 4) . '-' . substr($s, 4, 2) . '-' . substr($s, 6, 2);
+    }
+
     $brandstofTekst = strtolower($fuel0['brandstof_omschrijving'] ?? '');
     $brandstof = null;
     if (str_contains($brandstofTekst, 'benzine')) $brandstof = 'Benzine';
@@ -80,6 +87,7 @@ public function rdwPublic(string $kenteken)
         'bouwjaar'  => $bouwjaar,
         'carrosserie' => $v['inrichting'] ?? null,
         'brandstof' => $brandstof,
+        'apk_tot'   => $apkTot,
     ]);
 }
 
