@@ -506,7 +506,21 @@ a { color: inherit; text-decoration: none; }
   box-shadow: 0 0 0 3px rgba(230,57,70,.12);
   background: rgba(255,255,255,.04);
 }
-.adm-field select { cursor: pointer; }
+.adm-field select {
+  cursor: pointer;
+  /* Browser native popup in dark-theme renderen — anders erft <option> color: #fff
+     en krijg je wit-op-wit (= onzichtbaar) */
+  color-scheme: dark;
+}
+.adm-field option {
+  background: var(--px-surface-2);
+  color: #fff;
+  padding: 8px;
+}
+.adm-field option:checked,
+.adm-field option:hover {
+  background: var(--px-accent);
+}
 
 /* Fill flash — RDW-vulling met accent flash */
 .adm-field.adm-just-filled input,
@@ -876,8 +890,21 @@ a { color: inherit; text-decoration: none; }
 /* =========================================================
    LIVE PREVIEW (sticky right column)
    ========================================================= */
-.adm-preview { position: relative; }
-.adm-preview-sticky { position: sticky; top: 84px; }
+.adm-preview {
+  position: relative;
+  align-self: stretch;        /* stretch met grid-row hoogte zodat sticky-context lang genoeg is */
+}
+.adm-preview-sticky {
+  position: sticky;
+  top: 80px;                  /* onder de sticky topbar (~64px) + 16px ademruimte */
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+@media (max-width: 1100px) {
+  /* op kleine schermen niet sticky maken — dan staat de preview boven het form */
+  .adm-preview-sticky { position: relative; top: auto; }
+}
 
 .adm-preview-head {
   display: flex;
@@ -906,7 +933,6 @@ a { color: inherit; text-decoration: none; }
   border: 1px solid var(--px-border);
   border-radius: var(--px-radius-lg);
   overflow: hidden;
-  margin-bottom: 16px;
   transition: border-color .25s, transform .25s;
 }
 .adm-preview-card:hover {
