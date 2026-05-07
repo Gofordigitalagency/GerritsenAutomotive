@@ -36,7 +36,7 @@
 
     <div class="px-nav-actions">
       <a href="tel:+31638257987" class="px-btn px-btn-ghost px-phone-pill">06 38 25 79 87</a>
-      <a href="#aanbod" class="px-btn px-btn-primary">Bekijk aanbod</a>
+      <a href="#aanbod" class="px-btn px-btn-primary" data-magnetic>Bekijk aanbod</a>
 
       <button class="px-menu-btn" id="pxMenuBtn" aria-label="Menu" aria-expanded="false">
         <span></span><span></span><span></span>
@@ -109,14 +109,13 @@
         <h2 class="px-h2">Persoonlijk, helder en zonder gedoe.</h2>
         <p>Bij Gerritsen Automotive in Arnhem ben je aan het juiste adres voor advies, verkoop van geselecteerde occasions en praktische verhuur.</p>
         <p>Duidelijke prijzen, transparante informatie en snel schakelen — of je nu vandaag wil proefrijden of iets wil huren, we regelen het zonder gedoe.</p>
-        <a href="#aanbod" class="px-btn px-btn-primary">Bekijk ons aanbod</a>
+        <a href="#aanbod" class="px-btn px-btn-primary" data-magnetic>Bekijk ons aanbod</a>
       </div>
     </div>
   </div>
 </section>
 
 @php
-  // Pak een spotlight: eerste niet-verkochte met foto + onder €15k indien mogelijk, anders eerste niet-verkochte
   $spotlight = $nieuw->first(function($c){
       $sold = stripos($c->model ?? '', '(VERKOCHT)') !== false;
       return !$sold && !empty($c->hoofdfoto_path) && (int)($c->prijs ?? 0) <= 15000;
@@ -212,7 +211,7 @@
     </div>
 
     <div class="px-grid" id="pxGrid">
-      @foreach($nieuw as $car)
+      @foreach($nieuw->take(12) as $car)
         @php
           $merkModel = trim(($car->merk ?? '').' '.($car->model ?? ''));
           if ($merkModel === '' && !empty($car->titel)) $merkModel = $car->titel;
@@ -273,18 +272,26 @@
 
     <div class="px-grid-empty" id="pxGridEmpty" hidden>
       <p>Geen auto's binnen deze filters.</p>
-      <button class="px-btn px-btn-ghost" id="pxClearFilters">Filters wissen</button>
+      <button type="button" class="px-btn px-btn-ghost" id="pxClearFilters">Filters wissen</button>
     </div>
+
+    @if(count($nieuw) > 12)
+      <div class="px-grid-more">
+        <a href="{{ route('occasions.index') }}" class="px-btn px-btn-ghost px-btn-lg">
+          Bekijk alle {{ count($nieuw) }} occasions →
+        </a>
+      </div>
+    @endif
   </div>
 </section>
 
-{{-- ============ AI/SMART CAR FINDER ============ --}}
+{{-- ============ AUTO-ZOEKER ============ --}}
 <section class="px-section" id="finder">
   <div class="px-container">
     <div class="px-section-head">
       <div class="px-eyebrow"><span class="px-eyebrow-dot"></span>Auto-zoeker</div>
       <h2 class="px-h2">Niet zoeken. Vinden.</h2>
-      <p class="px-section-sub">Beantwoord 4 korte vragen — wij matchen je met de meest geschikte occasies uit ons aanbod.</p>
+      <p class="px-section-sub">Beantwoord 4 korte vragen — wij matchen je met de meest geschikte occasions uit ons aanbod.</p>
     </div>
 
     <div class="px-finder">
@@ -299,34 +306,40 @@
         </div>
       </div>
 
-      {{-- STEP 1: budget --}}
       <div class="px-finder-step px-active" data-step="1">
         <h3 class="px-step-q">Wat is je budget?</h3>
         <div class="px-budget">
           <div class="px-budget-display">
-            <span class="px-budget-prefix">Tot</span>
-            <span class="px-budget-value">€ <span id="pxBudgetVal">10.000</span></span>
+            <div class="px-budget-pair">
+              <span class="px-budget-prefix">Vanaf</span>
+              <span class="px-budget-value">€ <span id="pxBudgetMinVal">5.000</span></span>
+            </div>
+            <span class="px-budget-arrow">→</span>
+            <div class="px-budget-pair">
+              <span class="px-budget-prefix">Tot</span>
+              <span class="px-budget-value">€ <span id="pxBudgetMaxVal">15.000</span></span>
+            </div>
           </div>
-          <div class="px-range-single">
+          <div class="px-range-dual">
             <div class="px-range-bg"></div>
             <div class="px-range-fill" id="pxRangeFill"></div>
-            <input type="range" id="pxBudget" min="2500" max="30000" step="250" value="10000">
+            <input type="range" id="pxBudgetMin" min="0" max="30000" step="250" value="5000" aria-label="Minimum budget">
+            <input type="range" id="pxBudgetMax" min="0" max="30000" step="250" value="15000" aria-label="Maximum budget">
           </div>
           <div class="px-range-ticks">
-            <span>€ 2,5k</span>
-            <span>€ 30k</span>
+            <span>€ 0</span>
+            <span>€ 30.000</span>
           </div>
           <div class="px-budget-presets">
-            <button type="button" data-val="5000">Tot € 5k</button>
-            <button type="button" data-val="10000">Tot € 10k</button>
-            <button type="button" data-val="15000">Tot € 15k</button>
-            <button type="button" data-val="25000">Tot € 25k</button>
+            <button type="button" data-min="0"     data-max="5000">Tot € 5k</button>
+            <button type="button" data-min="5000"  data-max="10000">€ 5–10k</button>
+            <button type="button" data-min="10000" data-max="15000">€ 10–15k</button>
+            <button type="button" data-min="15000" data-max="30000">€ 15k+</button>
           </div>
         </div>
-        <div class="px-finder-actions"><button class="px-btn px-btn-primary" data-next data-magnetic>Volgende</button></div>
+        <div class="px-finder-actions"><button type="button" class="px-btn px-btn-primary" data-next>Volgende →</button></div>
       </div>
 
-      {{-- STEP 2: brandstof --}}
       <div class="px-finder-step" data-step="2">
         <h3 class="px-step-q">Welke brandstof?</h3>
         <div class="px-options">
@@ -337,12 +350,11 @@
           <button type="button" class="px-opt" data-key="brandstof" data-val="Elektrisch">Elektrisch</button>
         </div>
         <div class="px-finder-actions">
-          <button class="px-btn px-btn-ghost" data-prev>Terug</button>
-          <button class="px-btn px-btn-primary" data-next>Volgende</button>
+          <button type="button" class="px-btn px-btn-ghost" data-prev>← Terug</button>
+          <button type="button" class="px-btn px-btn-primary" data-next>Volgende →</button>
         </div>
       </div>
 
-      {{-- STEP 3: type auto --}}
       <div class="px-finder-step" data-step="3">
         <h3 class="px-step-q">Welk type auto?</h3>
         <div class="px-options">
@@ -354,12 +366,11 @@
           <button type="button" class="px-opt" data-key="type" data-val="mpv">MPV</button>
         </div>
         <div class="px-finder-actions">
-          <button class="px-btn px-btn-ghost" data-prev>Terug</button>
-          <button class="px-btn px-btn-primary" data-next>Volgende</button>
+          <button type="button" class="px-btn px-btn-ghost" data-prev>← Terug</button>
+          <button type="button" class="px-btn px-btn-primary" data-next>Volgende →</button>
         </div>
       </div>
 
-      {{-- STEP 4: bouwjaar --}}
       <div class="px-finder-step" data-step="4">
         <h3 class="px-step-q">Hoe nieuw moet de auto minimaal zijn?</h3>
         <div class="px-options">
@@ -370,19 +381,18 @@
           <button type="button" class="px-opt" data-key="minYear" data-val="2021">Vanaf 2021</button>
         </div>
         <div class="px-finder-actions">
-          <button class="px-btn px-btn-ghost" data-prev>Terug</button>
-          <button class="px-btn px-btn-primary" id="pxFinderGo">Toon resultaat</button>
+          <button type="button" class="px-btn px-btn-ghost" data-prev>← Terug</button>
+          <button type="button" class="px-btn px-btn-primary" id="pxFinderGo">Toon resultaat</button>
         </div>
       </div>
 
-      {{-- STEP 5: resultaat --}}
       <div class="px-finder-step px-finder-result" data-step="5">
         <div class="px-result-head">
           <div>
             <div class="px-eyebrow"><span class="px-eyebrow-dot"></span>Top match</div>
             <h3 class="px-result-title" id="pxResultTitle">We vonden 0 occasions</h3>
           </div>
-          <button class="px-btn px-btn-ghost px-btn-sm" id="pxFinderRestart">Opnieuw zoeken</button>
+          <button type="button" class="px-btn px-btn-ghost px-btn-sm" id="pxFinderRestart">Opnieuw zoeken</button>
         </div>
         <div class="px-result-grid" id="pxResultGrid"></div>
         <div class="px-result-empty" id="pxResultEmpty" hidden>
@@ -480,7 +490,7 @@
       <h2 class="px-h2">APK, onderhoud of reparatie?<br>In 4 stappen ingepland.</h2>
       <p>Vul je kenteken in, kies de werkzaamheden en je tijdstip. We bevestigen direct.</p>
       <div class="px-werkplaats-cta">
-        <a href="{{ route('workshop.step1') }}" class="px-btn px-btn-primary px-btn-lg">Plan een afspraak</a>
+        <a href="{{ route('workshop.step1') }}" class="px-btn px-btn-primary px-btn-lg" data-magnetic>Plan een afspraak</a>
         <a href="tel:+31638257987" class="px-btn px-btn-ghost px-btn-lg">Of bel direct</a>
       </div>
     </div>

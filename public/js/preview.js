@@ -150,49 +150,79 @@
   }
 
   /* =========================================================
-     BUDGET SLIDER (single, "tot € X")
+     BUDGET SLIDER (dual-range, vanaf → tot)
      ========================================================= */
-  const slider = $('#pxBudget');
-  const sliderVal = $('#pxBudgetVal');
-  const sliderFill = $('#pxRangeFill');
+  const minR = $('#pxBudgetMin');
+  const maxR = $('#pxBudgetMax');
+  const minV = $('#pxBudgetMinVal');
+  const maxV = $('#pxBudgetMaxVal');
+  const fill = $('#pxRangeFill');
   const presetBtns = $$('.px-budget-presets button');
 
   const fmt = (n) => Number(n).toLocaleString('nl-NL');
 
-  const updateSlider = () => {
-    if (!slider) return;
-    const v = parseInt(slider.value, 10);
-    const min = parseInt(slider.min, 10);
-    const max = parseInt(slider.max, 10);
-    const pct = ((v - min) / (max - min)) * 100;
+  const updateRange = (driver) => {
+    if (!minR || !maxR) return;
 
-    if (sliderVal) sliderVal.textContent = fmt(v);
-    if (sliderFill) sliderFill.style.width = pct + '%';
+    let lo = parseInt(minR.value, 10);
+    let hi = parseInt(maxR.value, 10);
 
-    finderState.maxBudget = v;
+    // Voorkom overlap: min mag max niet voorbij, en omgekeerd
+    if (lo > hi) {
+      if (driver === 'min') hi = lo;
+      else                  lo = hi;
+      minR.value = lo;
+      maxR.value = hi;
+    }
 
+    const min = parseInt(minR.min, 10);
+    const max = parseInt(minR.max, 10);
+    const lp = ((lo - min) / (max - min)) * 100;
+    const hp = ((hi - min) / (max - min)) * 100;
+
+    if (fill) {
+      // 12px inset aan beide kanten (matched met CSS .px-range-bg)
+      fill.style.left  = `calc(12px + (100% - 24px) * ${lp / 100})`;
+      fill.style.width = `calc((100% - 24px) * ${(hp - lp) / 100})`;
+    }
+
+    if (minV) minV.textContent = fmt(lo);
+    if (maxV) maxV.textContent = fmt(hi);
+
+    finderState.minBudget = lo;
+    finderState.maxBudget = hi;
+
+    // Z-index trick: zorg dat de actief gesleepte thumb erbovenop staat
+    if (driver === 'min') { minR.style.zIndex = 4; maxR.style.zIndex = 3; }
+    if (driver === 'max') { minR.style.zIndex = 3; maxR.style.zIndex = 4; }
+
+    // Presets-state
     presetBtns.forEach(b => {
-      b.classList.toggle('active', parseInt(b.dataset.val, 10) === v);
+      const bm = parseInt(b.dataset.min, 10);
+      const bx = parseInt(b.dataset.max, 10);
+      b.classList.toggle('active', bm === lo && bx === hi);
     });
   };
 
-  if (slider) {
-    slider.addEventListener('input', updateSlider);
-    updateSlider();
+  if (minR && maxR) {
+    minR.addEventListener('input', () => updateRange('min'));
+    maxR.addEventListener('input', () => updateRange('max'));
+    updateRange();
   }
 
   presetBtns.forEach(btn => btn.addEventListener('click', () => {
-    if (!slider) return;
-    slider.value = btn.dataset.val;
-    updateSlider();
+    if (!minR || !maxR) return;
+    minR.value = btn.dataset.min;
+    maxR.value = btn.dataset.max;
+    updateRange();
   }));
 
   /* =========================================================
      FINDER WIZARD
      ========================================================= */
   const finderState = {
-    minBudget: 0,
-    maxBudget: 10000,
+    minBudget: 5000,
+    maxBudget: 15000,
     brandstof: '',
     type: '',
     minYear: 0,
@@ -249,9 +279,12 @@
     finderState.brandstof = '';
     finderState.type = '';
     finderState.minYear = 0;
-    finderState.maxBudget = 10000;
+    finderState.minBudget = 5000;
+    finderState.maxBudget = 15000;
     $$('.px-opt').forEach(o => o.classList.remove('selected'));
-    if (slider) { slider.value = 10000; updateSlider(); }
+    if (minR && maxR) {
+      minR.value = 5000; maxR.value = 15000; updateRange();
+    }
     goToStep(1);
   });
 
@@ -264,6 +297,11 @@
   function scoreOccasion(o) {
     let score = 100;
 
+    if (o.prijs < finderState.minBudget) {
+      const under = finderState.minBudget - o.prijs;
+      const pen = Math.min(50, Math.round((under / 1000) * 6));
+      score -= pen;
+    }
     if (o.prijs > finderState.maxBudget) {
       const over = o.prijs - finderState.maxBudget;
       const pen = Math.min(70, Math.round((over / 1000) * 8));
