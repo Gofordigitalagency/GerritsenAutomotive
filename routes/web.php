@@ -11,6 +11,7 @@ use App\Http\Controllers\SellCarController;
 use App\Http\Controllers\WorkshopAppointmentController;
 use App\Http\Controllers\OccasionPdfController;
 use App\Http\Controllers\admin\ReclameController;
+use App\Http\Controllers\admin\WorkshopAppointmentController as AdminWorkshopAppointmentController;
 
 
 
@@ -106,6 +107,12 @@ Route::get('occasions/rdw/{kenteken}', [AdminOccasionController::class, 'rdwLook
 
     // Agenda
     Route::get('/agenda', [ReservationController::class, 'calendar'])->name('agenda.index');
+
+    // Werkplaats afspraken (vanaf het online formulier)
+    Route::get('/werkplaats-afspraken',                 [AdminWorkshopAppointmentController::class, 'index'])->name('workshop.index');
+    Route::get('/werkplaats-afspraken/{workshop}',      [AdminWorkshopAppointmentController::class, 'show'])->name('workshop.show');
+    Route::post('/werkplaats-afspraken/{workshop}/status', [AdminWorkshopAppointmentController::class, 'updateStatus'])->name('workshop.status');
+    Route::delete('/werkplaats-afspraken/{workshop}',   [AdminWorkshopAppointmentController::class, 'destroy'])->name('workshop.destroy');
 
     Route::post('occasions/{occasion}/gallery/reorder', [AdminOccasionController::class, 'galleryReorder'])
         ->name('occasions.gallery.reorder');

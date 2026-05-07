@@ -41,6 +41,11 @@
         <img src="{{ asset('images/headlights.svg') }}" alt="" aria-hidden="true"> {{-- kies je eigen icoonbestand --}}
         <span>Koplampen</span>
       </a>
+
+      <a href="{{ route('admin.workshop.index') }}" class="menu-item {{ request()->routeIs('admin.workshop.*') ? 'active' : '' }}">
+        <img src="{{ asset('images/agenda.svg') }}" alt="" aria-hidden="true">
+        <span>Werkplaats afspraken</span>
+      </a>
       
       <a href="{{ route('admin.reclame.index') }}"
         class="menu-item {{ request()->routeIs('admin.reclame.*') ? 'active' : '' }}">
