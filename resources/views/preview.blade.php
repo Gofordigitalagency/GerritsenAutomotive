@@ -19,6 +19,11 @@
 </head>
 <body class="px-body">
 
+@php
+  // Alleen niet-verkochte auto's tellen mee in "occasions" displays
+  $availableCount = $nieuw->reject(fn ($c) => stripos($c->model ?? '', '(VERKOCHT)') !== false)->count();
+@endphp
+
 {{-- ============ NAV (gedeelde partial — werkt cross-page) ============ --}}
 @include('preview.partials.header')
 
