@@ -46,7 +46,7 @@
         Alles onder één dak in Arnhem.
       </p>
       <div class="px-hero-cta px-reveal" style="--rd: .3s">
-        <a href="#aanbod" class="px-btn px-btn-primary px-btn-lg" data-magnetic>Bekijk <span class="px-counter" data-target="{{ count($nieuw) }}">0</span> occasions</a>
+        <a href="#aanbod" class="px-btn px-btn-primary px-btn-lg" data-magnetic>Bekijk <span class="px-counter" data-target="{{ $availableCount }}">0</span> occasions</a>
         <a href="#contact" class="px-btn px-btn-ghost px-btn-lg">Contact</a>
       </div>
 
@@ -86,7 +86,7 @@
     </div>
 
     <div class="px-chips" id="pxChips">
-      <button type="button" class="px-chip px-chip-active" data-filter="all">Alle <span>{{ count($nieuw) }}</span></button>
+      <button type="button" class="px-chip px-chip-active" data-filter="all">Alle <span>{{ $availableCount }}</span></button>
       <button type="button" class="px-chip" data-filter="price:0-1500">Tot € 1.500</button>
       <button type="button" class="px-chip" data-filter="price:1500-2500">€ 1.500 – 2.500</button>
       <button type="button" class="px-chip" data-filter="price:2500-4000">€ 2.500 – 4.000</button>
@@ -161,10 +161,10 @@
       <button type="button" class="px-btn px-btn-ghost" id="pxClearFilters">Filters wissen</button>
     </div>
 
-    @if(count($nieuw) > 6)
+    @if($availableCount > 6)
       <div class="px-grid-more">
         <a href="{{ route('occasions.index') }}" class="px-btn px-btn-ghost px-btn-lg">
-          Bekijk alle {{ count($nieuw) }} occasions →
+          Bekijk alle {{ $availableCount }} occasions →
         </a>
       </div>
     @endif
