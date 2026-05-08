@@ -338,6 +338,7 @@
     minBudget: 1500,
     maxBudget: 3000,
     brandstof: '',
+    transmissie: '',
     type: '',
     minYear: 0,
   };
@@ -418,7 +419,7 @@
   const progressBar = $('#pxFinderBar');
 
   let currentStep = 1;
-  const totalSteps = 5;
+  const totalSteps = 6;
 
   function goToStep(n) {
     n = Math.max(1, Math.min(totalSteps, n));
@@ -451,17 +452,17 @@
       selectOption(opt);
       const stepEl = opt.closest('.px-finder-step');
       const stepN = parseInt(stepEl.dataset.step, 10);
-      if (stepN < 4) {
+      // Auto-advance vanaf elke optie-stap (2 t/m 5) naar de volgende
+      if (stepN >= 2 && stepN <= 5) {
         setTimeout(() => goToStep(stepN + 1), 220);
-      } else if (stepN === 4) {
-        setTimeout(() => goToStep(5), 220);
       }
     });
   });
 
-  $('#pxFinderGo')?.addEventListener('click', () => goToStep(5));
+  $('#pxFinderGo')?.addEventListener('click', () => goToStep(6));
   $('#pxFinderRestart')?.addEventListener('click', () => {
     finderState.brandstof = '';
+    finderState.transmissie = '';
     finderState.type = '';
     finderState.minYear = 0;
     finderState.minBudget = 1500;
@@ -494,6 +495,13 @@
 
     if (finderState.brandstof && o.brandstof) {
       if (o.brandstof.toLowerCase() !== finderState.brandstof.toLowerCase()) score -= 25;
+    }
+
+    if (finderState.transmissie && o.transmissie) {
+      const t = o.transmissie.toLowerCase();
+      const wantAuto = finderState.transmissie === 'auto';
+      const isAuto = t.includes('auto');
+      if (wantAuto !== isAuto) score -= 30;
     }
 
     if (finderState.type && o.type) {
