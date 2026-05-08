@@ -50,7 +50,7 @@
           <div class="px-stars" aria-label="4.9 sterren">
             @for($i=0;$i<5;$i++)<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>@endfor
           </div>
-          <span><b>4.9</b> · Google reviews</span>
+          <span><b><span class="px-counter" data-target="4.9" data-decimals="1">0,0</span></b> · Google reviews</span>
         </div>
         <span class="px-trust-divider"></span>
         <div class="px-trust-item"><span>BOVAG aangesloten</span></div>
@@ -280,7 +280,7 @@
         <div class="px-stars" aria-label="4.9 sterren">
           @for($i=0;$i<5;$i++)<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>@endfor
         </div>
-        <span class="px-reviews-score"><b>4.9</b> gemiddeld · gebaseerd op Google reviews</span>
+        <span class="px-reviews-score"><b><span class="px-counter" data-target="4.9" data-decimals="1">0,0</span></b> gemiddeld · gebaseerd op Google reviews</span>
       </div>
     </div>
 

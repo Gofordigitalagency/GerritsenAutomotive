@@ -999,6 +999,25 @@ a.px-over-meta-value:hover svg {
 }
 @media (max-width: 600px) { .px-grid { grid-template-columns: 1fr; } }
 
+/* Generic stagger entrance — wordt door cardObserver getriggerd */
+.px-card,
+.px-why-card,
+.px-service-card,
+.px-review,
+.px-person {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity .65s var(--px-ease), transform .65s var(--px-ease), border-color .25s, box-shadow .25s, background .25s;
+}
+.px-card.in,
+.px-why-card.in,
+.px-service-card.in,
+.px-review.in,
+.px-person.in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .px-card {
   position: relative;
   display: flex;
@@ -1007,9 +1026,6 @@ a.px-over-meta-value:hover svg {
   border: 1px solid var(--px-border);
   border-radius: var(--px-radius-lg);
   overflow: hidden;
-  opacity: 0;
-  transform: translateY(14px);
-  transition: opacity .6s var(--px-ease), transform .6s var(--px-ease), border-color .25s, box-shadow .25s;
 }
 .px-card::before {
   content: '';

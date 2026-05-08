@@ -127,7 +127,8 @@
     });
   }, { threshold: 0, rootMargin: '0px 0px 200px 0px' });    // cards faden eerder in
 
-  $$('.px-card').forEach(el => cardObserver.observe(el));
+  // Alle card-achtige elementen krijgen staggered entrance
+  $$('.px-card, .px-why-card, .px-service-card, .px-review, .px-person').forEach(el => cardObserver.observe(el));
 
   /* =========================================================
      TILT ON HOVER (cards, spotlight)
@@ -241,15 +242,20 @@
      COUNTER ANIMATION (hero CTA: "Bekijk X occasions")
      ========================================================= */
   function animateCounter(el) {
-    const target = parseInt(el.dataset.target, 10);
-    if (!target || target <= 0) { el.textContent = '0'; return; }
+    const targetRaw = (el.dataset.target || '0').replace(',', '.');
+    const target   = parseFloat(targetRaw);
+    const decimals = parseInt(el.dataset.decimals || '0', 10);
+    if (!target || target <= 0) { el.textContent = (0).toFixed(decimals).replace('.', ','); return; }
     const duration = 1600;
     const start = performance.now();
     const tick = (t) => {
       const elapsed = t - start;
       const progress = Math.min(1, elapsed / duration);
       const eased = 1 - Math.pow(1 - progress, 3); // easeOutCubic
-      el.textContent = Math.round(target * eased);
+      const value = target * eased;
+      el.textContent = decimals > 0
+        ? value.toFixed(decimals).replace('.', ',')
+        : Math.round(value).toString();
       if (progress < 1) requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);
