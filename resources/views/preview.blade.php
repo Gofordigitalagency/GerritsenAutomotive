@@ -66,30 +66,6 @@
   </div>
 </section>
 
-{{-- ============ MARQUEE STRIP ============ --}}
-<div class="px-marquee" aria-hidden="true">
-  <div class="px-marquee-track">
-    @php
-      $marqueeItems = [
-        'BOVAG aangesloten',
-        '4,9 ★ op Google',
-        'Eigen werkplaats',
-        count($nieuw) . ' occasions in voorraad',
-        'Sinds jaar en dag in Arnhem',
-        'Persoonlijk advies',
-        'Transparante prijzen',
-        'NAP-controle',
-      ];
-    @endphp
-    @for($i = 0; $i < 2; $i++)
-      @foreach($marqueeItems as $item)
-        <span>{{ $item }}</span>
-        <span class="px-marquee-dot">●</span>
-      @endforeach
-    @endfor
-  </div>
-</div>
-
 {{-- ============ 2 · AANBOD SHOWCASE ============ --}}
 <section class="px-section px-section-alt" id="aanbod">
   <div class="px-container">
@@ -115,15 +91,14 @@
     </div>
 
     <div class="px-grid" id="pxGrid">
-      @foreach($nieuw->take(6) as $i => $car)
+      @foreach($nieuw->take(6) as $car)
         @php
           $merkModel = trim(($car->merk ?? '').' '.($car->model ?? ''));
           if ($merkModel === '' && !empty($car->titel)) $merkModel = $car->titel;
           $hasDiscount = !empty($car->oude_prijs) && $car->oude_prijs > $car->prijs;
           $sold = stripos($car->model ?? '', '(VERKOCHT)') !== false;
-          $isFeatured = $i === 0;
         @endphp
-        <a class="px-card {{ $sold ? 'px-card-sold' : '' }} {{ $isFeatured ? 'px-card-featured' : '' }}"
+        <a class="px-card {{ $sold ? 'px-card-sold' : '' }}"
            href="{{ route('occasions.show', $car->slug) }}"
            data-brandstof="{{ $car->brandstof ?? '' }}"
            data-trans="{{ strtolower($car->transmissie ?? '') }}"
@@ -290,24 +265,6 @@
         <p>Geen verkooppraatjes. We luisteren en denken met je mee.</p>
       </div>
     </div>
-  </div>
-</section>
-
-{{-- ============ PULL-QUOTE (visuele breker) ============ --}}
-<section class="px-pullquote-section">
-  <div class="px-container">
-    <figure class="px-pullquote">
-      <span class="px-pullquote-mark" aria-hidden="true">"</span>
-      <blockquote>
-        Tweede auto die ik bij Gerritsen koop. Dat zegt eigenlijk alles.
-      </blockquote>
-      <figcaption>
-        <div class="px-pullquote-stars">
-          @for($i=0;$i<5;$i++)<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>@endfor
-        </div>
-        <span class="px-pullquote-author">Patrick, Arnhem · Google review</span>
-      </figcaption>
-    </figure>
   </div>
 </section>
 

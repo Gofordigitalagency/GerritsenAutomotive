@@ -1105,73 +1105,10 @@ a.px-over-meta-value:hover svg {
 
 .px-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
   gap: 20px;
 }
-@media (max-width: 1000px) { .px-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 600px)  { .px-grid { grid-template-columns: 1fr; } }
-
-/* Featured card — eerste auto: 2 kolommen breed met groter beeld + bold typo */
-.px-card-featured {
-  grid-column: span 2;
-  display: grid;
-  grid-template-columns: 1.4fr 1fr;
-  align-items: stretch;
-}
-.px-card-featured .px-card-photo {
-  aspect-ratio: auto;
-  height: 100%;
-  min-height: 320px;
-}
-.px-card-featured .px-card-body {
-  padding: 24px 26px 22px;
-  justify-content: space-between;
-}
-.px-card-featured .px-card-title {
-  font-size: 24px;
-  letter-spacing: -0.02em;
-  line-height: 1.15;
-}
-.px-card-featured .px-card-type {
-  font-size: 14px;
-}
-.px-card-featured .px-card-meta {
-  font-size: 14px;
-  margin: 14px 0 18px;
-}
-.px-card-featured .px-card-price {
-  font-size: 26px;
-}
-.px-card-featured::after {
-  content: 'Uitgelicht';
-  position: absolute;
-  top: 16px; right: 16px;
-  padding: 5px 12px;
-  background: var(--px-accent);
-  color: #fff;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  border-radius: 999px;
-  z-index: 3;
-  box-shadow: 0 4px 14px var(--px-accent-glow);
-}
-
-@media (max-width: 1000px) {
-  .px-card-featured { grid-column: span 2; }
-}
-@media (max-width: 700px) {
-  .px-card-featured {
-    grid-column: 1 / -1;
-    grid-template-columns: 1fr;
-  }
-  .px-card-featured .px-card-photo {
-    aspect-ratio: 4/3;
-    height: auto;
-    min-height: 0;
-  }
-}
+@media (max-width: 600px) { .px-grid { grid-template-columns: 1fr; } }
 
 .px-card {
   position: relative;
