@@ -215,47 +215,78 @@ public function priceSuggest(\Illuminate\Http\Request $request)
             ->whereRaw('LOWER(merk) LIKE ?', [strtolower($merk) . '%']);
     };
 
-    // Probeer 1: merk + model + bouwjaar (±3 jaar) + km (±50k)
-    $q = $build();
-    if ($modelClean !== '') {
-        $q->whereRaw('LOWER(model) LIKE ?', [strtolower($modelClean) . '%']);
-    }
-    if ($bouwjaar > 0) {
-        $q->whereBetween('bouwjaar', [$bouwjaar - 3, $bouwjaar + 3]);
-    }
-    if ($km > 0) {
-        $q->whereBetween('tellerstand', [max(0, $km - $kmRange), $km + $kmRange]);
-    }
-    $rows = $q->limit(50)->pluck('prijs')->map(fn ($p) => (int) $p)->all();
-    $usedFilter = 'merk + model + bouwjaar + km';
+    // Helper: model-filter dat ZOWEL "C1%" als "CITROEN C1%" matcht
+    // (DB heeft inconsistente data: soms model="C1", soms model="CITROEN C1")
+    $applyModelFilter = function ($q) use ($modelClean, $merk) {
+        if ($modelClean === '') return;
+        $q->where(function ($w) use ($modelClean, $merk) {
+            $w->whereRaw('LOWER(model) LIKE ?', [strtolower($modelClean) . '%'])
+              ->orWhereRaw('LOWER(model) LIKE ?', [strtolower($merk . ' ' . $modelClean) . '%']);
+        });
+    };
 
-    // Fallback 1: drop km
-    if (empty($rows) && $km > 0) {
+    // Filter-niveaus van strikt → los. Iteratief: pak het eerste niveau met ≥3 matches.
+    // Als geen enkel niveau 3+ haalt, behouden we het meest preciese niet-lege resultaat.
+    $minMatches = 3;
+    $attempts = [
+        [
+            'name'  => 'merk + model + bouwjaar + km',
+            'apply' => function ($q) use ($applyModelFilter, $bouwjaar, $km, $kmRange) {
+                $applyModelFilter($q);
+                if ($bouwjaar > 0) $q->whereBetween('bouwjaar', [$bouwjaar - 3, $bouwjaar + 3]);
+                if ($km > 0) $q->whereBetween('tellerstand', [max(0, $km - $kmRange), $km + $kmRange]);
+            },
+            'requires' => ($modelClean !== '' && $bouwjaar > 0 && $km > 0),
+        ],
+        [
+            'name'  => 'merk + model + bouwjaar',
+            'apply' => function ($q) use ($applyModelFilter, $bouwjaar) {
+                $applyModelFilter($q);
+                if ($bouwjaar > 0) $q->whereBetween('bouwjaar', [$bouwjaar - 3, $bouwjaar + 3]);
+            },
+            'requires' => ($modelClean !== '' && $bouwjaar > 0),
+        ],
+        [
+            'name'  => 'merk + model',
+            'apply' => function ($q) use ($applyModelFilter) {
+                $applyModelFilter($q);
+            },
+            'requires' => ($modelClean !== ''),
+        ],
+        [
+            'name'  => 'merk',
+            'apply' => function ($q) {},
+            'requires' => true,
+        ],
+    ];
+
+    $rows = [];
+    $usedFilter = '';
+    $bestRows = [];
+    $bestFilter = '';
+
+    foreach ($attempts as $a) {
+        if (!$a['requires']) continue;
         $q = $build();
-        if ($modelClean !== '') {
-            $q->whereRaw('LOWER(model) LIKE ?', [strtolower($modelClean) . '%']);
+        $a['apply']($q);
+        $r = $q->limit(50)->pluck('prijs')->map(fn ($p) => (int) $p)->all();
+
+        // Voldoende matches op dit niveau? Dan gebruiken we die.
+        if (count($r) >= $minMatches) {
+            $rows = $r;
+            $usedFilter = $a['name'];
+            break;
         }
-        if ($bouwjaar > 0) {
-            $q->whereBetween('bouwjaar', [$bouwjaar - 3, $bouwjaar + 3]);
+        // Bewaar het meest preciese niet-lege resultaat als laatste vangnet.
+        if (empty($bestRows) && !empty($r)) {
+            $bestRows = $r;
+            $bestFilter = $a['name'];
         }
-        $rows = $q->limit(50)->pluck('prijs')->map(fn ($p) => (int) $p)->all();
-        $usedFilter = 'merk + model + bouwjaar';
     }
 
-    // Fallback 2: drop bouwjaar
-    if (empty($rows) && $bouwjaar > 0) {
-        $q = $build();
-        if ($modelClean !== '') {
-            $q->whereRaw('LOWER(model) LIKE ?', [strtolower($modelClean) . '%']);
-        }
-        $rows = $q->limit(50)->pluck('prijs')->map(fn ($p) => (int) $p)->all();
-        $usedFilter = 'merk + model';
-    }
-
-    // Fallback 3: drop model — alleen merk
-    if (empty($rows)) {
-        $rows = $build()->limit(50)->pluck('prijs')->map(fn ($p) => (int) $p)->all();
-        $usedFilter = 'merk';
+    if (empty($rows) && !empty($bestRows)) {
+        $rows = $bestRows;
+        $usedFilter = $bestFilter;
     }
 
     if (empty($rows)) {
