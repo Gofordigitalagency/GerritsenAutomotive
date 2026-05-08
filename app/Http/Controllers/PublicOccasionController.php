@@ -197,6 +197,8 @@ public function priceSuggest(\Illuminate\Http\Request $request)
     $merk = trim((string) $request->get('merk', ''));
     $model = trim((string) $request->get('model', ''));
     $bouwjaar = (int) $request->get('bouwjaar', 0);
+    $km = (int) $request->get('km', 0);
+    $kmRange = 50000; // ±50.000 km venster
 
     if ($merk === '') {
         return response()->json(['message' => 'merk vereist'], 422);
@@ -205,8 +207,7 @@ public function priceSuggest(\Illuminate\Http\Request $request)
     // Strip merk-prefix uit model (RDW geeft soms "VOLKSWAGEN POLO", soms "POLO")
     $modelClean = trim(preg_replace('/^' . preg_quote($merk, '/') . '\s+/i', '', $model));
 
-    // Helper: bouw query met case-insensitive merk-match (LIKE met % aan einde
-    // zodat "PEUGEOT" ook "Peugeot" matcht via LOWER)
+    // Helper: bouw query met case-insensitive merk-match
     $build = function () use ($merk) {
         return Occasion::query()
             ->whereNotNull('prijs')
@@ -214,20 +215,34 @@ public function priceSuggest(\Illuminate\Http\Request $request)
             ->whereRaw('LOWER(merk) LIKE ?', [strtolower($merk) . '%']);
     };
 
-    // Probeer 1: merk + model + bouwjaar (±3 jaar)
+    // Probeer 1: merk + model + bouwjaar (±3 jaar) + km (±50k)
     $q = $build();
     if ($modelClean !== '') {
-        $q->where(function ($w) use ($modelClean) {
-            $w->whereRaw('LOWER(model) LIKE ?', [strtolower($modelClean) . '%']);
-        });
+        $q->whereRaw('LOWER(model) LIKE ?', [strtolower($modelClean) . '%']);
     }
     if ($bouwjaar > 0) {
         $q->whereBetween('bouwjaar', [$bouwjaar - 3, $bouwjaar + 3]);
     }
+    if ($km > 0) {
+        $q->whereBetween('tellerstand', [max(0, $km - $kmRange), $km + $kmRange]);
+    }
     $rows = $q->limit(50)->pluck('prijs')->map(fn ($p) => (int) $p)->all();
-    $usedFilter = 'merk + model + bouwjaar';
+    $usedFilter = 'merk + model + bouwjaar + km';
 
-    // Fallback 1: drop bouwjaar
+    // Fallback 1: drop km
+    if (empty($rows) && $km > 0) {
+        $q = $build();
+        if ($modelClean !== '') {
+            $q->whereRaw('LOWER(model) LIKE ?', [strtolower($modelClean) . '%']);
+        }
+        if ($bouwjaar > 0) {
+            $q->whereBetween('bouwjaar', [$bouwjaar - 3, $bouwjaar + 3]);
+        }
+        $rows = $q->limit(50)->pluck('prijs')->map(fn ($p) => (int) $p)->all();
+        $usedFilter = 'merk + model + bouwjaar';
+    }
+
+    // Fallback 2: drop bouwjaar
     if (empty($rows) && $bouwjaar > 0) {
         $q = $build();
         if ($modelClean !== '') {
@@ -237,7 +252,7 @@ public function priceSuggest(\Illuminate\Http\Request $request)
         $usedFilter = 'merk + model';
     }
 
-    // Fallback 2: drop model — alleen merk
+    // Fallback 3: drop model — alleen merk
     if (empty($rows)) {
         $rows = $build()->limit(50)->pluck('prijs')->map(fn ($p) => (int) $p)->all();
         $usedFilter = 'merk';

@@ -408,11 +408,13 @@
     const merk = getVal('merk');
     const model = getVal('model');
     const bouwjaar = parseInt(getVal('bouwjaar'), 10) || 0;
+    const km = parseInt(getVal('tellerstand'), 10) || 0;
     if (!merk) return;
 
     const params = new URLSearchParams({ merk });
-    if (model) params.set('model', model);
+    if (model)    params.set('model', model);
     if (bouwjaar) params.set('bouwjaar', bouwjaar);
+    if (km)       params.set('km', km);
 
     try {
       const res = await fetch(`/api/preview/price-suggest?${params.toString()}`);
@@ -432,9 +434,12 @@
 
       // Geef context welke filter gebruikt is — eerlijk voor de gebruiker
       let filterTekst = '';
-      if (data.filter === 'merk + model + bouwjaar') filterTekst = 'merk, model én bouwjaar';
-      else if (data.filter === 'merk + model')       filterTekst = 'merk en model (alle bouwjaren)';
-      else                                            filterTekst = 'alleen merk (geen exacte match op model)';
+      switch (data.filter) {
+        case 'merk + model + bouwjaar + km': filterTekst = 'merk, model, bouwjaar én km-stand'; break;
+        case 'merk + model + bouwjaar':      filterTekst = 'merk, model én bouwjaar';            break;
+        case 'merk + model':                 filterTekst = 'merk en model (alle bouwjaren)';    break;
+        default:                             filterTekst = 'alleen merk (geen exacte match op model)';
+      }
 
       priceDet.textContent = `${data.count} ${data.count === 1 ? 'auto' : 'auto\'s'} in jullie aanbod, op basis van ${filterTekst} · gemiddelde € ${data.avg.toLocaleString('nl-NL')}`;
       priceBtn.style.display = 'inline-block';
