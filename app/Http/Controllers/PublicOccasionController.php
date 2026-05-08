@@ -253,6 +253,14 @@ public function priceSuggest(\Illuminate\Http\Request $request)
             },
             'requires' => ($modelClean !== ''),
         ],
+        // Voor zeldzame modellen: vergelijk met alle merk-genoten van vergelijkbaar bouwjaar.
+        [
+            'name'  => 'merk + bouwjaar',
+            'apply' => function ($q) use ($bouwjaar) {
+                if ($bouwjaar > 0) $q->whereBetween('bouwjaar', [$bouwjaar - 3, $bouwjaar + 3]);
+            },
+            'requires' => ($bouwjaar > 0),
+        ],
         [
             'name'  => 'merk',
             'apply' => function ($q) {},

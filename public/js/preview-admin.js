@@ -435,9 +435,10 @@
       // Geef context welke filter gebruikt is — eerlijk voor de gebruiker
       let filterTekst = '';
       switch (data.filter) {
-        case 'merk + model + bouwjaar + km': filterTekst = 'merk, model, bouwjaar én km-stand'; break;
-        case 'merk + model + bouwjaar':      filterTekst = 'merk, model én bouwjaar';            break;
-        case 'merk + model':                 filterTekst = 'merk en model (alle bouwjaren)';    break;
+        case 'merk + model + bouwjaar + km': filterTekst = 'merk, model, bouwjaar én km-stand';   break;
+        case 'merk + model + bouwjaar':      filterTekst = 'merk, model én bouwjaar';              break;
+        case 'merk + model':                 filterTekst = 'merk en model (alle bouwjaren)';      break;
+        case 'merk + bouwjaar':              filterTekst = 'merk en bouwjaar (ander model)';      break;
         default:                             filterTekst = 'alleen merk (geen exacte match op model)';
       }
 
