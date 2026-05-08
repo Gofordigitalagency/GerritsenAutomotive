@@ -128,7 +128,7 @@
   }, { threshold: 0, rootMargin: '0px 0px 200px 0px' });    // cards faden eerder in
 
   // Alle card-achtige elementen krijgen staggered entrance
-  $$('.px-card, .px-why-card, .px-service-card, .px-review, .px-person').forEach(el => cardObserver.observe(el));
+  $$('.px-card, .px-why-card, .px-service-card, .px-review, .px-person, .px-spotlight-meta li').forEach(el => cardObserver.observe(el));
 
   /* =========================================================
      TILT ON HOVER (cards, spotlight)

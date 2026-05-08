@@ -1018,6 +1018,17 @@ a.px-over-meta-value:hover svg {
   transform: translateY(0);
 }
 
+/* Spotlight meta-items: subtielere stagger entrance (kleine elementen) */
+.px-spotlight-meta li {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity .55s var(--px-ease), transform .55s var(--px-ease);
+}
+.px-spotlight-meta li.in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .px-card {
   position: relative;
   display: flex;
@@ -1429,6 +1440,12 @@ a.px-over-meta-value:hover svg {
   border-color: var(--px-accent);
   color: #fff;
   box-shadow: 0 6px 16px -2px var(--px-accent-glow);
+  animation: pxOptPop .4s var(--px-ease);
+}
+@keyframes pxOptPop {
+  0%   { transform: scale(1); }
+  60%  { transform: scale(1.06); }
+  100% { transform: scale(1); }
 }
 
 .px-finder-actions {

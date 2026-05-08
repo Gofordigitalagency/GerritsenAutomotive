@@ -744,7 +744,7 @@
 </section>
 
 {{-- ============ FOOTER ============ --}}
-<footer class="px-footer" id="contact">
+<footer class="px-footer px-reveal" id="contact">
   <div class="px-container">
     <div class="px-footer-grid">
       <div>
