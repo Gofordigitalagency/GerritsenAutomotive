@@ -180,6 +180,14 @@ ul { list-style: none; padding: 0; margin: 0; }
   line-height: 1.6;
   color: var(--px-fg-muted);
 }
+.px-section-sub-right {
+  margin: 0;
+  max-width: 380px;
+  text-align: right;
+}
+@media (max-width: 800px) {
+  .px-section-sub-right { text-align: left; max-width: none; margin-top: 12px; }
+}
 
 /* ---------- Buttons ---------- */
 .px-btn {
@@ -651,7 +659,7 @@ ul { list-style: none; padding: 0; margin: 0; }
    ========================================================= */
 .px-over {
   display: grid;
-  grid-template-columns: 1fr 1.05fr;
+  grid-template-columns: 1.1fr 1fr;
   gap: 56px;
   align-items: center;
 }

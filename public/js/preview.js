@@ -107,7 +107,7 @@
         revealObserver.unobserve(en.target);
       }
     });
-  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  }, { threshold: 0, rootMargin: '0px 0px 240px 0px' });   // start 240px voordat sectie in beeld is
 
   $$('.px-reveal').forEach(el => revealObserver.observe(el));
   // h2's apart observeren — niet alle hebben .px-reveal
@@ -125,7 +125,7 @@
         cardObserver.unobserve(en.target);
       }
     });
-  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  }, { threshold: 0, rootMargin: '0px 0px 200px 0px' });    // cards faden eerder in
 
   $$('.px-card').forEach(el => cardObserver.observe(el));
 

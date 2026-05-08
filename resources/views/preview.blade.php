@@ -271,9 +271,11 @@
 {{-- ============ 5 · REVIEWS ============ --}}
 <section class="px-section" id="reviews">
   <div class="px-container">
-    <div class="px-section-head">
-      <div class="px-eyebrow"><span class="px-eyebrow-dot"></span>Reviews</div>
-      <h2 class="px-h2">Wat klanten over ons zeggen.</h2>
+    <div class="px-section-head px-section-head-row">
+      <div>
+        <div class="px-eyebrow"><span class="px-eyebrow-dot"></span>Reviews</div>
+        <h2 class="px-h2">Wat klanten over ons zeggen.</h2>
+      </div>
       <div class="px-reviews-head">
         <div class="px-stars" aria-label="4.9 sterren">
           @for($i=0;$i<5;$i++)<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>@endfor
@@ -622,10 +624,12 @@
 {{-- ============ 8 · DIENSTEN ============ --}}
 <section class="px-section" id="diensten">
   <div class="px-container">
-    <div class="px-section-head">
-      <div class="px-eyebrow"><span class="px-eyebrow-dot"></span>Ook bij ons</div>
-      <h2 class="px-h2">Méér dan alleen verkoop.</h2>
-      <p class="px-section-sub">Naast verkoop en werkplaats verhuren we praktische spullen voor thuis &amp; rondom de auto. Direct online te reserveren.</p>
+    <div class="px-section-head px-section-head-row">
+      <div>
+        <div class="px-eyebrow"><span class="px-eyebrow-dot"></span>Ook bij ons</div>
+        <h2 class="px-h2">Méér dan alleen verkoop.</h2>
+      </div>
+      <p class="px-section-sub px-section-sub-right">Naast verkoop en werkplaats verhuren we praktische spullen voor thuis en rondom de auto. Direct online te reserveren.</p>
     </div>
 
     <div class="px-services-grid">
@@ -691,10 +695,6 @@
 <section class="px-section px-section-alt" id="over">
   <div class="px-container">
     <div class="px-over">
-      <div class="px-over-image">
-        <img class="px-parallax-img" src="{{ asset('images/handshake.jpg') }}" alt="Gerritsen Automotive in Arnhem">
-      </div>
-
       <div class="px-over-content">
         <div class="px-eyebrow"><span class="px-eyebrow-dot"></span>Over ons</div>
         <h2 class="px-h2">Een klein team. Een hele garage.</h2>
@@ -734,6 +734,10 @@
             <span class="px-over-meta-value">Ma t/m vr 08:30 – 17:30 · Za 09:00 – 16:00 · Zo gesloten</span>
           </div>
         </div>
+      </div>
+
+      <div class="px-over-image">
+        <img class="px-parallax-img" src="{{ asset('images/handshake.jpg') }}" alt="Gerritsen Automotive in Arnhem">
       </div>
     </div>
   </div>
