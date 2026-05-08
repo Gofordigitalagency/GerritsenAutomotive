@@ -784,7 +784,6 @@
 
     <div class="px-footer-bottom">
       <span>© {{ date('Y') }} Gerritsen Automotive.</span>
-      <span class="px-footer-preview-tag">Preview · Concept</span>
     </div>
   </div>
 </footer>
