@@ -11,24 +11,35 @@ use App\Http\Controllers\SellCarController;
 use App\Http\Controllers\WorkshopAppointmentController;
 use App\Http\Controllers\admin\ReclameController;
 use App\Http\Controllers\admin\WorkshopAppointmentController as AdminWorkshopAppointmentController;
+use App\Http\Controllers\admin\SiteContentController;
 
 
 
 // --- Publiek ---
 Route::get('/', [PublicOccasionController::class, 'home'])->name('home');
-// --- Preview area (hidden URLs voor klant-demo) ---
-Route::get('/preview', [PublicOccasionController::class, 'preview'])->name('preview.home');
+
+// Aanbod-pagina (volwaardige page met filter + sort)
+Route::get('/aanbod', [PublicOccasionController::class, 'aanbodPage'])->name('aanbod');
+
+// Werkplaats-pagina (volwaardige page met smart booking, diensten en USPs)
+Route::get('/werkplaats', [PublicOccasionController::class, 'werkplaatsPage'])->name('werkplaats');
+
+// Diensten-pagina (leenauto + verhuurdiensten)
+Route::get('/diensten', [PublicOccasionController::class, 'dienstenPage'])->name('diensten');
+
+// Over ons-pagina (verhaal + team)
+Route::get('/over', [PublicOccasionController::class, 'overPage'])->name('over');
+
+// Contact-pagina (gegevens + map + formulier)
+Route::get('/contact', [PublicOccasionController::class, 'contactPage'])->name('contact');
+
+// /preview toont dezelfde homepage (handig om te delen / te tonen)
+Route::get('/preview', [PublicOccasionController::class, 'home'])->name('preview');
+
+// Admin auto-toevoegen demo
 Route::get('/preview-admin', [PublicOccasionController::class, 'previewAdmin'])->name('preview.admin');
 
-// Placeholder routes — vervang straks door echte controllers wanneer de pagina's gemaakt worden.
-// Voor nu redirecten ze naar de homepage met de juiste anchor zodat de header alvast werkt.
-Route::get('/preview/aanbod',     fn () => redirect('/preview#aanbod'))->name('preview.aanbod');
-Route::get('/preview/werkplaats', fn () => redirect('/preview#werkplaats'))->name('preview.werkplaats');
-Route::get('/preview/diensten',   fn () => redirect('/preview#diensten'))->name('preview.diensten');
-Route::get('/preview/over',       fn () => redirect('/preview#over'))->name('preview.over');
-Route::get('/preview/contact',    fn () => redirect('/preview#contact'))->name('preview.contact');
-
-// Public APIs gebruikt door /preview en /preview-admin
+// Public APIs gebruikt door homepage + admin
 Route::get('/api/rdw/{kenteken}', [PublicOccasionController::class, 'rdwPublic'])->name('rdw.public');
 Route::get('/api/rdw-full/{kenteken}', [PublicOccasionController::class, 'rdwFull'])->name('rdw.full');
 Route::post('/api/preview/ai-describe', [PublicOccasionController::class, 'aiDescribe'])->name('preview.ai');
@@ -62,8 +73,9 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 
-Route::post('/sell-car', [SellCarController::class, 'store'])
-    ->name('sellcar.store');   // ⬅️ deze naam gebruikt je form
+// Auto verkopen (publieke pagina + submit)
+Route::get('/auto-verkopen', [SellCarController::class, 'show'])->name('sellcar.show');
+Route::post('/sell-car', [SellCarController::class, 'store'])->name('sellcar.store');
 
 // Reserveren (publiek)
 Route::get('/reserveren', [BookingController::class, 'show'])->name('booking.show');          // ?type=aanhanger|stofzuiger|koplampen
@@ -72,7 +84,11 @@ Route::post('/reserveren', [BookingController::class, 'store'])->name('booking.s
 
 // --- Admin (achter login) ---
 Route::middleware('auth')->prefix('admin')->as('admin.')->group(function () {
-    Route::get('/', fn () => redirect()->route('admin.occasions.index'));
+    Route::get('/', fn () => redirect()->route('admin.dashboard'));
+    Route::get('/dashboard', [\App\Http\Controllers\admin\DashboardController::class, 'index'])->name('dashboard');
+
+    // Reserveringen overzicht (combineert aanhanger/stofzuiger/koplampen/werkplaats)
+    Route::get('/reserveringen', [\App\Http\Controllers\admin\BookingsOverviewController::class, 'index'])->name('bookings.index');
 
     Route::get('reclame', [ReclameController::class, 'index'])->name('reclame.index');
     Route::get('reclame/nieuw', [ReclameController::class, 'create'])->name('reclame.create');
@@ -91,6 +107,17 @@ Route::get('occasions/rdw/{kenteken}', [AdminOccasionController::class, 'rdwLook
     
     Route::get('/occasions/{occasion}/raamkaart', [\App\Http\Controllers\admin\OccasionPdfController::class, 'raamkaart'])
         ->name('occasions.raamkaart');
+
+    // Notities per auto
+    Route::post('occasions/{occasion}/notes',         [\App\Http\Controllers\admin\OccasionNoteController::class, 'store'])->name('occasions.notes.store');
+    Route::delete('occasions/{occasion}/notes/{note}', [\App\Http\Controllers\admin\OccasionNoteController::class, 'destroy'])->name('occasions.notes.destroy');
+
+    // Tasks (todo's, globaal en per auto)
+    Route::get('tasks',                  [\App\Http\Controllers\admin\TaskController::class, 'index'])->name('tasks.index');
+    Route::post('tasks',                 [\App\Http\Controllers\admin\TaskController::class, 'store'])->name('tasks.store');
+    Route::put('tasks/{task}',           [\App\Http\Controllers\admin\TaskController::class, 'update'])->name('tasks.update');
+    Route::post('tasks/{task}/toggle',   [\App\Http\Controllers\admin\TaskController::class, 'toggle'])->name('tasks.toggle');
+    Route::delete('tasks/{task}',        [\App\Http\Controllers\admin\TaskController::class, 'destroy'])->name('tasks.destroy');
 
     // Galerij acties
     Route::post('occasions/{occasion}/gallery',           [AdminOccasionController::class,'addGallery'])->name('occasions.gallery.add');
@@ -137,5 +164,9 @@ Route::post('occasions/{occasion}/toggle-status', [
     App\Http\Controllers\admin\OccasionController::class,
     'toggleStatus'
 ])->name('occasions.toggleStatus');
+
+    // ===== Site-inhoud (CMS): teksten, kleuren, foto's per groep =====
+    Route::get('/site-content/{group?}', [SiteContentController::class, 'edit'])->name('site-content.edit');
+    Route::post('/site-content/{group}',  [SiteContentController::class, 'update'])->name('site-content.update');
 
 });
