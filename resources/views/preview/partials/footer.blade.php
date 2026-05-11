@@ -19,10 +19,10 @@
       <div>
         <h4>Navigeer</h4>
         <ul class="px-footer-list">
-          <li><a href="{{ route('aanbod') }}">Aanbod</a></li>
-          <li><a href="{{ route('werkplaats') }}">Werkplaats</a></li>
-          <li><a href="{{ route('diensten') }}">Diensten</a></li>
-          <li><a href="{{ route('over') }}">Over ons</a></li>
+          <li><a href="/aanbod">Aanbod</a></li>
+          <li><a href="/werkplaats">Werkplaats</a></li>
+          <li><a href="/diensten">Diensten</a></li>
+          <li><a href="/over">Over ons</a></li>
         </ul>
       </div>
 

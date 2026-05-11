@@ -1,15 +1,18 @@
 @php
-  $linkAanbod     = route('aanbod');
-  $linkWerkplaats = route('werkplaats');
-  $linkDiensten   = route('diensten');
-  $linkVerkopen   = route('sellcar.show');
-  $linkOver       = route('over');
-  $linkContact    = route('contact');
+  /* Hardcoded paden: zo werkt de header ook als de routes nog niet
+     allemaal geregistreerd zijn (bv. op productie waar alleen /preview
+     gepusht is). Lokaal werken deze paden uiteraard ook. */
+  $linkAanbod     = '/aanbod';
+  $linkWerkplaats = '/werkplaats';
+  $linkDiensten   = '/diensten';
+  $linkVerkopen   = '/auto-verkopen';
+  $linkOver       = '/over';
+  $linkContact    = '/contact';
 @endphp
 
 <header class="px-nav" id="pxNav">
   <div class="px-nav-inner">
-    <a href="{{ route('home') }}" class="px-logo" aria-label="Gerritsen Automotive">
+    <a href="/" class="px-logo" aria-label="Gerritsen Automotive">
       <img src="{{ asset('images/logo.png') }}" alt="Gerritsen Automotive">
     </a>
 

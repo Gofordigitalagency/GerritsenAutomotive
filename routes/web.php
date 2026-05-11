@@ -33,8 +33,8 @@ Route::get('/over', [PublicOccasionController::class, 'overPage'])->name('over')
 // Contact-pagina (gegevens + map + formulier)
 Route::get('/contact', [PublicOccasionController::class, 'contactPage'])->name('contact');
 
-// /preview toont dezelfde homepage (handig om te delen / te tonen)
-Route::get('/preview', [PublicOccasionController::class, 'home'])->name('preview');
+// /preview toont de nieuwe (dark) homepage als losse demo
+Route::get('/preview', [PublicOccasionController::class, 'preview'])->name('preview');
 
 // Admin auto-toevoegen demo
 Route::get('/preview-admin', [PublicOccasionController::class, 'previewAdmin'])->name('preview.admin');
