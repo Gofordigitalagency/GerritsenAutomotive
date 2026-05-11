@@ -128,7 +128,17 @@
   }, { threshold: 0.12, rootMargin: '0px 0px -80px 0px' });   // cards faden in als ze in beeld komen
 
   // Alle card-achtige elementen krijgen staggered entrance
-  $$('.px-card, .px-why-card, .px-service-card, .px-review, .px-person, .px-spotlight-meta li').forEach(el => cardObserver.observe(el));
+  const stagSelector = '.px-card, .px-why-card, .px-service-card, .px-review, .px-person, .px-spotlight-meta li, .px-wp-card, .px-wp-usp, .px-contact-card, .px-leenauto, .px-photo-strip-item';
+  $$(stagSelector).forEach(el => cardObserver.observe(el));
+
+  // Safety net: als om enige reden de observer niet alle cards heeft
+  // afgevuurd binnen 2,5 seconde, laat ze sowieso zien (anders blijft
+  // opacity:0 hangen door een edge-case en mist de gebruiker content).
+  setTimeout(() => {
+    $$(stagSelector).forEach(el => {
+      if (!el.classList.contains('in')) el.classList.add('in');
+    });
+  }, 2500);
 
   /* =========================================================
      TILT ON HOVER (cards, spotlight)
@@ -148,6 +158,9 @@
     };
 
     $$('.px-card').forEach(c => applyTilt(c, 3));
+    $$('.px-service-card').forEach(c => applyTilt(c, 3));
+    $$('.px-wp-card').forEach(c => applyTilt(c, 2.5));
+    $$('.px-contact-card').forEach(c => applyTilt(c, 2.5));
     const sp = $('.px-spotlight');
     if (sp) applyTilt(sp, 2.5);
   }
@@ -660,6 +673,26 @@
     if (search) search.value = '';
     applyGridFilter();
   });
+
+  /* =========================================================
+     LEENAUTO — thumbnail click-to-swap
+     ========================================================= */
+  const lMain   = $('#pxLeenautoMain');
+  const lThumbs = $$('.px-leenauto-thumb');
+  if (lMain && lThumbs.length) {
+    lThumbs.forEach(t => t.addEventListener('click', () => {
+      const src = t.dataset.src;
+      if (!src || src === lMain.src) return;
+      // Korte fade-overgang
+      lMain.style.opacity = '0';
+      setTimeout(() => {
+        lMain.src = src;
+        lMain.style.opacity = '1';
+      }, 180);
+      lThumbs.forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+    }));
+  }
 
   /* =========================================================
      SMART WORKSHOP BOOKING — kenteken → service → plan
