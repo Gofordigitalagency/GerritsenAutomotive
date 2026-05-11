@@ -1,4 +1,118 @@
-﻿<!DOCTYPE html>
+﻿@php
+  /* ============================================================
+     INLINE HELPERS — alleen voor /preview op productie
+     ============================================================
+     De officiële setting()/setting_image()/setting_tel() helpers
+     vereisen een autoload-registratie + een site_settings table.
+     Op productie staat nu alleen de blade gepusht, dus we
+     definieren hier global fallback-functies met hardgecodeerde
+     defaults zodat /preview standalone werkt.
+  */
+  if (! function_exists('setting')) {
+    function setting($key, $default = null) {
+      static $defaults = [
+        'theme.bg'           => '#0b0c10',
+        'theme.bg_alt'       => '#11131a',
+        'theme.surface'      => '#161922',
+        'theme.fg'           => '#f4f5f8',
+        'theme.fg_muted'     => '#8a8d99',
+        'theme.accent'       => '#e63946',
+        'theme.accent_soft'  => '#ff6b6b',
+        'theme.border'       => 'rgba(255,255,255,.08)',
+
+        'hero.eyebrow'       => 'Gerritsen Automotive · Arnhem',
+        'hero.title_line1'   => 'Uw partner in',
+        'hero.title_accent'  => 'betrouwbare',
+        'hero.title_line2'   => 'occasions.',
+        'hero.sub'           => "Zorgvuldig geselecteerde auto's, eerlijk advies en een eigen werkplaats.\nAlles onder één dak in Arnhem.",
+        'hero.cta_primary'   => 'Bekijk occasions',
+        'hero.cta_secondary' => 'Contact',
+        'hero.bg_image'      => 'images/backgroundhome.jpg',
+
+        'over.eyebrow'       => 'Over ons',
+        'over.title'         => 'Een klein team. Een hele garage.',
+        'over.body_p1'       => 'Bij Gerritsen Automotive in Arnhem ben je geen klantnummer. Je hebt direct contact met de mensen die de auto kennen, repareren en verkopen.',
+        'over.body_p2'       => 'Persoonlijk advies, duidelijke prijzen en alles op één locatie: verkoop, werkplaats en verhuur. Loop binnen, bel of stuur een berichtje, we helpen je graag.',
+        'over.image'         => 'images/handshake.jpg',
+        'over.person1_name'  => 'Shania',
+        'over.person1_role'  => 'Verkoop',
+        'over.person2_name'  => 'Mick',
+        'over.person2_role'  => 'Werkplaats',
+
+        'contact.address'        => 'Gelderse Rooslaan 14 A, 6841 BE Arnhem',
+        'contact.phone_sales'    => '0638257987',
+        'contact.phone_workshop' => '0649951874',
+        'contact.email'          => 'info@gerritsenautomotive.nl',
+        'contact.hours_weekday'  => 'Ma t/m vr 08:30 – 17:30',
+        'contact.hours_saturday' => 'Za 09:00 – 16:00',
+        'contact.hours_sunday'   => 'Zo gesloten',
+
+        'leenauto.eyebrow'    => 'Leenauto',
+        'leenauto.title'      => 'Toyota Aygo Premium Edition',
+        'leenauto.subtitle'   => 'Compact rijden. Premium gevoel.',
+        'leenauto.price'      => 'Vanaf € 35 per dag',
+        'leenauto.usps'       => "Apple CarPlay\nLederen interieur\nAirco\n5-deurs comfort\nElektrische ramen\nHandgeschakeld\nZuinig in verbruik\nOnbeperkte KM",
+        'leenauto.location'   => 'Direct beschikbaar in Arnhem',
+        'leenauto.image_main' => 'images/WhatsApp Image 2026-02-25 at 08.05.40.jpeg',
+        'leenauto.image_2'    => 'images/WhatsApp Image 2026-02-25 at 08.05.41 (1).jpeg',
+        'leenauto.image_3'    => 'images/WhatsApp Image 2026-02-25 at 08.05.41 (2).jpeg',
+        'leenauto.image_4'    => 'images/WhatsApp Image 2026-02-25 at 08.05.41 (3).jpeg',
+        'leenauto.image_5'    => 'images/WhatsApp Image 2026-02-25 at 08.05.41 (4).jpeg',
+        'leenauto.cta_primary'   => 'Reserveer nu',
+        'leenauto.cta_secondary' => 'Bel direct',
+
+        'werkplaats.eyebrow' => 'Werkplaats',
+        'werkplaats.title'   => 'APK, beurt of reparatie?',
+        'werkplaats.title2'  => 'Vul je kenteken, wij doen de rest.',
+        'werkplaats.image'   => 'images/afspraak-banner.jpg',
+      ];
+      return $defaults[$key] ?? $default ?? '';
+    }
+  }
+
+  if (! function_exists('setting_image')) {
+    function setting_image($key, $default = null) {
+      $value = setting($key, $default) ?: '';
+      if ($value === '') return $default ? asset($default) : '';
+      if (str_starts_with($value, 'site/') || str_starts_with($value, 'uploads/')) {
+        return asset('storage/' . $value);
+      }
+      return asset($value);
+    }
+  }
+
+  if (! function_exists('setting_tel')) {
+    function setting_tel($key) {
+      $raw = setting($key, '') ?? '';
+      $clean = preg_replace('/[^\d+]/', '', $raw);
+      if ($clean === '') return '';
+      if (str_starts_with($clean, '06')) {
+        $clean = '+31' . substr($clean, 1);
+      }
+      return $clean;
+    }
+  }
+
+  if (! function_exists('setting_phone')) {
+    function setting_phone($key) {
+      $raw = setting($key, '') ?? '';
+      $clean = preg_replace('/[^\d]/', '', $raw);
+      if ($clean === '') return '';
+      if (str_starts_with($clean, '316')) {
+        $clean = '0' . substr($clean, 2);
+      }
+      if (str_starts_with($clean, '06') && strlen($clean) === 10) {
+        return '06 ' . substr($clean, 2, 2) . ' ' . substr($clean, 4, 2)
+             . ' ' . substr($clean, 6, 2) . ' ' . substr($clean, 8, 2);
+      }
+      if (str_starts_with($clean, '0') && strlen($clean) >= 9) {
+        return substr($clean, 0, 3) . ' ' . substr($clean, 3);
+      }
+      return $raw;
+    }
+  }
+@endphp
+<!DOCTYPE html>
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
