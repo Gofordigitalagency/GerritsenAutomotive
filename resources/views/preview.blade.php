@@ -31,7 +31,7 @@
 
         'over.eyebrow'       => 'Over ons',
         'over.title'         => 'Een klein team. Een hele garage.',
-        'over.body_p1'       => 'Bij Gerritsen Automotive in Arnhem ben je geen nummertje. Je hebt direct contact met de mensen die de auto kennen, repareren en verkopen.',
+        'over.body_p1'       => 'Bij Gerritsen Automotive ben je geen nummer. Je hebt direct contact met de mensen die de auto kennen, repareren en verkopen.',
         'over.body_p2'       => 'Persoonlijk advies, duidelijke prijzen en alles op één locatie: verkoop, werkplaats en verhuur. Loop binnen, bel of stuur een berichtje, we helpen je graag.',
         'over.image'         => 'images/handshake.jpg',
         'over.person1_name'  => 'Shania',

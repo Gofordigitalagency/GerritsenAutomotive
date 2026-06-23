@@ -64,7 +64,7 @@ return [
         'fields' => [
             'over.eyebrow'        => ['type' => 'text',     'label' => 'Eyebrow',           'default' => 'Over ons'],
             'over.title'          => ['type' => 'text',     'label' => 'Titel',             'default' => 'Een klein team. Een hele garage.'],
-            'over.body_p1'        => ['type' => 'longtext', 'label' => 'Alinea 1',          'default' => 'Bij Gerritsen Automotive in Arnhem ben je geen nummertje. Je hebt direct contact met de mensen die de auto kennen, repareren en verkopen.'],
+            'over.body_p1'        => ['type' => 'longtext', 'label' => 'Alinea 1',          'default' => 'Bij Gerritsen Automotive ben je geen nummer. Je hebt direct contact met de mensen die de auto kennen, repareren en verkopen.'],
             'over.body_p2'        => ['type' => 'longtext', 'label' => 'Alinea 2',          'default' => 'Persoonlijk advies, duidelijke prijzen en alles op één locatie: verkoop, werkplaats en verhuur. Loop binnen, bel of stuur een berichtje, we helpen je graag.'],
             'over.image'          => ['type' => 'image',    'label' => 'Foto (rechts)',     'default' => 'images/handshake.jpg'],
             'over.person1_name'   => ['type' => 'text',     'label' => 'Persoon 1 — naam',  'default' => 'Shania'],
