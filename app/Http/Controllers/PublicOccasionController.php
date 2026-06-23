@@ -16,7 +16,8 @@ public function home()
         ->latest()
         ->get();
 
-    return view('home', compact('nieuw'));
+    // Hoofd-domein toont nog de oude home. De nieuwe versie staat op /preview.
+    return view('home_old', compact('nieuw'));
 }
 
 public function preview()
@@ -390,6 +391,31 @@ public function binnenkort()
     return view('occasions.binnenkort', compact('nieuw'));
 }
 
+public function aanbodPage(Request $request)
+{
+    return $this->index($request);
+}
+
+public function werkplaatsPage()
+{
+    return view('preview.werkplaats');
+}
+
+public function dienstenPage()
+{
+    return view('preview.diensten');
+}
+
+public function overPage()
+{
+    return view('preview.over');
+}
+
+public function contactPage()
+{
+    return view('preview.contact');
+}
+
 public function index(Request $request)
 {
     $sort = $request->get('sort', 'best');
@@ -443,8 +469,9 @@ public function index(Request $request)
     }
 
     $occasions = $q->get();
+    $binnenkortCount = Occasion::where('binnenkort', true)->count();
 
-    return view('occasions.index', compact('occasions', 'sort'));
+    return view('preview.aanbod', compact('occasions', 'sort', 'binnenkortCount'));
 }
 
     public function show($slug)

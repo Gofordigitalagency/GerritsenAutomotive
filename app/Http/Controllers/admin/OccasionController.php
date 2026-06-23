@@ -210,24 +210,41 @@ public function edit(Occasion $occasion)
         return back()->with('ok', 'Foto’s toegevoegd.');
     }
 
-public function toggleStatus(Occasion $occasion)
+public function toggleStatus(Occasion $occasion, \Illuminate\Http\Request $request)
 {
-    // MODEL-veld gebruiken voor VERKOCHT-tag
     $model = $occasion->model ?? '';
+    $isCurrentlySold = $occasion->verkocht_datum !== null
+                    || str_contains($model, '(VERKOCHT)');
 
-    // Staat er al VERKOCHT?
-    if (str_contains($model, '(VERKOCHT)')) {
-        // VERKOCHT verwijderen
-        $model = trim(str_replace('(VERKOCHT)', '', $model));
-    } else {
-        // VERKOCHT toevoegen
-        $model = trim($model . ' (VERKOCHT)');
+    if ($isCurrentlySold) {
+        // Terugzetten naar voorraad: sold-velden wissen + legacy marker weghalen
+        $occasion->verkocht_datum = null;
+        $occasion->verkoopprijs   = null;
+        $occasion->verkocht_aan   = null;
+        $occasion->model = trim(str_replace('(VERKOCHT)', '', $model));
+        $occasion->save();
+        return back()->with('success', 'Auto teruggezet naar voorraad.');
     }
 
-    $occasion->model = $model;
+    // Markeren als verkocht — datum + prijs uit modal, fallback naar vandaag/vraagprijs.
+    $data = $request->validate([
+        'verkocht_datum' => ['nullable', 'date'],
+        'verkoopprijs'   => ['nullable', 'integer', 'min:0'],
+        'verkocht_aan'   => ['nullable', 'string', 'max:160'],
+    ]);
+
+    $occasion->verkocht_datum = $data['verkocht_datum'] ?? now()->toDateString();
+    $occasion->verkoopprijs   = $data['verkoopprijs']   ?? $occasion->prijs;
+    $occasion->verkocht_aan   = $data['verkocht_aan']   ?? null;
+
+    // Legacy "(VERKOCHT)" marker voor bestaande filters (preview/aanbod/dashboard).
+    if (! str_contains($model, '(VERKOCHT)')) {
+        $occasion->model = trim($model . ' (VERKOCHT)');
+    }
+
     $occasion->save();
 
-    return back()->with('ok', 'Status aangepast');
+    return back()->with('success', 'Auto gemarkeerd als verkocht.');
 }
 
     // Bestaande galerij-foto verwijderen (index i)

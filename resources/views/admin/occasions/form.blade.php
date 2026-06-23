@@ -1,25 +1,76 @@
-@extends('admin.layout')
-@section('title', $occasion->exists ? 'Occasion bewerken' : 'Nieuwe occasion')
-@section('page_title', $occasion->exists ? 'Occasion bewerken' : 'Nieuwe occasion')
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>{{ $occasion->exists ? 'Auto bewerken' : 'Nieuwe auto' }} — Gerritsen Admin</title>
+  <link rel="icon" type="image/png" href="{{ asset('images/FAVICON-GERRITSEN.png') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ asset('css/admin.css') }}?v={{ filemtime(public_path('css/admin.css')) }}">
+  <style>
+    :root {
+      --px-bg:        {{ setting('theme.bg') }};
+      --px-bg-2:      {{ setting('theme.bg_alt') }};
+      --px-surface:   {{ setting('theme.surface') }};
+      --px-fg:        {{ setting('theme.fg') }};
+      --px-fg-muted:  {{ setting('theme.fg_muted') }};
+      --px-accent:        {{ setting('theme.accent') }};
+      --px-accent-soft:   {{ setting('theme.accent_soft') }};
+      --px-border:    {{ setting('theme.border') }};
+    }
+  </style>
+</head>
+<body class="adm-fullscreen">
 
-@section('content')
-  {{-- Top actions --}}
-  <div class="page-actions">
-    <a href="{{ route('admin.occasions.index') }}" class="btn">← Terug naar overzicht</a>
-    <div class="spacer"></div>
-    <button form="occasionForm" class="btn primary" type="submit">
-      {{ $occasion->exists ? 'Opslaan' : 'Aanmaken' }}
-    </button>
+{{-- ============ TOPBAR ============ --}}
+<header class="adm-occ-topbar">
+  <div class="adm-occ-topbar-inner">
+    <a href="{{ route('admin.occasions.index') }}" class="adm-occ-back" aria-label="Terug naar overzicht">
+      <img src="{{ asset('images/logo.png') }}" alt="Gerritsen Automotive">
+      <span class="adm-occ-back-tag">Admin</span>
+    </a>
+
+    <nav class="adm-occ-breadcrumb">
+      <a href="{{ route('admin.dashboard') }}">Dashboard</a>
+      <span class="adm-occ-bc-sep">/</span>
+      <a href="{{ route('admin.occasions.index') }}">Occasions</a>
+      <span class="adm-occ-bc-sep">/</span>
+      <span>{{ $occasion->exists ? trim(($occasion->merk ?? '').' '.($occasion->model ?? '')) ?: 'Bewerken' : 'Nieuwe auto' }}</span>
+    </nav>
+
+    <div class="adm-occ-topbar-actions">
+      <span class="adm-progress-mini">
+        <span class="adm-progress-mini-bar"><span class="adm-progress-mini-fill" id="admProgressMiniFill"></span></span>
+        <b id="admProgressMiniPct">0</b>% compleet
+      </span>
+      <a href="{{ route('admin.occasions.index') }}" class="btn">Annuleren</a>
+      <button form="occasionForm" class="btn primary" type="submit" data-magnetic>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5L20 7"/></svg>
+        {{ $occasion->exists ? 'Opslaan' : 'Opslaan & publiceren' }}
+      </button>
+    </div>
   </div>
+</header>
+
+<main class="adm-occ-main">
 
   {{-- Flash/Errors --}}
+  @if (session('success'))
+    <div class="alert success">{{ session('success') }}</div>
+  @endif
   @if ($errors->any())
-    <div class="alert error" style="margin-bottom:14px;">
-      <ul style="margin:0;padding-left:18px;">
+    <div class="alert error">
+      <ul>
         @foreach($errors->all() as $e) <li>{{ $e }}</li> @endforeach
       </ul>
     </div>
   @endif
+
+  <div class="adm-occ-shell">
+  <div class="adm-occ-form-col">
 
   {{-- ===== HOOFDFORMULIER OPEN ===== --}}
   <form id="occasionForm"
@@ -28,129 +79,157 @@
     @csrf
     @if($occasion->exists) @method('PUT') @endif
 
-    {{-- BASIS --}}
+    {{-- ============ KENTEKEN HERO ============ --}}
+    <div class="adm-plate-card">
+      <span class="form-card-eyebrow">Hoofdstuk 01 · Identificatie</span>
+      <h2 style="margin:0 0 6px;font-family:'Plus Jakarta Sans','Inter',sans-serif;font-size:22px;font-weight:700;letter-spacing:-.01em">Voertuig identificeren</h2>
+      <p class="form-card-sub" style="margin:0">Vul het kenteken in. Wij halen de basisgegevens automatisch op uit de RDW.</p>
+
+      <div class="adm-plate-row">
+        <label class="adm-plate" for="kentekenInput">
+          <span class="adm-plate-nl">
+            <span class="adm-plate-stars">★★★</span>
+            NL
+          </span>
+          <input type="text" id="kentekenInput" name="kenteken" value="{{ old('kenteken',$occasion->kenteken) }}" placeholder="00-XXX-0" maxlength="10" autocapitalize="characters" spellcheck="false">
+        </label>
+        <button type="button" class="adm-plate-action" id="rdwBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          Haal RDW info op
+        </button>
+      </div>
+
+      <div class="adm-plate-status" id="rdwStatus"></div>
+    </div>
+
+    {{-- ============ BASIS ============ --}}
+    <div class="form-card">
+      <div class="form-card-head">
+        <span class="form-card-eyebrow">Hoofdstuk 02 · Basis</span>
+        <h3>Voertuiggegevens</h3>
+        <p class="form-card-sub">Velden gemarkeerd met <span class="adm-rdw-tag">RDW</span> worden automatisch gevuld.</p>
+      </div>
+      <div class="form-card-body grid-2">
+
+        <label class="input-row">
+          <span>Merk <span class="adm-rdw-tag">RDW</span></span>
+          <input id="merkInput" name="merk" value="{{ old('merk',$occasion->merk) }}" required>
+          @error('merk')<small class="field-error">{{ $message }}</small>@enderror
+        </label>
+
+        <label class="input-row">
+          <span>Model <span class="adm-rdw-tag">RDW</span></span>
+          <input id="modelInput" name="model" value="{{ old('model',$occasion->model) }}" required>
+          @error('model')<small class="field-error">{{ $message }}</small>@enderror
+        </label>
+
+        <label class="input-row">
+          <span>Type / uitvoering</span>
+          <input id="typeInput" name="type" value="{{ old('type',$occasion->type) }}" placeholder="bv. 1.4 Comfortline">
+        </label>
+
+        <label class="input-row">
+          <span>Bouwjaar <span class="adm-rdw-tag">RDW</span></span>
+          <input id="bouwjaarInput" type="number" name="bouwjaar" value="{{ old('bouwjaar',$occasion->bouwjaar) }}">
+        </label>
+
+        <label class="input-row">
+          <span>Transmissie</span>
+          <select id="transmissieSelect" name="transmissie" required>
+            <option value="">-- Kies transmissie --</option>
+            <option value="Handgeschakeld" {{ old('transmissie', $occasion->transmissie) == 'Handgeschakeld' ? 'selected' : '' }}>Handgeschakeld</option>
+            <option value="Automaat" {{ old('transmissie', $occasion->transmissie) == 'Automaat' ? 'selected' : '' }}>Automaat</option>
+            <option value="Semi-automaat" {{ old('transmissie', $occasion->transmissie) == 'Semi-automaat' ? 'selected' : '' }}>Semi-automaat</option>
+          </select>
+        </label>
+
+        <label class="input-row">
+          <span>Brandstof <span class="adm-rdw-tag">RDW</span></span>
+          <select id="brandstofSelect" name="brandstof" required>
+            <option value="">-- Kies brandstof --</option>
+            <option value="Benzine" {{ old('brandstof', $occasion->brandstof) == 'Benzine' ? 'selected' : '' }}>Benzine</option>
+            <option value="Diesel" {{ old('brandstof', $occasion->brandstof) == 'Diesel' ? 'selected' : '' }}>Diesel</option>
+            <option value="Elektrisch" {{ old('brandstof', $occasion->brandstof) == 'Elektrisch' ? 'selected' : '' }}>Elektrisch</option>
+            <option value="Hybride" {{ old('brandstof', $occasion->brandstof) == 'Hybride' ? 'selected' : '' }}>Hybride</option>
+            <option value="LPG" {{ old('brandstof', $occasion->brandstof) == 'LPG' ? 'selected' : '' }}>LPG</option>
+          </select>
+        </label>
+
+        <label class="input-row">
+          <span>Tellerstand (km)</span>
+          <input id="tellerInput" type="number" name="tellerstand" value="{{ old('tellerstand',$occasion->tellerstand) }}">
+          <small class="hint" id="tellerPreview"></small>
+        </label>
+
+        <label class="input-row">
+          <span>Vermogen (PK)</span>
+          <input id="vermogenPkInput" type="number" name="vermogen_pk" value="{{ old('vermogen_pk', $occasion->vermogen_pk ?? '') }}" placeholder="bv. 145">
+        </label>
+
+        <label class="input-row">
+          <span>Exterieur kleur <span class="adm-rdw-tag">RDW</span></span>
+          <input id="kleur" type="text" name="kleur" value="{{ old('kleur', $occasion->kleur ?? '') }}" placeholder="bv. Zwart metallic">
+        </label>
+
+        <label class="input-row">
+          <span>Carrosserie <span class="adm-rdw-tag">RDW</span></span>
+          <input id="carrosserieInput" name="carrosserie" value="{{ old('carrosserie',$occasion->carrosserie) }}" placeholder="bv. Hatchback">
+        </label>
+
+        <div class="form-subhead">Prijs</div>
+
+        <label class="input-row">
+          <span>Vraagprijs (€)</span>
+          <div class="with-addon">
+            <span class="addon">€</span>
+            <input id="prijsInput" type="number" name="prijs" step="1" min="0" value="{{ old('prijs',$occasion->prijs) }}">
+          </div>
+          <small class="hint" id="prijsPreview"></small>
+        </label>
+
+        <label class="input-row">
+          <span>Was-prijs <small style="color:var(--muted);font-weight:400">— bij korting</small></span>
+          <div class="with-addon">
+            <span class="addon">€</span>
+            <input type="number" name="oude_prijs" step="1" min="0" value="{{ old('oude_prijs', $occasion->oude_prijs) }}" placeholder="Laat leeg als geen korting">
+          </div>
+          <small class="hint">Toont de oude prijs met streep erdoor op de site</small>
+        </label>
+
+        <label class="input-row" data-internal style="grid-column: 1 / -1;">
+          <span>Inkoopprijs (€) <small style="color:var(--muted);font-weight:400">— intern, nooit publiek zichtbaar</small></span>
+          <div class="with-addon">
+            <span class="addon">€</span>
+            <input id="inkoopInput" type="number" name="inkoop_prijs" step="1" min="0" value="{{ old('inkoop_prijs', $occasion->inkoop_prijs) }}" placeholder="Wat heb je ervoor betaald">
+          </div>
+          <small class="hint" id="margePreview">Marge wordt automatisch berekend zodra je beide prijzen invult.</small>
+        </label>
+
+        <div style="grid-column: 1 / -1" class="adm-binnenkort">
+          <input type="checkbox" name="binnenkort" id="binnenkortChk" value="1" {{ old('binnenkort', $occasion->binnenkort) ? 'checked' : '' }}>
+          <label for="binnenkortChk" class="adm-binnenkort-text" style="margin:0;cursor:pointer">
+            <strong>Binnenkort beschikbaar</strong>
+            <span>Toon deze auto op de "Binnenkort"-pagina i.p.v. het reguliere aanbod</span>
+          </label>
+        </div>
+
+        <label class="input-row">
+          <span>Verwachte prijs <small style="color:var(--muted);font-weight:400">— alleen bij "binnenkort"</small></span>
+          <div class="with-addon">
+            <span class="addon">€</span>
+            <input type="number" name="verwachte_prijs" step="1" min="0" value="{{ old('verwachte_prijs', $occasion->verwachte_prijs) }}" placeholder="Verwachte verkoopprijs">
+          </div>
+        </label>
+      </div>
+    </div>
+
+{{-- ============ SPECIFICATIES ============ --}}
 <div class="form-card">
-  <div class="form-card-head"><h3>Basis</h3></div>
-  <div class="form-card-body grid-2">
-    <label class="input-row">
-      <span>Merk</span>
-      <input id="merkInput" name="merk" value="{{ old('merk',$occasion->merk) }}" required>
-      @error('merk')<small class="field-error">{{ $message }}</small>@enderror
-    </label>
-
-    <label class="input-row">
-      <span>Model</span>
-      <input id="modelInput" name="model" value="{{ old('model',$occasion->model) }}" required>
-      @error('model')<small class="field-error">{{ $message }}</small>@enderror
-    </label>
-
-    <label class="input-row">
-      <span>Type</span>
-      <input id="typeInput" name="type" value="{{ old('type',$occasion->type) }}">
-    </label>
-
-    <label class="input-row">
-      <span>Transmissie</span>
-      <select id="transmissieSelect" name="transmissie" required>
-        <option value="">-- Kies transmissie --</option>
-        <option value="Handgeschakeld" {{ old('transmissie', $occasion->transmissie) == 'Handgeschakeld' ? 'selected' : '' }}>Handgeschakeld</option>
-        <option value="Automaat" {{ old('transmissie', $occasion->transmissie) == 'Automaat' ? 'selected' : '' }}>Automaat</option>
-        <option value="Semi-automaat" {{ old('transmissie', $occasion->transmissie) == 'Semi-automaat' ? 'selected' : '' }}>Semi-automaat</option>
-      </select>
-    </label>
-
-    <label class="input-row">
-      <span>Brandstof</span>
-      <select id="brandstofSelect" name="brandstof" required>
-        <option value="">-- Kies brandstof --</option>
-        <option value="Benzine" {{ old('brandstof', $occasion->brandstof) == 'Benzine' ? 'selected' : '' }}>Benzine</option>
-        <option value="Diesel" {{ old('brandstof', $occasion->brandstof) == 'Diesel' ? 'selected' : '' }}>Diesel</option>
-        <option value="Elektrisch" {{ old('brandstof', $occasion->brandstof) == 'Elektrisch' ? 'selected' : '' }}>Elektrisch</option>
-        <option value="Hybride" {{ old('brandstof', $occasion->brandstof) == 'Hybride' ? 'selected' : '' }}>Hybride</option>
-        <option value="LPG" {{ old('brandstof', $occasion->brandstof) == 'LPG' ? 'selected' : '' }}>LPG</option>
-      </select>
-    </label>
-
-    <label class="input-row">
-      <span>Bouwjaar</span>
-      <input id="bouwjaarInput" type="number" name="bouwjaar" value="{{ old('bouwjaar',$occasion->bouwjaar) }}">
-    </label>
-
-    <label class="input-row">
-      <span>Exterieur kleur</span>
-      <input id="kleur" type="text" name="kleur" value="{{ old('kleur', $occasion->kleur ?? '') }}" placeholder="Bijv. Zwart metallic">
-    </label>
-
-    <label class="input-row">
-      <span>Tellerstand (km)</span>
-      <input id="tellerInput" type="number" name="tellerstand" value="{{ old('tellerstand',$occasion->tellerstand) }}">
-      <small class="hint" id="tellerPreview"></small>
-    </label>
-
-    <label class="input-row">
-  <span>Vermogen (PK)</span>
-  <input id="vermogenPkInput" type="number" name="vermogen_pk"
-         value="{{ old('vermogen_pk', $occasion->vermogen_pk ?? '') }}"
-         placeholder="bijv. 510">
-</label>
-
-    <label class="input-row">
-      <span>Prijs (€)</span>
-      <div class="with-addon">
-        <span class="addon">€</span>
-        <input id="prijsInput" type="number" name="prijs" step="1" min="0" value="{{ old('prijs',$occasion->prijs) }}">
-      </div>
-      <small class="hint" id="prijsPreview"></small>
-    </label>
-
-    <label class="input-row">
-      <span>Oude prijs (voor korting) <small style="color:#888;font-weight:400">— optioneel</small></span>
-      <div class="with-addon">
-        <span class="addon">€</span>
-        <input type="number" name="oude_prijs" step="1" min="0" value="{{ old('oude_prijs', $occasion->oude_prijs) }}" placeholder="Laat leeg als geen korting">
-      </div>
-      <small class="hint">Vul in om een aanbieding te tonen (oude prijs met streep erdoor)</small>
-    </label>
-
-    <label class="input-row" style="grid-column: 1 / -1;">
-      <div style="display:flex; align-items:center; gap:12px; padding:14px; background:#fff8e1; border:1px solid #ffd54f; border-radius:8px;">
-        <input type="checkbox" name="binnenkort" value="1" {{ old('binnenkort', $occasion->binnenkort) ? 'checked' : '' }} style="width:18px; height:18px;">
-        <div style="flex:1;">
-          <strong>Binnenkort beschikbaar</strong>
-          <div style="font-size:13px; color:#666; margin-top:2px;">Toon deze auto op de "Binnenkort"-pagina i.p.v. het reguliere aanbod</div>
-        </div>
-      </div>
-    </label>
-
-    <label class="input-row">
-      <span>Verwachte prijs <small style="color:#888;font-weight:400">— alleen voor "binnenkort"</small></span>
-      <div class="with-addon">
-        <span class="addon">€</span>
-        <input type="number" name="verwachte_prijs" step="1" min="0" value="{{ old('verwachte_prijs', $occasion->verwachte_prijs) }}" placeholder="Verwachte verkoopprijs">
-      </div>
-    </label>
-
-      <label class="input-row" style="grid-column: 1 / -1;">
-        <span>Kenteken</span>
-
-        <div style="display:flex; gap:10px; align-items:center;">
-          <input name="kenteken"
-                value="{{ old('kenteken',$occasion->kenteken) }}"
-                id="kentekenInput"
-                placeholder="XX-999-X"
-                style="flex:1;">
-          <button type="button" class="btn sm" id="rdwBtn">Haal RDW info op</button>
-        </div>
-
-        <small class="hint">Wordt automatisch in hoofdletters gezet.</small>
-        <small class="hint" id="rdwStatus"></small>
-      </label>
+  <div class="form-card-head">
+    <span class="form-card-eyebrow">Hoofdstuk 03 · Detail</span>
+    <h3>Specificaties</h3>
+    <p class="form-card-sub">Technische details van het voertuig.</p>
   </div>
-</div>
-
-{{-- SPECIFICATIES --}}
-<div class="form-card">
-  <div class="form-card-head"><h3>Specificaties</h3></div>
   <div class="form-card-body grid-3">
     <label class="input-row">
       <span>Interieurkleur</span>
@@ -166,23 +245,17 @@
     </label>
 
     <label class="input-row">
-      <span>Cilinderinhoud (cc)</span>
+      <span>Cilinderinhoud (cc) <span class="adm-rdw-tag">RDW</span></span>
       <input id="cilinderinhoudInput" type="number" name="cilinderinhoud" value="{{ old('cilinderinhoud',$occasion->cilinderinhoud) }}">
     </label>
 
     <label class="input-row">
-      <span>Carrosserie</span>
-      <input id="carrosserieInput" name="carrosserie" value="{{ old('carrosserie',$occasion->carrosserie) }}">
-    </label>
-
-
-    <label class="input-row">
-      <span>APK tot</span>
+      <span>APK tot <span class="adm-rdw-tag">RDW</span></span>
       <input id="apkTotInput" type="date" name="apk_tot" value="{{ old('apk_tot', optional($occasion->apk_tot)->format('Y-m-d')) }}">
     </label>
 
     <label class="input-row">
-      <span>Energielabel</span>
+      <span>Energielabel <span class="adm-rdw-tag">RDW</span></span>
       <input id="energielabelInput" name="energielabel" value="{{ old('energielabel',$occasion->energielabel) }}">
     </label>
 
@@ -192,17 +265,17 @@
     </label>
 
     <label class="input-row">
-      <span>Aantal deuren</span>
+      <span>Aantal deuren <span class="adm-rdw-tag">RDW</span></span>
       <input id="aantalDeurenInput" type="number" name="aantal_deuren" value="{{ old('aantal_deuren',$occasion->aantal_deuren) }}">
     </label>
 
     <label class="input-row">
       <span>Bekleding</span>
-      <input id="bekledingInput" name="bekleding" value="{{ old('bekleding',$occasion->bekleding) }}">
+      <input id="bekledingInput" name="bekleding" value="{{ old('bekleding',$occasion->bekleding) }}" placeholder="bv. Stof / Leder">
     </label>
 
     <label class="input-row">
-      <span>Aantal cilinders</span>
+      <span>Aantal cilinders <span class="adm-rdw-tag">RDW</span></span>
       <input id="aantalCilindersInput" type="number" name="aantal_cilinders" value="{{ old('aantal_cilinders',$occasion->aantal_cilinders) }}">
     </label>
 
@@ -212,12 +285,12 @@
     </label>
 
     <label class="input-row">
-      <span>Gewicht (kg)</span>
+      <span>Gewicht (kg) <span class="adm-rdw-tag">RDW</span></span>
       <input id="gewichtInput" type="number" name="gewicht" value="{{ old('gewicht',$occasion->gewicht) }}">
     </label>
 
     <label class="input-row">
-      <span>Laadvermogen (kg)</span>
+      <span>Laadvermogen (kg) <span class="adm-rdw-tag">RDW</span></span>
       <input id="laadvermogenInput" type="number" name="laadvermogen" value="{{ old('laadvermogen',$occasion->laadvermogen) }}">
     </label>
 
@@ -225,25 +298,26 @@
       <span>Bijtelling (€)</span>
       <div class="with-addon">
         <span class="addon">€</span>
-        <input id="bijtellingInput" type="number" name="bijtelling"
-               step="1" min="0"
-               value="{{ old('bijtelling',$occasion->bijtelling) }}"
-               placeholder="bijv. 150">
+        <input id="bijtellingInput" type="number" name="bijtelling" step="1" min="0" value="{{ old('bijtelling',$occasion->bijtelling) }}" placeholder="bv. 150">
       </div>
       <small class="hint" id="bijtellingPreview"></small>
     </label>
 
     <label class="input-row">
-      <span>Gemiddeld verbruik</span>
+      <span>Gem. verbruik (l/100) <span class="adm-rdw-tag">RDW</span></span>
       <input id="gemiddeldVerbruikInput" name="gemiddeld_verbruik" value="{{ old('gemiddeld_verbruik',$occasion->gemiddeld_verbruik) }}">
     </label>
   </div>
 </div>
 
 
-    {{-- OPTIES & OMSCHRIJVING --}}
+    {{-- ============ OPTIES & OMSCHRIJVING ============ --}}
     <div class="form-card">
-      <div class="form-card-head"><h3>Opties & Omschrijving</h3></div>
+      <div class="form-card-head">
+        <span class="form-card-eyebrow">Hoofdstuk 04 · Verhaal</span>
+        <h3>Opties &amp; omschrijving</h3>
+        <p class="form-card-sub">Selecteer aanwezige opties en schrijf een verkooptekst.</p>
+      </div>
       <div class="form-card-body grid-2">
 @php
   $selectedExterieur  = old('exterieur_options',  $occasion->exterieur_options  ?? []);
@@ -294,34 +368,36 @@
       </div>
     </div>
 
-    {{-- AFBEELDINGEN --}}
+    {{-- ============ AFBEELDINGEN ============ --}}
     <div class="form-card">
-      <div class="form-card-head"><h3>Afbeeldingen</h3></div>
+      <div class="form-card-head">
+        <span class="form-card-eyebrow">Hoofdstuk 05 · Beelden</span>
+        <h3>Foto's</h3>
+        <p class="form-card-sub">Eerste foto wordt automatisch de cover. Sleep om volgorde te wijzigen.</p>
+      </div>
       <div class="form-card-body">
-        <h4 class="subhead">Hoofdfoto</h4>
+        <div class="form-subhead" style="margin-top:0">Hoofdfoto</div>
         <label class="input-row">
           <input type="file" id="hoofdfoto" name="hoofdfoto" accept="image/*">
           @if($occasion->hoofdfoto_path)
             <div class="photo-preview" style="margin-top:8px;">
-              <img src="{{ asset('storage/'.$occasion->hoofdfoto_path) }}" alt="" style="max-width:360px; width:100%; border-radius:12px; border:1px solid #e5e7eb;">
+              <img src="{{ asset('storage/'.$occasion->hoofdfoto_path) }}" alt="">
             </div>
           @endif
         </label>
 
-<h4 class="subhead">Meerdere foto’s</h4>
+        <div class="form-subhead">Galerij</div>
 
-{{-- Dropzone + knop --}}
-<div id="nu-dropzone" class="nu-drop">
-  <div class="nu-drop-inner">
-    <strong>Sleep bestanden hierheen</strong>
-    <span>of</span>
-    <button type="button" class="btn sm" id="nu-browse">Kies bestanden</button>
-    <small class="muted" style="display:block;margin-top:6px;">
-      Sleep om de volgorde te wijzigen. Verwijderen kan per kaart.
-    </small>
-  </div>
-  <input type="file" name="gallery[]" id="galleryInput" accept="image/*" multiple hidden>
-</div>
+        {{-- Dropzone + knop --}}
+        <div id="nu-dropzone" class="nu-drop">
+          <div class="nu-drop-inner">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--accent);margin-bottom:4px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+            <strong>Sleep foto's hierheen</strong>
+            <span>of <button type="button" class="btn sm" id="nu-browse" style="display:inline-flex;padding:4px 12px;margin-left:4px">kies bestanden</button></span>
+            <small class="muted">JPG, PNG · sleep om te herordenen · klik op een kaart om als cover in te stellen</small>
+          </div>
+          <input type="file" name="gallery[]" id="galleryInput" accept="image/*" multiple hidden>
+        </div>
 
 {{-- Volgorde JSON (oude indices in nieuwe volgorde) --}}
 <input type="hidden" name="gallery_new_order" id="galleryNewOrder" value="[]">
@@ -332,15 +408,188 @@
 </div>
 
     {{-- Bottom actions (in-form) --}}
-    <div class="page-actions" style="margin-top:14px;">
+    <div class="page-actions">
       <a href="{{ route('admin.occasions.index') }}" class="btn">Annuleren</a>
       <div class="spacer"></div>
       <button class="btn primary" type="submit" name="save" value="1">
-        <span>{{ $occasion->exists ? 'Opslaan' : 'Aanmaken' }}</span>
+        {{ $occasion->exists ? 'Opslaan' : '+ Aanmaken' }}
       </button>
     </div>
   </form>
   {{-- ===== HOOFDFORMULIER SLUIT ===== --}}
+
+  @if($occasion->exists)
+    {{-- ============ VERKOCHT-STATUS ============ --}}
+    @php
+      $isSold = $occasion->is_sold;
+    @endphp
+    <div class="form-card">
+      <div class="form-card-head">
+        <span class="form-card-eyebrow">Status</span>
+        <h3>{{ $isSold ? 'Verkocht' : 'In voorraad' }}</h3>
+        <p class="form-card-sub">
+          @if($isSold)
+            Auto staat gemarkeerd als verkocht en is niet meer zichtbaar in het publieke aanbod.
+          @else
+            Markeer als verkocht zodra de auto is verkocht — voor accurate omzet- en marge-rapportage.
+          @endif
+        </p>
+      </div>
+      <div class="form-card-body">
+        @if($isSold)
+          <div class="adm-deflist adm-deflist-2col">
+            <dt>Verkocht op</dt>
+            <dd>{{ $occasion->verkocht_datum?->format('d-m-Y') ?? 'Onbekend' }}</dd>
+            <dt>Verkoopprijs</dt>
+            <dd>
+              @if($occasion->verkoopprijs)
+                <strong>€ {{ number_format($occasion->verkoopprijs, 0, ',', '.') }}</strong>
+                @if($occasion->prijs && (float) $occasion->verkoopprijs !== (float) $occasion->prijs)
+                  <span style="color:var(--muted);font-size:13px"> (vraagprijs was € {{ number_format($occasion->prijs, 0, ',', '.') }})</span>
+                @endif
+              @else — @endif
+            </dd>
+            @if($occasion->gerealiseerde_marge !== null)
+              <dt>Gerealiseerde marge</dt>
+              <dd>
+                <span class="adm-marge {{ $occasion->gerealiseerde_marge >= 0 ? 'adm-marge-pos' : 'adm-marge-neg' }}">
+                  {{ $occasion->gerealiseerde_marge >= 0 ? '+' : '' }}€ {{ number_format($occasion->gerealiseerde_marge, 0, ',', '.') }}
+                </span>
+              </dd>
+            @endif
+            @if($occasion->dagen_in_voorraad !== null)
+              <dt>Tijd in voorraad</dt>
+              <dd>{{ $occasion->dagen_in_voorraad }} dagen</dd>
+            @endif
+            @if($occasion->verkocht_aan)
+              <dt>Verkocht aan</dt>
+              <dd>{{ $occasion->verkocht_aan }}</dd>
+            @endif
+          </div>
+          <form method="POST" action="{{ route('admin.occasions.toggleStatus', $occasion) }}" onsubmit="return confirm('Weet je zeker dat je deze auto terug naar voorraad wilt zetten?')" style="margin-top:18px;display:flex;justify-content:flex-end">
+            @csrf
+            <button type="submit" class="btn">↺ Terug naar voorraad</button>
+          </form>
+        @else
+          <form method="POST" action="{{ route('admin.occasions.toggleStatus', $occasion) }}" class="adm-sold-form">
+            @csrf
+            <div class="form-card-body grid-3" style="padding:0;gap:14px">
+              <label class="input-row">
+                <span>Verkocht op</span>
+                <input type="date" name="verkocht_datum" value="{{ now()->toDateString() }}" required>
+              </label>
+              <label class="input-row">
+                <span>Werkelijke verkoopprijs (€)</span>
+                <div class="with-addon">
+                  <span class="addon">€</span>
+                  <input type="number" name="verkoopprijs" min="0" step="1" value="{{ $occasion->prijs }}" placeholder="Vraagprijs is voorgevuld">
+                </div>
+                <small class="hint">Pas aan als je voor een andere prijs hebt verkocht</small>
+              </label>
+              <label class="input-row">
+                <span>Verkocht aan <small style="color:var(--muted);font-weight:400">— optioneel</small></span>
+                <input type="text" name="verkocht_aan" maxlength="160" placeholder="Naam koper">
+              </label>
+            </div>
+            <div style="display:flex;justify-content:flex-end;margin-top:14px">
+              <button type="submit" class="btn primary" data-magnetic>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5L20 7"/></svg>
+                Markeer als verkocht
+              </button>
+            </div>
+          </form>
+        @endif
+      </div>
+    </div>
+
+    {{-- ============ NOTITIES (los van hoofdformulier) ============ --}}
+    <div class="form-card">
+      <div class="form-card-head">
+        <h3>Notities <small style="color:var(--muted);font-weight:400">— intern, alleen voor admin zichtbaar</small></h3>
+      </div>
+      <div class="form-card-body">
+        <form method="POST" action="{{ route('admin.occasions.notes.store', $occasion) }}" class="adm-occ-notes-form">
+          @csrf
+          <textarea name="body" rows="3" required maxlength="5000" placeholder="Notitie toevoegen… (bijv. opmerkingen van klant, kleine reparaties, onderhandelingsruimte)"></textarea>
+          <div style="display:flex;justify-content:flex-end">
+            <button type="submit" class="btn primary">Notitie toevoegen</button>
+          </div>
+        </form>
+
+        @if($occasion->notes->isEmpty())
+          <p class="adm-panel-empty" style="padding:16px 0;margin:0;text-align:left">Nog geen notities. Voeg er eentje toe hierboven.</p>
+        @else
+          <ul class="adm-notes-list">
+            @foreach($occasion->notes as $note)
+              <li class="adm-note-item">
+                <div class="adm-note-head">
+                  <div class="adm-note-body">{{ $note->body }}</div>
+                  <form method="POST" action="{{ route('admin.occasions.notes.destroy', [$occasion, $note]) }}" onsubmit="return confirm('Notitie verwijderen?')" class="adm-note-del-form">
+                    @csrf @method('DELETE')
+                    <button type="submit" class="btn sm danger" title="Verwijderen">×</button>
+                  </form>
+                </div>
+                <div class="adm-note-meta">
+                  {{ $note->user?->name ?? 'Admin' }} · {{ $note->created_at->diffForHumans() }}
+                </div>
+              </li>
+            @endforeach
+          </ul>
+        @endif
+      </div>
+    </div>
+
+    {{-- ============ TAKEN PER AUTO ============ --}}
+    <div class="form-card">
+      <div class="form-card-head">
+        <h3>Taken voor deze auto</h3>
+      </div>
+      <div class="form-card-body">
+        <form method="POST" action="{{ route('admin.tasks.store') }}" class="adm-occ-tasks-form">
+          @csrf
+          <input type="hidden" name="occasion_id" value="{{ $occasion->id }}">
+          <input type="text" name="title" required maxlength="200" placeholder="bijv. Achterruitenwisser vervangen">
+          <input type="datetime-local" name="due_at">
+          <select name="priority">
+            <option value="normal">Normaal</option>
+            <option value="high">Hoog</option>
+            <option value="low">Laag</option>
+          </select>
+          <button type="submit" class="btn primary">Toevoegen</button>
+        </form>
+
+        @if($occasion->tasks->isEmpty())
+          <p class="adm-panel-empty" style="padding:16px 0;margin:0;text-align:left">Nog geen taken voor deze auto.</p>
+        @else
+          <ul class="adm-list">
+            @foreach($occasion->tasks as $task)
+              <li class="adm-list-item @if($task->is_overdue && ! $task->is_completed) is-error @endif @if($task->is_completed) is-done @endif">
+                <form method="POST" action="{{ route('admin.tasks.toggle', $task) }}" class="adm-occ-task-form">
+                  @csrf
+                  <button type="submit" class="adm-task-check @if($task->is_completed) is-checked @endif" title="{{ $task->is_completed ? 'Markeer als open' : 'Markeer als gedaan' }}">
+                    @if($task->is_completed)<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg>@endif
+                  </button>
+                </form>
+                <div class="adm-list-body">
+                  <div class="adm-task-title @if($task->is_completed) is-done @endif">{{ $task->title }}</div>
+                  <div class="adm-list-meta @if($task->is_overdue && ! $task->is_completed) adm-list-meta-warn @endif">
+                    @if($task->due_at)
+                      {{ $task->is_overdue && ! $task->is_completed ? '⚠ ' : '' }}{{ $task->due_at->format('d-m-Y H:i') }} · {{ $task->due_at->diffForHumans() }} ·
+                    @endif
+                    Prioriteit: {{ ['low'=>'laag','normal'=>'normaal','high'=>'hoog'][$task->priority] ?? $task->priority }}
+                  </div>
+                </div>
+                <form method="POST" action="{{ route('admin.tasks.destroy', $task) }}" onsubmit="return confirm('Taak verwijderen?')" class="adm-occ-task-form">
+                  @csrf @method('DELETE')
+                  <button type="submit" class="btn sm danger" title="Verwijderen">×</button>
+                </form>
+              </li>
+            @endforeach
+          </ul>
+        @endif
+      </div>
+    </div>
+  @endif
 
   {{-- Bestaande galerij beheren (los van hoofdformulier) --}}
   @php $gallery = $occasion->galerij ?? []; @endphp
@@ -383,13 +632,69 @@
             </div>
           </form>
         @else
-          <p class="muted">Nog geen galerijfoto’s.</p>
+          <p class="muted">Nog geen galerijfoto's.</p>
         @endif
       </div>
     </div>
   @endif
 
-  
+  </div> {{-- /adm-occ-form-col --}}
+
+  {{-- ============ LIVE PREVIEW (rechts, sticky) ============ --}}
+  <aside class="adm-occ-preview">
+    <div class="adm-occ-preview-sticky">
+      <div class="adm-occ-preview-head">
+        <span class="adm-occ-preview-eyebrow"><span class="adm-dot"></span>Live preview</span>
+        <span class="adm-occ-preview-tag">Hoe klanten dit zien</span>
+      </div>
+
+      <div class="adm-occ-preview-card">
+        <div class="adm-occ-preview-photo">
+          <img id="admPreviewPhoto" src="{{ $occasion->hoofdfoto_path ? asset('storage/'.$occasion->hoofdfoto_path) : asset('images/placeholder-car.jpg') }}" alt="">
+          <div class="adm-occ-preview-photo-empty" id="admPreviewPhotoEmpty" @if($occasion->hoofdfoto_path) hidden @endif>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            <span>Voeg een hoofdfoto toe</span>
+          </div>
+        </div>
+        <div class="adm-occ-preview-body">
+          <h3 class="adm-occ-preview-title" id="admPreviewTitle">{{ trim(($occasion->merk ?? '').' '.($occasion->model ?? '')) ?: 'Auto titel' }}</h3>
+          <div class="adm-occ-preview-type" id="admPreviewType">{{ $occasion->type ?? 'Type / uitvoering' }}</div>
+          <ul class="adm-occ-preview-meta" id="admPreviewMeta">
+            <li>{{ $occasion->bouwjaar ?? '·' }}</li>
+            <li>{{ $occasion->tellerstand ? number_format($occasion->tellerstand, 0, ',', '.').' km' : '·' }}</li>
+            <li>{{ $occasion->brandstof ? ucfirst($occasion->brandstof) : '·' }}</li>
+          </ul>
+          <div class="adm-occ-preview-foot">
+            <span class="adm-occ-preview-price" id="admPreviewPrice">
+              {{ $occasion->prijs ? '€ '.number_format($occasion->prijs, 0, ',', '.') : '€ 0' }}
+            </span>
+            <span class="adm-occ-preview-arrow">→</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="adm-occ-preview-progress">
+        <div class="adm-occ-preview-progress-bar"><div class="adm-occ-preview-progress-fill" id="admPreviewProgressFill"></div></div>
+        <div class="adm-occ-preview-progress-meta">
+          <span><b id="admPreviewProgressPct">0</b>% compleet</span>
+          <span id="admPreviewProgressNext">Begin met kenteken</span>
+        </div>
+      </div>
+
+      @if($occasion->exists && isset($occasion->marge) && $occasion->marge !== null)
+        <div class="adm-occ-preview-marge {{ $occasion->marge >= 0 ? 'is-pos' : 'is-neg' }}">
+          <span class="adm-occ-preview-marge-label">Marge (intern)</span>
+          <span class="adm-occ-preview-marge-value">
+            {{ $occasion->marge >= 0 ? '+' : '' }}€ {{ number_format($occasion->marge, 0, ',', '.') }}
+            @if($occasion->marge_percent !== null) <small>({{ $occasion->marge >= 0 ? '+' : '' }}{{ $occasion->marge_percent }}%)</small> @endif
+          </span>
+        </div>
+      @endif
+    </div>
+  </aside>
+  </div> {{-- /adm-occ-shell --}}
+
+
   <script>
 
     document.addEventListener('click', (e) => {
@@ -418,21 +723,21 @@
     
 
     if (!kenteken) {
+      rdwStatus.className = 'adm-plate-status is-error';
       rdwStatus.textContent = 'Vul eerst een kenteken in.';
       return;
     }
 
-    rdwStatus.textContent = 'RDW data ophalen...';
+    rdwStatus.className = 'adm-plate-status';
+    rdwStatus.textContent = 'RDW data ophalen…';
 
     try {
       const url = `{{ route('admin.occasions.rdw', 'KENTEKEN') }}`.replace('KENTEKEN', kenteken);
       const res = await fetch(url);
       const data = await res.json();
 
-        console.log('RDW response:', data);
-
-
       if (!res.ok) {
+        rdwStatus.className = 'adm-plate-status is-error';
         rdwStatus.textContent = data.message || 'Er ging iets mis.';
         return;
       }
@@ -468,9 +773,11 @@ if (data.energielabel) document.getElementById('energielabelInput').value = data
 if (data.carrosserie) document.getElementById('carrosserieInput').value = data.carrosserie;
 
 
-      rdwStatus.textContent = '✅ RDW gegevens ingevuld.';
+      rdwStatus.className = 'adm-plate-status is-success';
+      rdwStatus.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5L20 7"/></svg> RDW gegevens ingevuld.';
     } catch (e) {
-      rdwStatus.textContent = '❌ RDW ophalen mislukt.';
+      rdwStatus.className = 'adm-plate-status is-error';
+      rdwStatus.textContent = 'RDW ophalen mislukt.';
     }
   });
     /* ---------------------------
@@ -516,6 +823,27 @@ if (data.carrosserie) document.getElementById('carrosserieInput').value = data.c
     const prijsPreview = document.getElementById('prijsPreview');
     function updatePrijsPreview(){ prijsPreview.textContent = prijsInput?.value ? 'Voorbeeld: € ' + formatEuro(prijsInput.value) : ''; }
     if (prijsInput){ updatePrijsPreview(); prijsInput.addEventListener('input', updatePrijsPreview); }
+
+    /* Live marge-berekening (verkoop - inkoop). Alleen intern. */
+    const inkoopInput = document.getElementById('inkoopInput');
+    const margePreview = document.getElementById('margePreview');
+    function updateMargePreview(){
+      if (!margePreview) return;
+      const verkoop = parseInt(prijsInput?.value || '0', 10);
+      const inkoop  = parseInt(inkoopInput?.value || '0', 10);
+      if (!inkoop || !verkoop) {
+        margePreview.textContent = 'Marge wordt automatisch berekend zodra je beide prijzen invult.';
+        margePreview.style.color = '';
+        return;
+      }
+      const marge = verkoop - inkoop;
+      const pct = inkoop > 0 ? Math.round((marge / inkoop) * 1000) / 10 : 0;
+      const sign = marge >= 0 ? '+' : '';
+      margePreview.textContent = `Marge: ${sign}€ ${formatEuro(marge)} (${sign}${pct}%)`;
+      margePreview.style.color = marge < 0 ? '#c0392b' : '#1f8f3a';
+      margePreview.style.fontWeight = '600';
+    }
+    if (inkoopInput){ updateMargePreview(); inkoopInput.addEventListener('input', updateMargePreview); prijsInput?.addEventListener('input', updateMargePreview); }
 
     const tellerInput = document.getElementById('tellerInput');
     const tellerPreview = document.getElementById('tellerPreview');
@@ -834,28 +1162,120 @@ if (data.carrosserie) document.getElementById('carrosserieInput').value = data.c
 })();
 </script>
 
-<style>
-  .nu-drop {
-    border: 2px dashed #d1d5db; border-radius: 12px; padding: 16px; background:#fafafa;
-    margin-bottom: 12px; transition: .15s border-color ease;
-  }
-  .nu-drop.nu-dragging { border-color:#60a5fa; background:#f3f8ff; }
-  .nu-drop-inner { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-  .nu-grid {
-    display:grid; gap:16px;
-    grid-template-columns: repeat(auto-fill, minmax(220px,1fr));
-  }
-  .nu-item {
-    position:relative; background:#f8fafc; border:1px solid #e5e7eb; border-radius:14px;
-    padding:10px; display:flex; flex-direction:column; gap:8px;
-  }
-  .nu-toolbar { display:flex; justify-content:space-between; align-items:center; }
-  .nu-handle { cursor:grab; user-select:none; font-weight:700; color:#64748b; }
-  .nu-del { background:transparent; border:0; font-size:20px; line-height:20px; cursor:pointer; color:#ef4444; }
-  .nu-thumb { display:flex; align-items:center; justify-content:center; background:#fff; border:1px solid #e5e7eb; border-radius:10px; min-height:140px; padding:8px; }
-  .nu-thumb img { max-width:100%; max-height:180px; border-radius:8px; display:block; }
-  .nu-meta { font-size:.9rem; color:#475569; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding:0 2px; }
-  .nu-compressing .nu-drop-inner::after { content:'Foto\27s verkleinen...'; display:block; width:100%; color:#6366f1; font-weight:600; margin-top:4px; }
-  @media (max-width:640px){ .nu-grid{ grid-template-columns:1fr 1fr; } }
-</style>
-@endsection
+<script>
+  /* ============================================================
+     LIVE PREVIEW + PROGRESS — luistert naar form input
+     ============================================================ */
+  (function () {
+    const titleEl = document.getElementById('admPreviewTitle');
+    const typeEl  = document.getElementById('admPreviewType');
+    const metaEl  = document.getElementById('admPreviewMeta');
+    const priceEl = document.getElementById('admPreviewPrice');
+    const photoEl = document.getElementById('admPreviewPhoto');
+    const photoEmpty = document.getElementById('admPreviewPhotoEmpty');
+    const progressFill = document.getElementById('admPreviewProgressFill');
+    const progressPct  = document.getElementById('admPreviewProgressPct');
+    const progressNext = document.getElementById('admPreviewProgressNext');
+    const miniFill     = document.getElementById('admProgressMiniFill');
+    const miniPct      = document.getElementById('admProgressMiniPct');
+
+    const merkInp = document.getElementById('merkInput');
+    const modelInp = document.getElementById('modelInput');
+    const typeInp = document.getElementById('typeInput');
+    const bouwjaarInp = document.getElementById('bouwjaarInput');
+    const tellerInp = document.getElementById('tellerInput');
+    const brandstofInp = document.getElementById('brandstofSelect');
+    const transmissieInp = document.getElementById('transmissieSelect');
+    const prijsInp = document.getElementById('prijsInput');
+    const hoofdfotoInp = document.getElementById('hoofdfoto');
+
+    function fmt(n){ return new Intl.NumberFormat('nl-NL').format(parseInt(n||0,10)); }
+
+    function update() {
+      const merk = merkInp?.value.trim() || '';
+      const model = modelInp?.value.trim() || '';
+      const type = typeInp?.value.trim() || '';
+      const titel = `${merk} ${model}`.trim();
+
+      if (titleEl) titleEl.textContent = titel || 'Auto titel';
+      if (typeEl) typeEl.textContent = type || 'Type / uitvoering';
+
+      if (metaEl) {
+        const items = [
+          bouwjaarInp?.value.trim() || '·',
+          tellerInp?.value ? fmt(tellerInp.value) + ' km' : '·',
+          brandstofInp?.value || '·',
+        ];
+        metaEl.innerHTML = items.map(i => `<li>${i}</li>`).join('');
+      }
+
+      if (priceEl) {
+        priceEl.textContent = prijsInp?.value ? '€ ' + fmt(prijsInp.value) : '€ 0';
+      }
+
+      // Progress: tel hoeveel van de "key" velden ingevuld zijn
+      const keyFields = [merkInp, modelInp, bouwjaarInp, tellerInp, brandstofInp, transmissieInp, prijsInp];
+      const filled = keyFields.filter(f => f?.value && String(f.value).trim() !== '').length;
+      const photoOk = !!(photoEl && photoEl.src && !photoEl.src.includes('placeholder')) || (hoofdfotoInp?.files?.length > 0);
+      const total = keyFields.length + 1; // +1 voor foto
+      const score = filled + (photoOk ? 1 : 0);
+      const pct = Math.round((score / total) * 100);
+
+      if (progressFill) progressFill.style.width = pct + '%';
+      if (progressPct) progressPct.textContent = pct;
+      if (miniFill) miniFill.style.width = pct + '%';
+      if (miniPct) miniPct.textContent = pct;
+
+      if (progressNext) {
+        if (!merkInp?.value) progressNext.textContent = 'Begin met merk';
+        else if (!modelInp?.value) progressNext.textContent = 'Voeg model toe';
+        else if (!prijsInp?.value) progressNext.textContent = 'Stel een prijs in';
+        else if (!photoOk) progressNext.textContent = 'Voeg een foto toe';
+        else if (pct === 100) progressNext.textContent = '✓ Alles compleet';
+        else progressNext.textContent = 'Vul de rest in';
+      }
+    }
+
+    // Listen op alle relevante velden
+    [merkInp, modelInp, typeInp, bouwjaarInp, tellerInp, brandstofInp, transmissieInp, prijsInp]
+      .forEach(el => el?.addEventListener('input', update));
+    [brandstofInp, transmissieInp].forEach(el => el?.addEventListener('change', update));
+
+    // Hoofdfoto preview
+    hoofdfotoInp?.addEventListener('change', () => {
+      const file = hoofdfotoInp.files?.[0];
+      if (file && photoEl) {
+        photoEl.src = URL.createObjectURL(file);
+        if (photoEmpty) photoEmpty.hidden = true;
+      }
+      update();
+    });
+
+    update();
+  })();
+
+  /* ============================================================
+     MAGNETIC BUTTONS — subtle scale/translate op hover
+     ============================================================ */
+  (function () {
+    const isFinePointer = window.matchMedia('(pointer: fine)').matches;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!isFinePointer || reduceMotion) return;
+
+    document.querySelectorAll('[data-magnetic]').forEach(btn => {
+      btn.addEventListener('mousemove', (e) => {
+        const r = btn.getBoundingClientRect();
+        const x = (e.clientX - r.left - r.width / 2) * 0.15;
+        const y = (e.clientY - r.top - r.height / 2) * 0.15;
+        btn.style.transform = `translate(${x}px, ${y}px)`;
+      });
+      btn.addEventListener('mouseleave', () => {
+        btn.style.transform = '';
+      });
+    });
+  })();
+</script>
+
+</main>
+</body>
+</html>

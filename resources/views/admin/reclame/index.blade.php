@@ -1,55 +1,56 @@
 @extends('admin.layout')
-@section('title', 'Reclame export')
+@section('title', 'Reclame export — Gerritsen Admin')
+@section('page_title', 'Reclame export')
 
 @section('content')
-  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
-    <h1 style="margin:0;">Reclame export</h1>
+<div class="adm-dash">
 
-    <a href="{{ route('admin.reclame.create') }}" class="btn-primary">
-      + Nieuwe reclame
-    </a>
+  <div class="page-actions">
+    <span style="color:var(--muted);font-size:13.5px">{{ $reclames->total() }} {{ $reclames->total() === 1 ? 'reclame' : 'reclames' }}</span>
+    <div class="spacer"></div>
+    <a href="{{ route('admin.reclame.create') }}" class="btn primary">+ Nieuwe reclame</a>
   </div>
 
-  @if(session('success'))
-    <div class="alert-success" style="margin-top:12px;">{{ session('success') }}</div>
-  @endif
-
-  <div style="margin-top:16px;">
+  <div class="form-card">
+    <div class="form-card-head"><h3>Overzicht</h3></div>
     @if($reclames->count() === 0)
-      <div style="padding:14px;border:1px solid #eee;border-radius:10px;">
-        Nog geen reclames aangemaakt.
+      <div class="adm-panel-empty" style="padding:48px 20px">
+        <div class="adm-panel-empty-icon">📰</div>
+        <p style="margin:0">Nog geen reclames aangemaakt.</p>
       </div>
     @else
-      <table style="width:100%;border-collapse:collapse;">
-        <thead>
-          <tr style="text-align:left;border-bottom:1px solid #eee;">
-            <th style="padding:10px;">#</th>
-            <th style="padding:10px;">Titel</th>
-            <th style="padding:10px;">Subtitel</th>
-            <th style="padding:10px;">Aangemaakt</th>
-            <th style="padding:10px;text-align:right;">Acties</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          @foreach($reclames as $r)
-            <tr style="border-bottom:1px solid #f2f2f2;">
-              <td style="padding:10px;">{{ $r->id }}</td>
-              <td style="padding:10px;font-weight:700;">{{ $r->title }}</td>
-              <td style="padding:10px;color:#555;">{{ $r->subtitle }}</td>
-              <td style="padding:10px;color:#666;">{{ $r->created_at?->format('d-m-Y H:i') }}</td>
-              <td style="padding:10px;text-align:right;white-space:nowrap;">
-                <a class="btn" href="{{ route('admin.reclame.edit', $r) }}">Bewerken</a>
-                <a class="btn" href="{{ route('admin.reclame.pdf', $r) }}" target="_blank">PDF</a>
-              </td>
+      <div class="table-wrap" style="border:0;border-radius:0;border-top:1px solid var(--border)">
+        <table class="table">
+          <thead>
+            <tr>
+              <th style="width:60px">#</th>
+              <th>Titel</th>
+              <th>Subtitel</th>
+              <th>Aangemaakt</th>
+              <th style="width:200px"></th>
             </tr>
-          @endforeach
-        </tbody>
-      </table>
-
-      <div style="margin-top:12px;">
-        {{ $reclames->links() }}
+          </thead>
+          <tbody>
+            @foreach($reclames as $r)
+              <tr>
+                <td style="color:var(--muted);font-size:13px">{{ $r->id }}</td>
+                <td style="font-weight:600">{{ $r->title }}</td>
+                <td style="color:var(--muted)">{{ $r->subtitle }}</td>
+                <td style="color:var(--muted);font-size:13px">{{ $r->created_at?->format('d-m-Y H:i') }}</td>
+                <td>
+                  <div style="display:flex;gap:6px;justify-content:flex-end">
+                    <a href="{{ route('admin.reclame.edit', $r) }}" class="btn sm">Bewerken</a>
+                    <a href="{{ route('admin.reclame.pdf', $r) }}" target="_blank" class="btn sm primary">PDF →</a>
+                  </div>
+                </td>
+              </tr>
+            @endforeach
+          </tbody>
+        </table>
       </div>
+      <div style="padding:14px 18px">{{ $reclames->links() }}</div>
     @endif
   </div>
+
+</div>
 @endsection

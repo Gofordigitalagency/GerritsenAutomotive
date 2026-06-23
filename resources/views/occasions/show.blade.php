@@ -1,790 +1,399 @@
 @php
-    // Titel van de auto
     $pageTitle = trim(($occasion->merk ?? '').' '.($occasion->model ?? '')) ?: $occasion->titel;
 
-    // Hoofdafbeelding (eerste foto / hoofdfoto)
-    $ogImage = $occasion->hoofdfoto_path
+    $cover = $occasion->hoofdfoto_path
         ? asset('storage/'.$occasion->hoofdfoto_path)
         : asset('images/placeholder-car.jpg');
 
-    // Beschrijving voor bij delen (zoals Marktplaats)
+    $galerijRaw = $occasion->galerij ?? [];
+    if (is_string($galerijRaw)) {
+        $decoded = json_decode($galerijRaw, true);
+        $galerijRaw = json_last_error() === JSON_ERROR_NONE ? $decoded : [];
+    }
+    $galerijUrls = collect((array)$galerijRaw)
+        ->filter()
+        ->map(fn ($p) => is_string($p) && !str_starts_with($p, 'http') ? asset('storage/'.$p) : $p);
+
+    $galleryAll = collect([$cover])->merge($galerijUrls)->filter()->unique()->values();
+
+    // OG/share-meta opbouwen
     $parts = [];
-
-    if (!empty($occasion->bouwjaar)) {
-        $parts[] = $occasion->bouwjaar;
+    if (!empty($occasion->bouwjaar))     $parts[] = $occasion->bouwjaar;
+    if (!empty($occasion->tellerstand))  $parts[] = number_format($occasion->tellerstand, 0, ',', '.') . ' km';
+    if (!empty($occasion->brandstof))    $parts[] = ucfirst($occasion->brandstof);
+    if (!empty($occasion->transmissie))  $parts[] = ucfirst($occasion->transmissie);
+    if (!empty($occasion->prijs))        $parts[] = '€ ' . number_format($occasion->prijs, 0, ',', '.');
+    $ogDescription = implode(' · ', $parts);
+    if ($ogDescription === '' && !empty($occasion->omschrijving)) {
+        $ogDescription = \Illuminate\Support\Str::limit(strip_tags($occasion->omschrijving), 150);
     }
 
-    if (!empty($occasion->tellerstand)) {
-        $parts[] = number_format($occasion->tellerstand, 0, ',', '.') . ' km';
-    }
+    $hasDiscount = !empty($occasion->oude_prijs) && $occasion->oude_prijs > $occasion->prijs;
+    $sold = stripos($occasion->model ?? '', '(VERKOCHT)') !== false;
 
-    if (!empty($occasion->brandstof)) {
-        $parts[] = ucfirst($occasion->brandstof);
-    }
+    $opties_flat = preg_split('/\r\n|\r|\n/', (string)($occasion->opties ?? ''), -1, PREG_SPLIT_NO_EMPTY);
+    $exterieur   = $occasion->exterieur_options  ?? [];
+    $interieur   = $occasion->interieur_options  ?? [];
+    $veiligheid  = $occasion->veiligheid_options ?? [];
+    $overige     = $occasion->overige_options    ?? [];
+    $hasOpties   = !empty($exterieur) || !empty($interieur) || !empty($veiligheid) || !empty($overige) || !empty($opties_flat);
 
-    if (!empty($occasion->transmissie)) {
-        $parts[] = ucfirst($occasion->transmissie);
-    }
+    $vermogen = $occasion->vermogen_pk ?? $occasion->pk ?? $occasion->vermogen ?? null;
 
-    if (!empty($occasion->prijs)) {
-        $parts[] = '€ ' . number_format($occasion->prijs, 0, ',', '.') . ',-';
-    }
-
-    // Join alles met bolletjes
-    $ogDescription = implode(' • ', $parts);
-
-    // Fallbacks als er weinig data is
-    if ($ogDescription === '') {
-        if (!empty($occasion->omschrijving)) {
-            $ogDescription = \Illuminate\Support\Str::limit(strip_tags($occasion->omschrijving), 150);
-        } else {
-            $ogDescription = 'Bekijk deze ' . $pageTitle . ' bij Gerritsen Automotive in Arnhem.';
-        }
-    }
+    $waMessage = 'Hoi! Ik heb interesse in de ' . $pageTitle
+        . (!empty($occasion->bouwjaar) ? ' (' . $occasion->bouwjaar . ')' : '')
+        . '. Is deze nog beschikbaar?';
 @endphp
-
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{{ $pageTitle }} – Gerritsen Automotive</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no,email=no,address=no">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-  {{-- Open Graph voor WhatsApp / Facebook / Insta DM --}}
-  <meta property="og:title" content="{{ $pageTitle }} – Gerritsen Automotive">
-  <meta property="og:description" content="{{ $ogDescription }}">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="{{ url()->current() }}">
-  <meta property="og:site_name" content="Gerritsen Automotive">
-  <meta property="og:image" content="{{ $ogImage }}">
-  <meta property="og:image:alt" content="{{ $pageTitle }}">
+    <title>{{ $pageTitle }} — Gerritsen Automotive</title>
 
-  {{-- Twitter / X (sommige apps pakken deze ook) --}}
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="{{ $pageTitle }} – Gerritsen Automotive">
-  <meta name="twitter:description" content="{{ $ogDescription }}">
-  <meta name="twitter:image" content="{{ $ogImage }}">
+    <meta property="og:title" content="{{ $pageTitle }} – Gerritsen Automotive">
+    <meta property="og:description" content="{{ $ogDescription }}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:site_name" content="Gerritsen Automotive">
+    <meta property="og:image" content="{{ $cover }}">
+    <meta property="og:image:alt" content="{{ $pageTitle }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $pageTitle }} – Gerritsen Automotive">
+    <meta name="twitter:description" content="{{ $ogDescription }}">
+    <meta name="twitter:image" content="{{ $cover }}">
 
-  <!-- Fonts & Icons -->
-  <link href="https://fonts.googleapis.com/css2?family=Play:wght@400;700&display=swap" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{{ asset('images/FAVICON-GERRITSEN.png') }}">
 
-  <!-- Globale styles + occasion styles -->
-  <link rel="stylesheet" href="{{ asset('css/occasions.css') }}?v={{ filemtime(public_path('css/occasions.css')) }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ asset('css/preview.css') }}?v={{ filemtime(public_path('css/preview.css')) }}">
+
+    <style>
+      :root {
+        --px-bg:        {{ setting('theme.bg') }};
+        --px-bg-2:      {{ setting('theme.bg_alt') }};
+        --px-surface:   {{ setting('theme.surface') }};
+        --px-fg:        {{ setting('theme.fg') }};
+        --px-fg-muted:  {{ setting('theme.fg_muted') }};
+        --px-accent:        {{ setting('theme.accent') }};
+        --px-accent-soft:   {{ setting('theme.accent_soft') }};
+        --px-border:    {{ setting('theme.border') }};
+      }
+    </style>
 </head>
+<body class="px-body">
 
-<body class="is-oc">
-<header class="navbar" x-data>
-  <div class="container">
-    <a class="logo" href="/" aria-label="Gerritsen Automotive">
-      <img src="{{ asset('images/logo.png') }}" alt="Gerritsen Automotive">
+@include('preview.partials.header')
+
+<section class="px-section px-od-section">
+  <div class="px-container">
+
+    <a href="{{ route('aanbod') }}" class="px-od-back">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Terug naar aanbod
     </a>
 
-    <div class="icons">
-      <!-- Telefoon (alleen mobiel zichtbaar via CSS) -->
-      <a href="tel:+31649951874" class="phone-btn" aria-label="Bel ons">
-        <img src="{{ asset('images/phone-call.svg') }}" alt="" class="phone-icon">
-      </a>
+    <div class="px-od-shell">
 
-      <!-- Menu toggle: één knop met morphende SVG -->
-      <button
-        id="menuToggle"
-        class="menu-toggle"
-        aria-label="Menu openen"
-        aria-controls="mainNav"
-        aria-expanded="false"
-        type="button"
-      >
-        <svg class="hamburger-svg" viewBox="0 0 24 24" width="40" height="40" aria-hidden="true">
-          <line class="line top"    x1="4" y1="7"  x2="20" y2="7"  />
-          <line class="line middle" x1="4" y1="12" x2="20" y2="12" />
-          <line class="line bottom" x1="4" y1="17" x2="20" y2="17" />
-        </svg>
-        <span class="sr-only">Menu</span>
-      </button>
-    </div>
+      {{-- ============ LINKER KOLOM: GALLERY ============ --}}
+      <div class="px-od-left">
+        <div class="px-od-stage" data-urls='@json($galleryAll)'>
+          <img id="pxOdMain" src="{{ $galleryAll->first() ?? $cover }}" alt="{{ $pageTitle }}">
 
-    <!-- Desktop menu -->
-    <nav id="mainNav" class="nav-desktop" aria-label="Hoofdmenu">
-      <a href="/">HOME</a>
-      <a href="/#info">OVER ONS</a>
-      <a href="/#aanbod">AANBOD</a>
-      <a href="{{ route('occasions.binnenkort') }}">BINNENKORT</a>
-      <a href="/#footer">CONTACT</a>
+          @if($sold)
+            <span class="px-od-badge px-od-badge-sold">Verkocht</span>
+          @elseif($hasDiscount)
+            <span class="px-od-badge px-od-badge-sale">Aanbieding</span>
+          @endif
 
-      <!-- Dark mode toggle (DESKTOP – naast CONTACT) -->
-      <button id="themeToggle"
-              class="theme-toggle theme-toggle--nav"
-              type="button"
-              aria-label="Dark mode wisselen"
-              aria-pressed="false">
-        <img src="{{ asset('images/moon.svg') }}" alt="" width="20" height="20">
-      </button>
-    </nav>
-  </div>
-
-  <!-- Mobiele overlay + panel -->
-  <div id="navOverlay" class="nav-overlay" aria-hidden="true">
-    <div class="nav-panel" role="dialog" aria-modal="true" aria-labelledby="mobileNavTitle">
-      <div class="panel-top">
-        <img src="{{ asset('images/logo.png') }}" alt="Gerritsen Automotive" class="panel-logo">
-        <button id="menuClose" class="panel-close" aria-label="Menu sluiten" type="button">
-          <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">
-            <line x1="6" y1="6" x2="18" y2="18" />
-            <line x1="18" y1="6" x2="6" y2="18" />
-          </svg>
-        </button>
-      </div>
-    
-      <nav class="nav-mobile" aria-labelledby="mobileNavTitle">
-        <h2 id="mobileNavTitle" class="sr-only">Hoofdmenu</h2>
-        <a href="/">HOME</a>
-        <a href="/#info">OVER ONS</a>
-        <a href="/#aanbod">AANBOD</a>
-        <a href="{{ route('occasions.binnenkort') }}">BINNENKORT</a>
-        <a href="/#footer">CONTACT</a>
-      </nav>
-
-      <!-- Dark mode toggle (MOBIEL – in hamburger menu) -->
-      <button id="themeToggleMobile"
-              class="panel-theme-toggle"
-              type="button"
-              aria-label="Dark mode wisselen"
-              aria-pressed="false">
-        <img src="{{ asset('images/moon.svg') }}" alt="" width="22" height="22">
-        <span>Dark mode</span>
-      </button>
-
-      <a href="tel:+31649951874" class="panel-call">
-        <img src="{{ asset('images/phone-call.svg') }}" alt="" class="phone-icon"> Bel ons
-      </a>
-    </div>
-  </div>
-</header>
-
-<main class="oc-detail">
-  <div class="container">
-
-    <a href="/" class="ocd-back">← Terug naar overzicht</a>
-
-@php
-  $cover = $occasion->hoofdfoto_path
-            ? asset('storage/'.$occasion->hoofdfoto_path)
-            : asset('images/placeholder-car.jpg');
-
-  $galerijRaw = $occasion->galerij ?? [];
-  if (is_string($galerijRaw)) {
-      $decoded = json_decode($galerijRaw, true);
-      if (json_last_error() === JSON_ERROR_NONE) $galerijRaw = $decoded;
-      else $galerijRaw = [];
-  }
-
-  $galerijUrls = collect((array)$galerijRaw)
-      ->filter()
-      ->map(function ($path) {
-          // ‘occasions/…’ uit storage -> absolute URL
-          if (is_string($path) && !str_starts_with($path, 'http')) {
-              return asset('storage/'.$path);
-          }
-          return $path;
-      });
-
-  $galleryAll = collect([$cover])
-      ->merge($galerijUrls)
-      ->filter()
-      ->unique()
-      ->values();
-
-  $main   = $galleryAll->first() ?? $cover;
-  $thumbs = $galleryAll
-      ->reject(fn($u) => $u === $cover) // voorkom dubbele hoofdfoto
-      ->take(4)
-      ->values();
-@endphp
-    <div class="ocd-shell">
-      <!-- Linkerkolom -->
-    <div class="ocd-left">
-  <div class="ocd-stage" 
-       data-urls='@json($galleryAll)'
-       data-urls-thumbs='@json($thumbs)'>
-    <img id="ocdMain" src="{{ $main }}" alt="{{ $occasion->titel }}">
-    @if($galleryAll->count() > 1)
-      <button class="ocd-nav ocd-prev" type="button" aria-label="Vorige">‹</button>
-      <button class="ocd-nav ocd-next" type="button" aria-label="Volgende">›</button>
-    @endif
-  </div>
-
-  @if($thumbs->count() > 0)
-    <div class="ocd-thumbs" id="ocdThumbs">
-      @foreach($thumbs as $i => $url)
-        <button class="ocd-thumb{{ $i===0 ? ' is-active' : '' }}" data-idx="{{ $i }}" type="button">
-          <img src="{{ $url }}" alt="Foto {{ $i+1 }}">
-        </button>
-      @endforeach
-    </div>
-  @endif
-</div>
-
-
-      <!-- Rechterkolom -->
-      <aside class="ocd-right">
-        <h1 class="ocd-title">
-          {{ trim(($occasion->merk ?? '').' '.($occasion->model ?? '')) ?: $occasion->titel }}
-        </h1>
-        @if(!empty($occasion->type))
-          <p class="ocd-sub">{{ $occasion->type }}</p>
-        @endif
-
-        <div class="ocd-price-row">
-          @if(!empty($occasion->oude_prijs) && $occasion->oude_prijs > $occasion->prijs)
-            <div class="ocd-price-old">€ {{ number_format($occasion->oude_prijs, 0, ',', '.') }},-</div>
-            <div class="ocd-price ocd-price-sale">€ {{ number_format($occasion->prijs ?? 0, 0, ',', '.') }},-</div>
-            <span class="ocd-sale-badge">
-              @php $korting = $occasion->oude_prijs - $occasion->prijs; @endphp
-              €{{ number_format($korting, 0, ',', '.') }} korting
-            </span>
-          @else
-            <div class="ocd-price">€ {{ number_format($occasion->prijs ?? 0, 0, ',', '.') }},-</div>
+          @if($galleryAll->count() > 1)
+            <button class="px-od-nav px-od-prev" type="button" aria-label="Vorige foto">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button class="px-od-nav px-od-next" type="button" aria-label="Volgende foto">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+            </button>
+            <span class="px-od-counter"><span id="pxOdIdx">1</span> / {{ $galleryAll->count() }}</span>
           @endif
         </div>
 
-        <!-- Compacte spec-tegelrij zoals eerder gewenst -->
-        <div class="ocd-specgrid">
-          <div class="ocd-kv"><span class="k">Carrosserie</span><span class="v">{{ $occasion->carrosserie ?? '—' }}</span></div>
-          <div class="ocd-kv"><span class="k">BTW/MARGE</span><span class="v">{{ $occasion->btw_marge ?? '—' }}</span></div>
-          <div class="ocd-kv"><span class="k">Kleur</span><span class="v">{{ $occasion->kleur ?? $occasion->exterieurkleur ?? '—' }}</span></div>
-          <div class="ocd-kv"><span class="k">Brandstof</span><span class="v">{{ $occasion->brandstof ? ucwords($occasion->brandstof) : '—' }}</span></div>
-          <div class="ocd-kv"><span class="k">KM-stand</span><span class="v">{{ isset($occasion->tellerstand) ? number_format($occasion->tellerstand, 0, ',', '.') . ' km' : '—' }}</span></div>
-          <div class="ocd-kv"><span class="k">Transmissie</span><span class="v">{{ $occasion->transmissie ? ucwords($occasion->transmissie) : '—' }}</span></div>
-          <div class="ocd-kv"><span class="k">Energielabel</span>
-            <span class="v">
-              @if(!empty($occasion->energielabel))
-                <span class="badge badge-green">{{ $occasion->energielabel }}</span>
-              @else — @endif
-            </span>
+        @if($galleryAll->count() > 1)
+          <div class="px-od-thumbs" id="pxOdThumbs">
+            @foreach($galleryAll as $i => $url)
+              <button type="button" class="px-od-thumb {{ $i === 0 ? 'is-active' : '' }}" data-idx="{{ $i }}">
+                <img loading="lazy" src="{{ $url }}" alt="Foto {{ $i + 1 }}">
+              </button>
+            @endforeach
           </div>
-          <div class="ocd-kv"><span class="k">Bouwjaar</span><span class="v">{{ $occasion->bouwjaar ?? '—' }}</span></div>
-        </div>
-<div class="ocd-cta-row">
-  <div class="cta-left">
-    <a href="#footer" class="ocd-btn ocd-btn-primary">IK BEN GEÏNTERESSEERD</a>
+        @endif
+      </div>
 
-    <button type="button" class="ocd-btn ocd-btn-share ocd-share-btn">
-      DELEN
-    </button>
-  </div>
+      {{-- ============ RECHTER KOLOM: INFO + STICKY CTA ============ --}}
+      <aside class="px-od-right">
+        <h1 class="px-od-title">{{ $pageTitle }}</h1>
+        @if(!empty($occasion->type))
+          <p class="px-od-sub">{{ $occasion->type }}</p>
+        @endif
 
-  <div class="cta-right">
-    <a href="#footer" class="ocd-btn ocd-btn-success">AUTO INRUILEN?</a>
-  </div>
-</div>
-
-        <div class="ocd-seller">
-          <div class="ocd-seller-info">
-            <div class="name">Mick Gerritsen</div>
-            <a href="tel:+31649951874">+31 6 49951874</a>
-            <a href="mailto:info@gerritsenautomotive.nl">handelsonderneming@mgerritsen.nl</a>
-          </div>
+        <div class="px-od-price-row">
+          @if($hasDiscount)
+            <span class="px-od-price-old">€ {{ number_format($occasion->oude_prijs, 0, ',', '.') }}</span>
+            <span class="px-od-price px-od-price-sale">€ {{ number_format($occasion->prijs ?? 0, 0, ',', '.') }}</span>
+            @php $korting = $occasion->oude_prijs - $occasion->prijs; @endphp
+            <span class="px-od-saving">€ {{ number_format($korting, 0, ',', '.') }} korting</span>
+          @else
+            <span class="px-od-price">€ {{ number_format($occasion->prijs ?? 0, 0, ',', '.') }}</span>
+          @endif
         </div>
 
-          <div class="ocd-seller">
-          <div class="ocd-seller-info">
-            <div class="name">Shania Jung (Verkoop)</div>
-            <a href="tel:+31649951874">+31 6 38257987</a>
-            <a href="mailto:info@gerritsenautomotive.nl">handelsonderneming@mgerritsen.nl</a>
-          </div>
+        <div class="px-od-quickspecs">
+          <div class="px-od-quickspec"><span class="k">Bouwjaar</span><span class="v">{{ $occasion->bouwjaar ?? '·' }}</span></div>
+          <div class="px-od-quickspec"><span class="k">KM-stand</span><span class="v">{{ isset($occasion->tellerstand) ? number_format($occasion->tellerstand, 0, ',', '.') : '·' }}</span></div>
+          <div class="px-od-quickspec"><span class="k">Brandstof</span><span class="v">{{ $occasion->brandstof ? ucfirst($occasion->brandstof) : '·' }}</span></div>
+          <div class="px-od-quickspec"><span class="k">Transmissie</span><span class="v">{{ $occasion->transmissie ? ucfirst($occasion->transmissie) : '·' }}</span></div>
+          @if(!empty($occasion->kleur) || !empty($occasion->exterieurkleur))
+            <div class="px-od-quickspec"><span class="k">Kleur</span><span class="v">{{ $occasion->kleur ?? $occasion->exterieurkleur }}</span></div>
+          @endif
+          @if(!empty($vermogen))
+            <div class="px-od-quickspec"><span class="k">Vermogen</span><span class="v">{{ $vermogen }} PK</span></div>
+          @endif
+          @if(!empty($occasion->energielabel))
+            <div class="px-od-quickspec"><span class="k">Energielabel</span><span class="v"><span class="px-od-energy">{{ $occasion->energielabel }}</span></span></div>
+          @endif
+          @if(!empty($occasion->btw_marge))
+            <div class="px-od-quickspec"><span class="k">BTW/MARGE</span><span class="v">{{ $occasion->btw_marge }}</span></div>
+          @endif
         </div>
 
-            
+        <div class="px-od-cta">
+          <a href="#contact" class="px-btn px-btn-primary px-btn-lg" data-magnetic>Plan een proefrit</a>
+          <button type="button" class="px-btn px-btn-ghost px-btn-lg" id="pxOdShare">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16,6 12,2 8,6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+            Delen
+          </button>
+        </div>
+
+        <div class="px-od-sellers">
+          <a href="tel:{{ setting_tel('contact.phone_sales') }}" class="px-od-seller">
+            <div class="px-od-seller-avatar">{{ Str::upper(Str::substr(setting('over.person1_name'), 0, 1)) }}</div>
+            <div class="px-od-seller-body">
+              <span class="px-od-seller-role">{{ setting('over.person1_role') }}</span>
+              <span class="px-od-seller-name">{{ setting('over.person1_name') }}</span>
+              <span class="px-od-seller-phone">{{ setting('contact.phone_sales') }}</span>
+            </div>
+          </a>
+          <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', setting_tel('contact.phone_sales')) }}?text={{ urlencode($waMessage) }}" target="_blank" rel="noopener" class="px-od-seller px-od-seller-wa">
+            <div class="px-od-seller-avatar px-od-seller-avatar-wa">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/></svg>
+            </div>
+            <div class="px-od-seller-body">
+              <span class="px-od-seller-role">Direct vraag stellen</span>
+              <span class="px-od-seller-name">WhatsApp</span>
+              <span class="px-od-seller-phone">Klik om te chatten</span>
+            </div>
+          </a>
+        </div>
       </aside>
     </div>
 
-    {{-- ===== Tabs: Kenmerken / Opties / Omschrijving ===== --}}
-    @php
-      $opties_flat = preg_split('/\r\n|\r|\n/', (string)($occasion->opties ?? ''), -1, PREG_SPLIT_NO_EMPTY);
-
-      $exterieur = $occasion->exterieur_options ?? [];
-      $interieur = $occasion->interieur_options ?? [];
-      $veiligheid= $occasion->veiligheid_options ?? [];
-      $overige   = $occasion->overige_options ?? [];
-    @endphp
-
-    <div class="ocd-tabs">
-      <button class="ocd-tab is-active" data-tab="specs">Kenmerken</button>
-      <button class="ocd-tab" data-tab="options">Opties</button>
-      <button class="ocd-tab" data-tab="desc">Omschrijving</button>
+    {{-- ============ TABS ============ --}}
+    <div class="px-od-tabs" role="tablist">
+      <button class="px-od-tab is-active" data-tab="specs" role="tab">Kenmerken</button>
+      <button class="px-od-tab" data-tab="options" role="tab">Opties</button>
+      <button class="px-od-tab" data-tab="desc" role="tab">Omschrijving</button>
     </div>
 
-    <!-- Kenmerken -->
-    <section class="ocd-tabpanel is-active" id="tab-specs" role="tabpanel" aria-label="Kenmerken">
-      <div class="spec-columns">
-        <ul class="spec-list">
-          <li><span class="k">Merk</span><span class="v">{{ $occasion->merk ?? '—' }}</span></li>
-          <li><span class="k">Model</span><span class="v">{{ $occasion->model ?? '—' }}</span></li>
-          <li><span class="k">Type</span><span class="v">{{ $occasion->type ?? '—' }}</span></li>
-          <li><span class="k">Transmissie</span><span class="v">{{ $occasion->transmissie ? ucwords($occasion->transmissie) : '—' }}</span></li>
-          <li><span class="k">Brandstof</span><span class="v">{{ $occasion->brandstof ? ucwords($occasion->brandstof) : '—' }}</span></li>
-          <li><span class="k">Kleur</span><span class="v">{{ $occasion->kleur ?? $occasion->exterieurkleur ?? '—' }}</span></li>
-          <li><span class="k">Prijs</span><span class="v">{{ !empty($occasion->prijs) ? '€ '.number_format($occasion->prijs,0,',','.').',-' : '—' }}</span></li>
-          <li><span class="k">Aantal cilinders</span><span class="v">{{ $occasion->aantal_cilinders ?? '—' }}</span></li>
-          <li>
-  <span class="k">Vermogen</span>
-  <span class="v">
-    @php
-      $vermogen = $occasion->vermogen_pk ?? $occasion->pk ?? $occasion->vermogen ?? null;
-    @endphp
-
-    {{ !empty($vermogen) ? $vermogen.' PK' : '—' }}
-  </span>
-</li>
-          <li><span class="k">Topsnelheid</span><span class="v">{{ !empty($occasion->topsnelheid) ? $occasion->topsnelheid.' km/u' : '—' }}</span></li>
-          <li><span class="k">Gewicht</span><span class="v">{{ !empty($occasion->gewicht) ? $occasion->gewicht.' kg' : '—' }}</span></li>
-          <li><span class="k">Gemiddeld verbruik</span><span class="v">{{ $occasion->gemiddeld_verbruik ?? '—' }} / 100 KM</span></li>
+    <section class="px-od-tabpanel is-active" id="px-od-tab-specs" role="tabpanel">
+      <div class="px-od-spec-cols">
+        <ul class="px-od-spec-list">
+          <li><span class="k">Merk</span><span class="v">{{ $occasion->merk ?? '·' }}</span></li>
+          <li><span class="k">Model</span><span class="v">{{ $occasion->model ?? '·' }}</span></li>
+          <li><span class="k">Type</span><span class="v">{{ $occasion->type ?? '·' }}</span></li>
+          <li><span class="k">Bouwjaar</span><span class="v">{{ $occasion->bouwjaar ?? '·' }}</span></li>
+          <li><span class="k">Transmissie</span><span class="v">{{ $occasion->transmissie ? ucwords($occasion->transmissie) : '·' }}</span></li>
+          <li><span class="k">Brandstof</span><span class="v">{{ $occasion->brandstof ? ucwords($occasion->brandstof) : '·' }}</span></li>
+          <li><span class="k">Kleur</span><span class="v">{{ $occasion->kleur ?? $occasion->exterieurkleur ?? '·' }}</span></li>
+          <li><span class="k">Carrosserie</span><span class="v">{{ $occasion->carrosserie ?? '·' }}</span></li>
+          <li><span class="k">Aantal cilinders</span><span class="v">{{ $occasion->aantal_cilinders ?? '·' }}</span></li>
+          <li><span class="k">Vermogen</span><span class="v">{{ !empty($vermogen) ? $vermogen.' PK' : '·' }}</span></li>
+          <li><span class="k">Topsnelheid</span><span class="v">{{ !empty($occasion->topsnelheid) ? $occasion->topsnelheid.' km/u' : '·' }}</span></li>
+          <li><span class="k">Gewicht</span><span class="v">{{ !empty($occasion->gewicht) ? $occasion->gewicht.' kg' : '·' }}</span></li>
         </ul>
-
-        <ul class="spec-list">
-          <li><span class="k">Aantal deuren</span><span class="v">{{ $occasion->aantal_deuren ?? '—' }}</span></li>
-          <li><span class="k">Tellerstand</span><span class="v">{{ !empty($occasion->tellerstand) ? number_format($occasion->tellerstand,0,',','.') . ' KM' : '—' }}</span></li>
-          <li><span class="k">Bouwjaar</span><span class="v">{{ $occasion->bouwjaar ?? '—' }}</span></li>
-          <li><span class="k">Bekleding</span><span class="v">{{ $occasion->bekleding ?? '—' }}</span></li>
-          <li><span class="k">Interieurkleur</span><span class="v">{{ $occasion->interieurkleur ?? '—' }}</span></li>
-          <li><span class="k">BTW/Marge</span><span class="v">{{ $occasion->btw_marge ?? '—' }}</span></li>
-          <li><span class="k">Cilinderinhoud</span><span class="v">{{ !empty($occasion->cilinderinhoud) ? $occasion->cilinderinhoud.' CC' : '—' }}</span></li>
-          <li><span class="k">Carrosserie</span><span class="v">{{ $occasion->carrosserie ?? '—' }}</span></li>
-          <li><span class="k">Energielabel</span>
-            <span class="v">
-              @if(!empty($occasion->energielabel))
-                <span class="badge badge-green">{{ $occasion->energielabel }}</span>
-              @else — @endif
-            </span>
-          </li>
-          <li><span class="k">Wegenbelasting per kwartaal</span><span class="v"> € {{ $occasion->wegenbelasting_min ?? '—' }}</span></li>
+        <ul class="px-od-spec-list">
+          <li><span class="k">Tellerstand</span><span class="v">{{ !empty($occasion->tellerstand) ? number_format($occasion->tellerstand,0,',','.').' km' : '·' }}</span></li>
+          <li><span class="k">Aantal deuren</span><span class="v">{{ $occasion->aantal_deuren ?? '·' }}</span></li>
+          <li><span class="k">Bekleding</span><span class="v">{{ $occasion->bekleding ?? '·' }}</span></li>
+          <li><span class="k">Interieurkleur</span><span class="v">{{ $occasion->interieurkleur ?? '·' }}</span></li>
+          <li><span class="k">BTW/Marge</span><span class="v">{{ $occasion->btw_marge ?? '·' }}</span></li>
+          <li><span class="k">Cilinderinhoud</span><span class="v">{{ !empty($occasion->cilinderinhoud) ? $occasion->cilinderinhoud.' cc' : '·' }}</span></li>
+          <li><span class="k">Gem. verbruik</span><span class="v">{{ $occasion->gemiddeld_verbruik ?? '·' }} / 100km</span></li>
+          <li><span class="k">Energielabel</span><span class="v">@if(!empty($occasion->energielabel))<span class="px-od-energy">{{ $occasion->energielabel }}</span>@else · @endif</span></li>
+          <li><span class="k">Wegenbelasting</span><span class="v">{{ !empty($occasion->wegenbelasting_min) ? '€ '.$occasion->wegenbelasting_min.' /kw' : '·' }}</span></li>
+          <li><span class="k">Prijs</span><span class="v">{{ !empty($occasion->prijs) ? '€ '.number_format($occasion->prijs,0,',','.') : '·' }}</span></li>
         </ul>
       </div>
     </section>
 
-    <!-- Opties -->
-    <section class="ocd-tabpanel" id="tab-options" role="tabpanel" aria-label="Opties">
-      @if(!empty($exterieur) || !empty($interieur) || !empty($veiligheid) || !empty($overige) || !empty($opties_flat))
-        <div class="options-grid">
+    <section class="px-od-tabpanel" id="px-od-tab-options" role="tabpanel">
+      @if($hasOpties)
+        <div class="px-od-opts-grid">
           @if(!empty($exterieur))
-            <div class="opt-col">
+            <div class="px-od-opts-col">
               <h4>Exterieur</h4>
-              <ul class="bullets">
-                @foreach($exterieur as $o)<li>{{ $o }}</li>@endforeach
-              </ul>
+              <ul class="px-od-bullets">@foreach($exterieur as $o)<li>{{ $o }}</li>@endforeach</ul>
             </div>
           @endif
-
-          @if(!empty($overige))
-            <div class="opt-col">
-              <h4>Infotainment / Overige</h4>
-              <ul class="bullets">
-                @foreach($overige as $o)<li>{{ $o }}</li>@endforeach
-              </ul>
-            </div>
-          @endif
-
           @if(!empty($interieur))
-            <div class="opt-col">
+            <div class="px-od-opts-col">
               <h4>Interieur</h4>
-              <ul class="bullets">
-                @foreach($interieur as $o)<li>{{ $o }}</li>@endforeach
-              </ul>
+              <ul class="px-od-bullets">@foreach($interieur as $o)<li>{{ $o }}</li>@endforeach</ul>
             </div>
           @endif
-
           @if(!empty($veiligheid))
-            <div class="opt-col">
+            <div class="px-od-opts-col">
               <h4>Veiligheid</h4>
-              <ul class="bullets">
-                @foreach($veiligheid as $o)<li>{{ $o }}</li>@endforeach
-              </ul>
+              <ul class="px-od-bullets">@foreach($veiligheid as $o)<li>{{ $o }}</li>@endforeach</ul>
             </div>
           @endif
-
+          @if(!empty($overige))
+            <div class="px-od-opts-col">
+              <h4>Infotainment / Overige</h4>
+              <ul class="px-od-bullets">@foreach($overige as $o)<li>{{ $o }}</li>@endforeach</ul>
+            </div>
+          @endif
           @if(empty($exterieur) && empty($interieur) && empty($veiligheid) && empty($overige) && !empty($opties_flat))
-            <div class="opt-col">
-              <ul class="bullets two-col">
-                @foreach($opties_flat as $o)<li>{{ trim($o) }}</li>@endforeach
-              </ul>
+            <div class="px-od-opts-col px-od-opts-col-wide">
+              <ul class="px-od-bullets px-od-bullets-cols">@foreach($opties_flat as $o)<li>{{ trim($o) }}</li>@endforeach</ul>
             </div>
           @endif
         </div>
       @else
-        <p class="ocd-empty">Geen opties bekend.</p>
+        <p class="px-od-empty">{{ setting('occasion_page.empty_text') }}</p>
       @endif
     </section>
 
-    <!-- Omschrijving -->
-    <section class="ocd-tabpanel" id="tab-desc" role="tabpanel" aria-label="Omschrijving">
+    <section class="px-od-tabpanel" id="px-od-tab-desc" role="tabpanel">
       @if(!empty($occasion->omschrijving))
-        <div class="ocd-text">{!! nl2br(e($occasion->omschrijving)) !!}</div>
+        <div class="px-od-desc">{!! nl2br(e($occasion->omschrijving)) !!}</div>
       @else
-        <p class="ocd-empty">Geen omschrijving aanwezig.</p>
+        <p class="px-od-empty">Geen omschrijving aanwezig.</p>
       @endif
     </section>
 
   </div>
-</main>
-
-
-<section class="afspraak-section">
-    <div class="container">
-        <div class="afspraak-section-inner">
-            <h1>Ook zo'n mooie auto op het oog?</h1>
-            <p>Plan snel een afspraak en stap binnenkort in jouw nieuwe auto.</p>
-             <div class="btn-aanbod">
-                <a href="#footer" class="btn btn-primary">Maak Afspraak</a>
-            </div>
-        </div>
-    </div>
 </section>
 
-<section class="openingstijden-section">
-    <div class="container">
-        <div class="openingstijden-section-inner">
-             <div class="openingstijden-content">
-                <h1>Openingstijden</h1>
-                <p>Je bent van harte welkom tijdens onze vaste openingstijden. Of je nu komt voor verhuur, een reservering wilt ophalen of iets wilt inleveren: wij staan klaar om je snel en prettig te helpen. We denken graag met je mee, zorgen dat alles vlot geregeld is en laten je niet onnodig wachten. Zo weet je precies waar je aan toe bent en kun je snel weer op weg.</p>
-                <p><strong>Ma–Vr:</strong> 08:30–17:30 · <strong>Za:</strong> 09:00–16:00 · <strong>Zo:</strong> gesloten</p>
-                <p>U bent welkom tijdens onze reguliere openingstijden. Wilt u langskomen buiten deze tijden? <br> Dat kan! Neem gerust contact met ons op om een afspraak te maken.</p>
-                <div class="btn-aanbod"><a href="#footer" class="btn btn-primary">Maak Afspraak</a></div>
-            </div>
-            <div class="openingstijden-image">
-                <img src="{{ asset('images/car-repair-maintenance-theme-mechanic-uniform-working-auto-service.jpg') }}" alt="Handdruk">
-            </div>
-        </div>
+{{-- ============ BOTTOM CTA ============ --}}
+<section class="px-section px-section-alt" id="contact">
+  <div class="px-container">
+    <div class="px-od-bottom-cta px-reveal">
+      <div>
+        <div class="px-eyebrow"><span class="px-eyebrow-dot"></span>Geïnteresseerd</div>
+        <h2 class="px-h2">{{ setting('occasion_page.cta_title') }}</h2>
+        <p>{{ setting('occasion_page.cta_sub') }}</p>
+      </div>
+      <div class="px-od-bottom-cta-actions">
+        <a href="tel:{{ setting_tel('contact.phone_sales') }}" class="px-btn px-btn-primary px-btn-lg" data-magnetic>{{ setting('occasion_page.cta_btn') }}</a>
+        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', setting_tel('contact.phone_sales')) }}?text={{ urlencode($waMessage) }}" target="_blank" rel="noopener" class="px-btn px-btn-ghost px-btn-lg">
+          WhatsApp
+        </a>
+      </div>
     </div>
+  </div>
 </section>
 
-<section id="footer" class="footer-section">
-    <div class="container">
-        <div class="footer-section-inner">
-            <div class="footer-content-left">
-                <h1>Neem contact op</h1>
-                
-                <div class="footer-content-left-info">
-                    <div class="naam">
-                        <img src="{{ asset('images/home.svg') }}" alt="home">
-                        <p>Gerritsen Automotive</p>
-                    </div>
+@include('preview.partials.footer')
 
-                    <div class="location">
-                        <img src="{{ asset('images/location.svg') }}" alt="home">
-                        <p>Gelderse Rooslaan 14 A, 6841 BE Arnhem</p>
-                    </div> 
-
-<div class="phone">
-  <img src="{{ asset('images/telephone.svg') }}" alt="phone">
-  <a href="tel:+31638257987">+31 6 38257987 (Verkoop, Shania)</a>
-</div>
-
-<div class="phone">
-  <img src="{{ asset('images/telephone.svg') }}" alt="phone">
-  <a href="tel:+31649951874">+31 6 49951874 (Werkplaats, Mick)</a>
-</div>
-
-<div class="email">
-  <img src="{{ asset('images/mail.svg') }}" alt="mail">
-  <a href="mailto:Handelsonderneming@mgerritsen.nl">Handelsonderneming@mgerritsen.nl</a>
-</div>                 
-                </div>
-
-                <img src="{{ asset('images/Garage-footer.png') }}" alt="keuringen">
-
-            </div>
-
-            <div class="footer-content-right">
-                <form method="POST" action="{{ route('contact.store') }}"  class="contact-form" novalidate>
-                   @csrf
-                    <div class="row two">
-                    <div class="field">
-                        <input class="inputform" type="text" name="name" placeholder="Naam">
-                    </div>
-                    <div class="field">
-                        <input class="inputform" type="text" name="phone" placeholder="Telefoonnummer">
-                    </div>
-                    </div>
-
-                    <div class="field">
-                    <input class="inputform" type="email" name="email" placeholder="Email">
-                    </div>
-
-                    <div class="field">
-                    <textarea class="inputform" name="message" rows="5" placeholder="Bericht:"></textarea>
-                    </div>
-
-                    <label class="check">
-                    <input type="checkbox" name="privacy">
-                    <span class="inputform"> Ik heb het privacybeleid gelezen en begrepen.</span>
-                    </label>
-
-                    <button type="submit" class="submit">Verzenden</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-</section>
-
-<div class="contact-map">
-  <iframe
-    src="https://www.google.com/maps?q=Handelstraat%2010,%206851%20EH%20Huissen&output=embed"
-    loading="lazy"
-    allowfullscreen
-    referrerpolicy="no-referrer-when-downgrade">
-  </iframe>
-</div>
-
-<section class="rechten-section">
-    <div class="container">
-        <div class="rechten-section-inner">
-            <p>© Gerritsen Automotive 2025 Alle Rechten Voorbehouden</p>
-        </div>
-    </div>
-</section>
+<script src="{{ asset('js/preview.js') }}?v={{ filemtime(public_path('js/preview.js')) }}" defer></script>
 
 <script>
-/* ===== THEME PRE-APPLY (voorkom flits) ===== */
-(() => {
-  try {
-    const saved = localStorage.getItem('ga_theme');
-    if (saved === 'dark') document.documentElement.classList.add('dark');
-  } catch (_) {}
-})();
+  /* ===== GALLERY ===== */
+  (function () {
+    const stage = document.querySelector('.px-od-stage');
+    if (!stage) return;
+    const main = document.getElementById('pxOdMain');
+    const idxLabel = document.getElementById('pxOdIdx');
+    const prev = stage.querySelector('.px-od-prev');
+    const next = stage.querySelector('.px-od-next');
+    const thumbs = document.querySelectorAll('#pxOdThumbs .px-od-thumb');
+    const urls = JSON.parse(stage.getAttribute('data-urls') || '[]');
+    let cur = 0;
 
-/* ===== NAV / MENU / SCROLL ===== */
-document.addEventListener('DOMContentLoaded', () => {
-  const toggleBtn = document.getElementById('menuToggle');
-  const overlay   = document.getElementById('navOverlay');
-  const closeBtn  = document.getElementById('menuClose');
-  const navbar    = document.querySelector('.navbar');
+    const show = (i) => {
+      if (!urls.length) return;
+      cur = (i + urls.length) % urls.length;
+      if (main) { main.src = urls[cur]; main.decoding = 'async'; }
+      if (idxLabel) idxLabel.textContent = cur + 1;
+      thumbs.forEach((t, j) => t.classList.toggle('is-active', j === cur));
+      const active = thumbs[cur];
+      if (active && active.scrollIntoView) {
+        active.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+      }
+    };
+    thumbs.forEach((t, i) => t.addEventListener('click', () => show(i)));
+    prev?.addEventListener('click', () => show(cur - 1));
+    next?.addEventListener('click', () => show(cur + 1));
 
-  // Header offset (voor fixed header)
-  const setHeaderOffset = () => {
-    if (!navbar) return;
-    document.documentElement.style.setProperty('--header-offset', `${navbar.offsetHeight}px`);
-  };
-
-  // Mobiel menu open/dicht
-  const openMenu = () => {
-    document.body.classList.add('menu-open');
-    toggleBtn?.classList.add('is-open');
-    toggleBtn?.setAttribute('aria-expanded', 'true');
-    overlay?.classList.add('is-open');
-    overlay?.setAttribute('aria-hidden', 'false');
-    overlay?.querySelector('.nav-mobile a')?.focus({ preventScroll: true });
-  };
-  const closeMenu = () => {
-    document.body.classList.remove('menu-open');
-    toggleBtn?.classList.remove('is-open');
-    toggleBtn?.setAttribute('aria-expanded', 'false');
-    toggleBtn?.focus?.({ preventScroll: true });
-    overlay?.classList.remove('is-open');
-    overlay?.setAttribute('aria-hidden', 'true');
-  };
-
-  toggleBtn?.addEventListener('click', () => {
-    overlay?.classList.contains('is-open') ? closeMenu() : openMenu();
-  });
-  closeBtn?.addEventListener('click', closeMenu);
-  overlay?.addEventListener('click', (e) => { if (e.target === overlay) closeMenu(); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay?.classList.contains('is-open')) closeMenu(); });
-
-  // Sticky header + offset updaten
-  const onScroll = () => {
-    if (window.scrollY > 8) navbar?.classList.add('scrolled');
-    else navbar?.classList.remove('scrolled');
-    setHeaderOffset();
-  };
-
-  // Smooth scroll voor ankers in het hoofdmenu (#info, #aanbod, #footer)
-  const getOffset = () => {
-    const cssVar = getComputedStyle(document.documentElement).getPropertyValue('--header-offset').trim();
-    const n = parseInt(cssVar, 10);
-    return Number.isFinite(n) ? n : (navbar?.offsetHeight || 0);
-  };
-  const smoothScrollTo = (targetEl) => {
-    const top = Math.max(0, targetEl.getBoundingClientRect().top + window.scrollY - getOffset() - 12);
-    window.scrollTo({ top, behavior: 'smooth' });
-  };
-  const isSamePageHash = (a) => a.hash?.startsWith('#') && a.pathname.replace(/\/+$/,'') === location.pathname.replace(/\/+$/,'');
-
-  document.querySelectorAll('.nav-desktop a[href^="#"], .nav-mobile a[href^="#"]').forEach((a) => {
-    a.addEventListener('click', (e) => {
-      if (!isSamePageHash(a)) return;
-      const target = document.querySelector(a.hash);
-      if (!target) return;
-      e.preventDefault();
-      if (overlay?.classList.contains('is-open')) closeMenu();
-      smoothScrollTo(target);
-      history.pushState(null, '', a.hash);
+    // Keyboard
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') show(cur - 1);
+      if (e.key === 'ArrowRight') show(cur + 1);
     });
-  });
 
-  // Init
-  onScroll();
-  setHeaderOffset();
-  window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', setHeaderOffset);
-  window.addEventListener('orientationchange', setHeaderOffset);
-  if ('ResizeObserver' in window && navbar) new ResizeObserver(setHeaderOffset).observe(navbar);
-
-  /* ===== THEME: Dark/Light (desktop + mobiel) ===== */
-  const STORAGE_KEY = 'ga_theme';
-
-  const applyTheme = (theme) => {
-    const dark = theme === 'dark';
-    document.documentElement.classList.toggle('dark', dark);
-    // aria-pressed sync op beide knoppen
-    document.querySelectorAll('#themeToggle, #themeToggleMobile')
-      .forEach((btn) => btn.setAttribute('aria-pressed', String(dark)));
-  };
-  const currentTheme = () => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved === 'dark' || saved === 'light') return saved;
-    } catch (_) {}
-    return 'light';
-  };
-  const toggleTheme = () => {
-    const next = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
-    try { localStorage.setItem(STORAGE_KEY, next); } catch (_) {}
-    applyTheme(next);
-  };
-
-  // Theme toepassen bij load (als pre-apply niet draaide) + aria sync
-  applyTheme(currentTheme());
-
-  // Eén document-listener (event delegation) → werkt ook als markup verandert
-  document.addEventListener('click', (e) => {
-    const el = e.target;
-    const isToggle =
-      (el && (el.id === 'themeToggle' || el.id === 'themeToggleMobile')) ||
-      el.closest?.('#themeToggle, #themeToggleMobile');
-    if (isToggle) {
-      e.preventDefault();
-      toggleTheme();
-    }
-  });
-});
-
-/* ===== TABS ===== */
-(function(){
-  const tabs = Array.from(document.querySelectorAll('.ocd-tab'));
-  const panels = {
-    specs: document.getElementById('tab-specs'),
-    options: document.getElementById('tab-options'),
-    desc: document.getElementById('tab-desc'),
-  };
-  tabs.forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      tabs.forEach(b=>b.classList.remove('is-active'));
-      Object.values(panels).forEach(p=>p?.classList.remove('is-active'));
-      btn.classList.add('is-active');
-      panels[btn.dataset.tab]?.classList.add('is-active');
+    // Swipe op mobiel
+    let startX = 0, dx = 0;
+    main?.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; dx = 0; }, { passive: true });
+    main?.addEventListener('touchmove', (e) => { dx = e.touches[0].clientX - startX; }, { passive: true });
+    main?.addEventListener('touchend', () => {
+      if (Math.abs(dx) > 40) show(cur + (dx < 0 ? 1 : -1));
     });
-  });
-})();
+  })();
 
-  /* ===== DELEN-KNOP ===== */
-  const shareBtn = document.querySelector('.ocd-share-btn');
-  if (shareBtn) {
-    shareBtn.addEventListener('click', async () => {
-      const shareUrl = window.location.href;
-      const shareTitle = document.title;
+  /* ===== TABS ===== */
+  (function () {
+    const tabs = document.querySelectorAll('.px-od-tab');
+    const panels = {
+      specs: document.getElementById('px-od-tab-specs'),
+      options: document.getElementById('px-od-tab-options'),
+      desc: document.getElementById('px-od-tab-desc'),
+    };
+    tabs.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabs.forEach(b => b.classList.remove('is-active'));
+        Object.values(panels).forEach(p => p?.classList.remove('is-active'));
+        btn.classList.add('is-active');
+        panels[btn.dataset.tab]?.classList.add('is-active');
+      });
+    });
+  })();
 
+  /* ===== SHARE ===== */
+  (function () {
+    const btn = document.getElementById('pxOdShare');
+    if (!btn) return;
+    btn.addEventListener('click', async () => {
+      const url = window.location.href;
+      const title = document.title;
       if (navigator.share) {
-        // Native share (WhatsApp, SMS, etc. in mobiele browsers)
-        try {
-          await navigator.share({
-            title: shareTitle,
-            url: shareUrl,
-          });
-        } catch (e) {
-          // gebruiker annuleert -> niks doen
-        }
+        try { await navigator.share({ title, url }); } catch (_) {}
       } else if (navigator.clipboard) {
-        // Fallback: kopieer link naar klembord
         try {
-          await navigator.clipboard.writeText(shareUrl);
-          alert('De link naar deze auto is gekopieerd. Je kunt hem nu plakken in WhatsApp of een bericht.');
-        } catch (e) {
-          alert('Kopiëren is niet gelukt. Je kunt de link bovenaan je browser kopiëren.');
-        }
-      } else {
-        // Oudere browsers: simpele alert
-        alert('Kopieer deze link om te delen:\n\n' + shareUrl);
+          await navigator.clipboard.writeText(url);
+          btn.classList.add('is-copied');
+          const lbl = btn.querySelector('span') || btn;
+          const orig = btn.innerHTML;
+          btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l5 5L20 7"/></svg> Link gekopieerd';
+          setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('is-copied'); }, 2000);
+        } catch (_) {}
       }
     });
-  }
-
-
-/* ===== OCCASION GALLERY (4 thumbs + prev/next) ===== */
-(function(){
-  const stage   = document.querySelector('.ocd-stage');
-  if (!stage) return;
-
-  const mainImg = document.getElementById('ocdMain');
-  const prevBtn = stage.querySelector('.ocd-prev');
-  const nextBtn = stage.querySelector('.ocd-next');
-  const thumbsEl= document.getElementById('ocdThumbs');
-
-  // Volledige set en de 4 getoonde thumbs (uit data attribuut)
-  const urlsAll    = JSON.parse(stage.getAttribute('data-urls') || '[]');
-  const urlsThumbs = JSON.parse(stage.getAttribute('data-urls-thumbs') || '[]');
-
-  let current = 0; // index in urlsAll
-
-  const setActiveThumb = (url) => {
-    if (!thumbsEl) return;
-    thumbsEl.querySelectorAll('.ocd-thumb').forEach(btn => {
-      const img = btn.querySelector('img');
-      btn.classList.toggle('is-active', img && img.src === url);
-    });
-  };
-
-  const show = (idx) => {
-    if (!urlsAll.length) return;
-    current = (idx + urlsAll.length) % urlsAll.length; // wrap
-    const url = urlsAll[current];
-    if (mainImg) {
-      mainImg.src = url;
-      mainImg.decoding = 'async';
-    }
-    setActiveThumb(url);
-  };
-
-  // Thumbs click (binnen de 4 zichtbare)
-  thumbsEl?.querySelectorAll('.ocd-thumb').forEach((btn, i) => {
-    btn.addEventListener('click', () => {
-      const url = urlsThumbs[i];
-      const idxInAll = urlsAll.indexOf(url);
-      show(idxInAll >= 0 ? idxInAll : i);
-    });
-  });
-
-  // Prev/Next
-  prevBtn?.addEventListener('click', () => show(current - 1));
-  nextBtn?.addEventListener('click', () => show(current + 1));
-
-  
-})();
+  })();
 </script>
-
-{{-- WhatsApp floating button --}}
-<a href="https://wa.me/31649951874?text={{ urlencode('Hoi! Ik heb interesse in de ' . ucfirst(mb_strtolower(trim(($occasion->merk ?? '') . ' ' . ($occasion->model ?? '')))) . (!empty($occasion->bouwjaar) ? ' (' . $occasion->bouwjaar . ')' : '') . '. Is deze nog beschikbaar?') }}" target="_blank" rel="noopener" aria-label="WhatsApp" style="
-  position:fixed;bottom:24px;right:24px;z-index:999;
-  width:56px;height:56px;border-radius:50%;
-  background:#25D366;color:#fff;
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 4px 16px rgba(0,0,0,.3);
-  transition:transform .2s,box-shadow .2s;
-  text-decoration:none;
-" onmouseover="this.style.transform='scale(1.1)';this.style.boxShadow='0 6px 24px rgba(0,0,0,.4)'" onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 16px rgba(0,0,0,.3)'">
-  <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-</a>
-
 </body>
 </html>

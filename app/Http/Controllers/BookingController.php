@@ -25,18 +25,20 @@ class BookingController extends Controller
         'koplampen'  => 60, // nieuw: vaste duur, 1-klik
     ];
 
-    // Toegestane resources
+    // Toegestane resources voor slot-booking
     private const RESOURCES = ['aanhanger','stofzuiger','koplampen'];
 
-    // Labels voor nette weergave in mails
+    // Labels voor nette weergave in mails / UI
     private const LABELS = [
         'aanhanger'  => 'Aanhanger',
         'stofzuiger' => 'Tapijtreiniger',
         'koplampen'  => 'Koplampen polijsten',
+        'leenauto'   => 'Leenauto',
     ];
 
     private function normalizeType(?string $t): string
     {
+        if ($t === 'leenauto') return $t;
         return in_array($t, self::RESOURCES, true) ? $t : 'aanhanger';
     }
 
@@ -45,13 +47,27 @@ class BookingController extends Controller
     {
         $type = $this->normalizeType($request->query('type'));
 
+        // Leenauto = aanvraagformulier (datum-range), geen slot-flow
+        if ($type === 'leenauto') {
+            return view('booking', [
+                'type'        => 'leenauto',
+                'typeLabel'   => self::LABELS['leenauto'],
+                'isLeenauto'  => true,
+                'openTime'    => self::OPEN_TIME,
+                'closeTime'   => self::CLOSE_TIME,
+                'slotMinutes' => self::SLOT_MINUTES,
+                'durationMin' => 60,
+            ]);
+        }
+
         return view('booking', [
             'type'        => $type,
             'typeLabel'   => self::LABELS[$type] ?? ucfirst($type),
+            'isLeenauto'  => false,
             'openTime'    => self::OPEN_TIME,
             'closeTime'   => self::CLOSE_TIME,
             'slotMinutes' => self::SLOT_MINUTES,
-            'durationMin' => self::DURATIONS[$type], // <-- voor 1-klik modus
+            'durationMin' => self::DURATIONS[$type],
         ]);
     }
 

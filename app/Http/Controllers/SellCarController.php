@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\Storage;
 
 class SellCarController extends Controller
 {
+    public function show()
+    {
+        return view('preview.verkopen');
+    }
+
     public function store(Request $r)
     {
         $data = $r->validate([

@@ -53,7 +53,20 @@
           </a>
 
           <div class="car-body">
-            <h3 class="car-title">{{ $o->titel }}</h3>
+            <h3 class="car-title">
+              {{ $o->titel }}
+              @php $marge = $o->marge; @endphp
+              @if($marge !== null)
+                <span class="adm-marge {{ $marge >= 0 ? 'adm-marge-pos' : 'adm-marge-neg' }}" title="Inkoop: € {{ number_format($o->inkoop_prijs, 0, ',', '.') }} · Verkoop: € {{ number_format($o->prijs, 0, ',', '.') }}">
+                  {{ $marge >= 0 ? '+' : '' }}€ {{ number_format($marge, 0, ',', '.') }}
+                  @if($o->marge_percent !== null)
+                    <small style="font-weight:500;opacity:.8">({{ $marge >= 0 ? '+' : '' }}{{ $o->marge_percent }}%)</small>
+                  @endif
+                </span>
+              @else
+                <span class="adm-marge adm-marge-none" title="Vul inkoopprijs in om marge te zien">geen marge</span>
+              @endif
+            </h3>
 
             <ul class="specs">
               <li><span class="k">Transmissie</span><span class="v">{{ $o->transmissie }}</span></li>

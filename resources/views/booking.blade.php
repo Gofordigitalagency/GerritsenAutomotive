@@ -1,326 +1,369 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/png" href="{{ asset('images/FAVICON-GERRITSEN.png') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no,email=no,address=no">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-  <title>Reserveren</title>
-  <style>
-    :root{
-      --bg:#ffffff;           /* pagina-achtergrond */
-      --card:#5B5B5B;         /* formulierkaart */
-      --text:#ffffff;         /* tekst in kaart */
-      --muted:#f1f1f1;        /* subtiele tekst */
-      --line:rgba(255,255,255,.28);
-      --chip:rgba(255,255,255,.10);
-      --chip-hover:rgba(255,255,255,.18);
-      --chip-active:rgba(255,255,255,.22);
-      --accent:#3C3C3C;       /* i.p.v. rood: donkergrijs voor selectie */
-      --accent-strong:#2A2A2A;
-      --shadow:0 10px 30px rgba(0,0,0,.10);
-      --radius:14px;
-      --gap:14px;
-    }
+    <title>{{ setting('reserveren_page.title') }} — Gerritsen Automotive</title>
 
-    *{box-sizing:border-box}
-    html,body{margin:0;background:var(--bg);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#111}
-    .wrap{max-width:980px;margin:36px auto;padding:0 16px}
-    .title{font-size:34px;font-weight:800;margin:0 0 18px}
+    <link rel="icon" type="image/png" href="{{ asset('images/FAVICON-GERRITSEN.png') }}">
 
-    .card{
-      background:var(--card);
-      color:var(--text);
-      border:1px solid var(--line);
-      border-radius:18px;
-      padding:20px;
-      box-shadow:var(--shadow);
-    }
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    .row{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap)}
-    .row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-    .input-row{display:flex;flex-direction:column;gap:8px}
-    label span{font-size:14px;color:var(--muted)}
+    <link rel="stylesheet" href="{{ asset('css/preview.css') }}?v={{ filemtime(public_path('css/preview.css')) }}">
 
-    .control{
-      -webkit-appearance:none; appearance:none;
-      width:100%;
-      background:var(--chip);
-      color:var(--text);
-      border:1px solid var(--line);
-      border-radius:12px;
-      padding:12px 14px;
-      line-height:1.35;
-      font-size:16px;
-      outline:none;
-      transition:border-color .15s, background .15s, box-shadow .15s, color .15s;
-    }
-    .control::placeholder{color:rgba(255,255,255,.8)}
-    .control:focus{
-      background:var(--chip-hover);
-      border-color:#fff;
-      box-shadow:0 0 0 3px rgba(255,255,255,.15);
-    }
-    input[type="date"].control::-webkit-calendar-picker-indicator{
-      filter: invert(1) opacity(.85);
-      cursor:pointer;
-    }
-    input.control:-webkit-autofill{
-      -webkit-text-fill-color:#fff;
-      box-shadow:0 0 0 30px var(--chip) inset !important;
-      transition:background-color 5000s ease-in-out 0s;
-    }
-    input.control:-webkit-autofill:focus{
-      box-shadow:0 0 0 30px var(--chip-hover) inset !important;
-    }
-
-    .seg{display:flex;gap:10px;flex-wrap:wrap}
-    .seg a{
-      padding:10px 14px; border:1px solid var(--line); border-radius:12px;
-      background:var(--chip); color:var(--text); text-decoration:none;
-      transition:background .15s,border-color .15s,transform .05s;
-    }
-    .seg a:hover{background:var(--chip-hover)}
-    .seg a:active{transform:translateY(1px)}
-    .seg a.active{background:#111;border-color:#111;color:#fff}
-
-    .times{display:flex;flex-wrap:wrap;gap:10px;min-height:44px}
-    .times button{
-      padding:10px 12px; border-radius:12px;
-      border:1px solid var(--line);
-      background:var(--chip); color:var(--text);
-      cursor:pointer;
-      transition:background .15s,border-color .15s,transform .05s,color .15s;
-    }
-    .times button:hover{background:var(--chip-hover)}
-    .times button:active{transform:translateY(1px)}
-    .times button.sel-start{background:var(--accent);border-color:var(--accent)}
-    .times button.range{background:var(--chip-active)}
-    .times button.selected{background:var(--accent-strong);border-color:var(--accent-strong);color:#fff}
-
-    .muted{color:var(--muted)}
-    .divider{height:1px;background:var(--line);margin:18px 0}
-
-    .btn{
-      display:inline-block; padding:12px 16px; border-radius:12px;
-      border:1px solid var(--accent-strong); background:var(--accent-strong);
-      color:#fff; font-weight:700; cursor:pointer;
-      transition:background .15s,border-color .15s,transform .05s;
-    }
-    .btn:hover{background:#1f1f1f;border-color:#1f1f1f}
-    .btn:active{transform:translateY(1px)}
-    .btn:disabled{opacity:.6;cursor:not-allowed}
-
-    .alert{padding:12px 14px;border-radius:12px;margin-bottom:12px;border:1px solid #cfe8d2;background:#e9f6eb;color:#244a2b}
-    .error{border-color:#e9b3b6;background:#fdeced;color:#6b1c20}
-
-    .summary{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text)}
-
-    @media (max-width:900px){ .row,.row-3{grid-template-columns:1fr} }
-    @media (max-width:480px){
-      .wrap{padding:0 12px}
-      .title{font-size:28px}
-      .seg a, .times button{padding:9px 12px}
-      .control{font-size:15px;padding:11px 12px}
-    }
-  </style>
+    <style>
+      :root {
+        --px-bg:        {{ setting('theme.bg') }};
+        --px-bg-2:      {{ setting('theme.bg_alt') }};
+        --px-surface:   {{ setting('theme.surface') }};
+        --px-fg:        {{ setting('theme.fg') }};
+        --px-fg-muted:  {{ setting('theme.fg_muted') }};
+        --px-accent:        {{ setting('theme.accent') }};
+        --px-accent-soft:   {{ setting('theme.accent_soft') }};
+        --px-border:    {{ setting('theme.border') }};
+      }
+    </style>
 </head>
-<body>
-  <div class="wrap">
-    @if(session('ok')) <div class="alert">{{ session('ok') }}</div> @endif
-    @if($errors->any()) <div class="alert error">{{ $errors->first() }}</div> @endif
+<body class="px-body">
 
-    <h1 class="title">Reserveren</h1>
+@include('preview.partials.header')
 
-    <div class="card">
-      <div class="input-row">
-        <span>Onderdeel</span>
-        <div class="seg">
-          <a href="{{ route('booking.show',['type'=>'aanhanger']) }}"  class="{{ $type==='aanhanger'?'active':'' }}">Aanhanger</a>
-          <a href="{{ route('booking.show',['type'=>'stofzuiger']) }}" class="{{ $type==='stofzuiger'?'active':'' }}">Tapijtreiniger</a>
-          <a href="{{ route('booking.show',['type'=>'koplampen']) }}"  class="{{ $type==='koplampen'?'active':'' }}">Koplampen polijsten</a>
-        </div>
-      </div>
+{{-- ============ PAGE HERO ============ --}}
+<section class="px-page-hero px-page-hero-photo">
+  <div class="px-page-hero-bg-img" style="background-image: url('{{ setting_image('reserveren_page.bg_image') }}');"></div>
+  <div class="px-page-hero-overlay"></div>
+  <div class="px-hero-grain"></div>
 
-      <div class="row" style="margin-top:14px">
-        <label class="input-row">
-          <span>Datum</span>
-          <input class="control" type="date" id="date" min="{{ now()->toDateString() }}" value="{{ now()->toDateString() }}">
-        </label>
-
-        <div class="input-row">
-          <span>Beschikbare tijden</span>
-          <div id="times" class="times">Laden...</div>
-        </div>
-      </div>
-
-      <div class="divider"></div>
-
-      <div id="pickRange" class="summary">Selecteer eerst een starttijd (klik), daarna een eindtijd (tweede klik).</div>
-
-      <form id="bookForm" method="post" action="{{ route('booking.store') }}" style="margin-top:10px;display:none">
-        @csrf
-        <input type="hidden" name="type" value="{{ $type }}">
-        <input type="hidden" name="start_at" id="start_at">
-        <input type="hidden" name="end_at" id="end_at">
-
-        <div class="row" style="margin-top:12px">
-          <label class="input-row"><span>Naam</span>
-            <input class="control" required name="name" placeholder="Voor- en achternaam" value="{{ old('name') }}">
-          </label>
-          <label class="input-row"><span>Telefoon</span>
-            <input class="control" required type="tel" name="phone" placeholder="06…" value="{{ old('phone') }}">
-          </label>
-          <label class="input-row" style="grid-column:1/-1"><span>E-mail</span>
-            <input class="control" required type="email" name="email" placeholder="jij@email.nl" value="{{ old('email') }}">
-          </label>
-        </div>
-
-        <div class="row-3" style="align-items:center;margin-top:12px">
-          <div class="summary" id="selSummary">Nog geen tijd geselecteerd</div>
-          <span></span>
-          <button class="btn" type="submit" id="submitBtn" disabled>Reservering bevestigen</button>
-        </div>
-        <p class="muted" style="margin:8px 0 0">Betaling vindt plaats bij Gerritsen Automotive.</p>
-      </form>
+  <div class="px-container">
+    <div class="px-page-hero-inner">
+      <div class="px-eyebrow px-reveal"><span class="px-eyebrow-dot"></span>{{ setting('reserveren_page.eyebrow') }}</div>
+      <h1 class="px-page-title px-reveal" style="--rd: .1s">{{ setting('reserveren_page.title') }}</h1>
+      <p class="px-page-sub px-reveal" style="--rd: .2s">{{ setting('reserveren_page.subtitle') }}</p>
     </div>
   </div>
+</section>
 
-  <script>
+{{-- ============ RESOURCE TABS + FORM ============ --}}
+<section class="px-section">
+  <div class="px-container">
+
+    @if(session('ok'))
+      <div class="px-form-success" style="margin-bottom: 22px;">{{ session('ok') }}</div>
+    @endif
+    @if(session('success'))
+      <div class="px-form-success" style="margin-bottom: 22px;">{{ session('success') }}</div>
+    @endif
+    @if($errors->any())
+      <div class="px-form-error" style="margin-bottom: 22px;">
+        @foreach($errors->all() as $error)<div>{{ $error }}</div>@endforeach
+      </div>
+    @endif
+
+    <div class="px-rsv-tabs">
+      @php
+        $tabs = [
+          'aanhanger'  => ['label' => 'Aanhanger',          'icon' => '<rect x="3" y="11" width="14" height="6" rx="1"/><circle cx="7" cy="19" r="2"/><circle cx="14" cy="19" r="2"/><path d="M17 14h4"/>'],
+          'stofzuiger' => ['label' => 'Tapijtreiniger',     'icon' => '<path d="M9 3v6h6V3"/><path d="M12 9v8"/><circle cx="12" cy="20" r="2"/>'],
+          'koplampen'  => ['label' => 'Koplampen polijsten','icon' => '<circle cx="12" cy="12" r="9"/><path d="M9 12h6M12 9v6"/>'],
+          'leenauto'   => ['label' => 'Leenauto',           'icon' => '<path d="M3 13l2-5a2 2 0 0 1 2-1h10a2 2 0 0 1 2 1l2 5"/><rect x="3" y="13" width="18" height="6" rx="1"/><circle cx="7" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/>'],
+        ];
+      @endphp
+
+      @foreach($tabs as $key => $t)
+        <a href="{{ route('booking.show', ['type' => $key]) }}"
+           class="px-rsv-tab {{ $type === $key ? 'is-active' : '' }}">
+          <span class="px-rsv-tab-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">{!! $t['icon'] !!}</svg>
+          </span>
+          <span class="px-rsv-tab-label">{{ $t['label'] }}</span>
+        </a>
+      @endforeach
+    </div>
+
+    <div class="px-rsv-card px-reveal">
+
+      @if(!empty($isLeenauto))
+        {{-- ============ LEENAUTO: aanvraag-formulier (geen slots) ============ --}}
+        <div class="px-rsv-head">
+          <div>
+            <div class="px-eyebrow"><span class="px-eyebrow-dot"></span>{{ setting('leenauto.eyebrow') }}</div>
+            <h2 class="px-rsv-title">{{ setting('leenauto.title') }}</h2>
+            <p class="px-rsv-sub">{{ setting('leenauto.subtitle') }} · {{ setting('leenauto.price') }}</p>
+          </div>
+          @if(setting_image('leenauto.image_main'))
+            <div class="px-rsv-head-photo">
+              <img loading="lazy" src="{{ setting_image('leenauto.image_main') }}" alt="{{ setting('leenauto.title') }}">
+            </div>
+          @endif
+        </div>
+
+        <form method="POST" action="{{ route('contact.store') }}" class="px-rsv-form" id="pxLeenautoForm">
+          @csrf
+          <input type="text" name="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;" aria-hidden="true">
+          <input type="hidden" name="privacy" value="1">
+          <input type="hidden" name="message" id="pxLeenautoMessage">
+
+          <div class="px-form-row">
+            <div class="px-input-wrap">
+              <label for="pxLeenFrom">Ophalen op</label>
+              <input type="date" id="pxLeenFrom" name="leenauto_from" required min="{{ now()->toDateString() }}" value="{{ now()->toDateString() }}">
+            </div>
+            <div class="px-input-wrap">
+              <label for="pxLeenTo">Terugbrengen op</label>
+              <input type="date" id="pxLeenTo" name="leenauto_to" required min="{{ now()->toDateString() }}" value="{{ now()->addDay()->toDateString() }}">
+            </div>
+          </div>
+
+          <div class="px-form-row">
+            <div class="px-input-wrap">
+              <label for="pxLeenName">Naam</label>
+              <input type="text" id="pxLeenName" name="name" required maxlength="120" value="{{ old('name') }}">
+            </div>
+            <div class="px-input-wrap">
+              <label for="pxLeenPhone">Telefoon</label>
+              <input type="tel" id="pxLeenPhone" name="phone" required maxlength="40" value="{{ old('phone') }}">
+            </div>
+          </div>
+
+          <div class="px-input-wrap">
+            <label for="pxLeenEmail">E-mail</label>
+            <input type="email" id="pxLeenEmail" name="email" required maxlength="190" value="{{ old('email') }}">
+          </div>
+
+          <div class="px-input-wrap">
+            <label for="pxLeenNotes">Aanvullende info (optioneel)</label>
+            <textarea id="pxLeenNotes" name="leenauto_notes" rows="4" maxlength="2000" placeholder="Bijvoorbeeld: doel van de huur, gewenste ophaaltijd…"></textarea>
+          </div>
+
+          <div class="px-form-foot">
+            <button type="submit" class="px-btn px-btn-primary px-btn-lg" data-magnetic>Aanvraag versturen</button>
+            <span class="px-form-foot-meta">
+              Liever bellen? <a href="tel:{{ setting_tel('contact.phone_workshop') }}">{{ setting('contact.phone_workshop') }}</a>
+            </span>
+          </div>
+        </form>
+
+      @else
+        {{-- ============ AANHANGER / TAPIJTREINIGER / KOPLAMPEN: slot-flow ============ --}}
+        <div class="px-rsv-head">
+          <div>
+            <div class="px-eyebrow"><span class="px-eyebrow-dot"></span>Reservering</div>
+            <h2 class="px-rsv-title">{{ $typeLabel }}</h2>
+            <p class="px-rsv-sub">Kies een datum en tijd. Bevestig met je gegevens.</p>
+          </div>
+        </div>
+
+        <div class="px-rsv-grid">
+          <div class="px-input-wrap">
+            <label for="pxRsvDate">Datum</label>
+            <input class="px-rsv-control" type="date" id="pxRsvDate" min="{{ now()->toDateString() }}" value="{{ now()->toDateString() }}">
+          </div>
+          <div class="px-input-wrap">
+            <label>Beschikbare tijden</label>
+            <div id="pxRsvTimes" class="px-rsv-times">Laden…</div>
+          </div>
+        </div>
+
+        <div class="px-rsv-pickhint" id="pxRsvPickHint">
+          Selecteer eerst een starttijd, daarna een eindtijd.
+        </div>
+
+        <form id="pxRsvForm" method="POST" action="{{ route('booking.store') }}" class="px-rsv-form" style="display:none">
+          @csrf
+          <input type="hidden" name="type" value="{{ $type }}">
+          <input type="hidden" name="start_at" id="pxRsvStart">
+          <input type="hidden" name="end_at" id="pxRsvEnd">
+
+          <div class="px-rsv-summary" id="pxRsvSummary">Nog geen tijd geselecteerd</div>
+
+          <div class="px-form-row">
+            <div class="px-input-wrap">
+              <label for="pxRsvName">Naam</label>
+              <input type="text" id="pxRsvName" name="name" required maxlength="120" placeholder="Voor- en achternaam" value="{{ old('name') }}">
+            </div>
+            <div class="px-input-wrap">
+              <label for="pxRsvPhone">Telefoon</label>
+              <input type="tel" id="pxRsvPhone" name="phone" required maxlength="30" placeholder="06…" value="{{ old('phone') }}">
+            </div>
+          </div>
+
+          <div class="px-input-wrap">
+            <label for="pxRsvEmail">E-mail</label>
+            <input type="email" id="pxRsvEmail" name="email" required maxlength="160" value="{{ old('email') }}">
+          </div>
+
+          <div class="px-form-foot">
+            <button type="submit" class="px-btn px-btn-primary px-btn-lg" id="pxRsvSubmit" disabled data-magnetic>Reservering bevestigen</button>
+            <span class="px-form-foot-meta">Betaling vindt plaats bij Gerritsen Automotive.</span>
+          </div>
+        </form>
+      @endif
+    </div>
+
+    <p class="px-rsv-help">{{ setting('reserveren_page.help_text') }} <a href="tel:{{ setting_tel('contact.phone_workshop') }}">{{ setting('contact.phone_workshop') }}</a></p>
+  </div>
+</section>
+
+@include('preview.partials.footer')
+
+<script src="{{ asset('js/preview.js') }}?v={{ filemtime(public_path('js/preview.js')) }}" defer></script>
+
+@if(empty($isLeenauto))
+<script>
+  /* ===== SLOT-BOOKING (aanhanger / tapijtreiniger / koplampen) ===== */
+  (function () {
     const type = @json($type);
-    const durationMin = @json($durationMin ?? 60);   // komt uit controller
-    const oneClick = (type === 'koplampen');         // vaste duur -> 1 klik
+    const durationMin = @json($durationMin ?? 60);
+    const oneClick = (type === 'koplampen');
 
-    const dateEl = document.getElementById('date');
-    const timesEl = document.getElementById('times');
-    const bookForm = document.getElementById('bookForm');
-    const startInput = document.getElementById('start_at');
-    const endInput = document.getElementById('end_at');
-    const selSummary = document.getElementById('selSummary');
-    const submitBtn = document.getElementById('submitBtn');
-    const pickRange = document.getElementById('pickRange');
+    const dateEl    = document.getElementById('pxRsvDate');
+    const timesEl   = document.getElementById('pxRsvTimes');
+    const form      = document.getElementById('pxRsvForm');
+    const startInp  = document.getElementById('pxRsvStart');
+    const endInp    = document.getElementById('pxRsvEnd');
+    const summary   = document.getElementById('pxRsvSummary');
+    const submitBtn = document.getElementById('pxRsvSubmit');
+    const hintEl    = document.getElementById('pxRsvPickHint');
 
-    // Instructietekst afhankelijk van modus
-    if (pickRange) {
-      pickRange.textContent = oneClick
-        ? 'Selecteer een tijd.'
-        : 'Selecteer eerst een starttijd (klik), daarna een eindtijd (tweede klik).';
+    if (hintEl) {
+      hintEl.textContent = oneClick
+        ? 'Selecteer een tijd om je reservering te plannen.'
+        : 'Selecteer eerst een starttijd, daarna een eindtijd.';
     }
 
-    let slots = [];             // [{start:"YYYY-MM-DD HH:mm", label:"HH:mm"}]
-    let selStartIndex = null;   // index in slots
-    let selEndIndex   = null;
+    let slots = [];
+    let selStart = null, selEnd = null;
 
-    function resetSelection(){
-      selStartIndex = selEndIndex = null;
-      startInput.value = endInput.value = '';
+    const pad = n => String(n).padStart(2, '0');
+    const toShort = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+
+    function reset() {
+      selStart = selEnd = null;
+      startInp.value = endInp.value = '';
       submitBtn.disabled = true;
-      selSummary.textContent = 'Nog geen tijd geselecteerd';
-      bookForm.style.display = 'none';
-      [...timesEl.children].forEach(b => { b.classList.remove('sel-start','range','selected'); });
+      summary.textContent = 'Nog geen tijd geselecteerd';
+      form.style.display = 'none';
+      [...timesEl.children].forEach(b => b.classList?.remove('sel-start','range','selected'));
     }
 
-    async function loadSlots(){
-      resetSelection();
-      timesEl.innerHTML = 'Laden...';
+    async function loadSlots() {
+      reset();
+      timesEl.innerHTML = '<span class="px-rsv-loading">Laden…</span>';
       const url = @json(route('booking.slots')) + `?type=${encodeURIComponent(type)}&date=${encodeURIComponent(dateEl.value)}`;
       try {
-        const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' }});
-        if(!res.ok) throw new Error('HTTP '+res.status);
+        const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
         slots = await res.json();
-        renderSlots();
-      } catch(err){
-        console.error(err);
-        timesEl.innerHTML = '<span class="muted">Kon tijden niet laden.</span>';
+        render();
+      } catch (e) {
+        console.error(e);
+        timesEl.innerHTML = '<span class="px-rsv-empty">Kon tijden niet laden.</span>';
       }
     }
 
-    function renderSlots(){
-      if(!Array.isArray(slots) || slots.length===0){
-        timesEl.innerHTML = '<span class="muted">Geen tijden beschikbaar.</span>';
+    function render() {
+      if (!Array.isArray(slots) || slots.length === 0) {
+        timesEl.innerHTML = '<span class="px-rsv-empty">Geen tijden beschikbaar voor deze dag.</span>';
         return;
       }
       timesEl.innerHTML = '';
       slots.forEach((s, i) => {
         const b = document.createElement('button');
         b.type = 'button';
+        b.className = 'px-rsv-time';
         b.textContent = s.label;
-        b.dataset.index = i;
-        b.addEventListener('click', () => handleClick(i, b));
+        b.addEventListener('click', () => pick(i, b));
         timesEl.appendChild(b);
       });
     }
 
-    function contiguous(fromIdx, toIdx){
-      if(toIdx <= fromIdx) return false;
-      for(let j = fromIdx; j < toIdx; j++){
-        if(!slots[j] || !slots[j+1]) return false;
-      }
+    function contiguous(from, to) {
+      if (to <= from) return false;
+      for (let j = from; j < to; j++) if (!slots[j] || !slots[j+1]) return false;
       return true;
     }
 
-    function handleClick(i, btn){
-      // 1-klik modus (koplampen): direct vaste duur
+    function pick(i, btn) {
       if (oneClick) {
         [...timesEl.children].forEach(b => b.classList.remove('sel-start','range','selected'));
-        selStartIndex = i;
+        selStart = i;
         btn.classList.add('selected');
-
         const start = new Date(slots[i].start.replace(' ', 'T'));
         const end   = new Date(start.getTime() + durationMin * 60000);
-
-        const pad = (n)=> (n<10?'0':'')+n;
-        const toISOshort = (d)=> d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+' '+pad(d.getHours())+':'+pad(d.getMinutes());
-
-        startInput.value = toISOshort(start);
-        endInput.value   = toISOshort(end);
-
-        selSummary.textContent = `Gekozen tijd: ${slots[i].label} – ${pad(end.getHours())}:${pad(end.getMinutes())}`;
-        bookForm.style.display = 'block';
+        startInp.value = toShort(start);
+        endInp.value   = toShort(end);
+        summary.textContent = `Gekozen tijd: ${slots[i].label} – ${pad(end.getHours())}:${pad(end.getMinutes())}`;
+        form.style.display = '';
         submitBtn.disabled = false;
         return;
       }
-
-      // 2-klikken modus (aanhanger/tapijtreiniger): range
-      if (selStartIndex === null) {
-        selStartIndex = i;
+      if (selStart === null) {
+        selStart = i;
         btn.classList.add('sel-start','selected');
-        selSummary.textContent = `Start: ${slots[i].label}`;
-        bookForm.style.display = 'none';
+        summary.textContent = `Start: ${slots[i].label}`;
+        form.style.display = 'none';
         submitBtn.disabled = true;
         return;
       }
-      if (i <= selStartIndex) { resetSelection(); handleClick(i, btn); return; }
-      if (!contiguous(selStartIndex, i)) { resetSelection(); handleClick(i, btn); return; }
-
-      selEndIndex = i;
-
-      // highlight range
+      if (i <= selStart || !contiguous(selStart, i)) { reset(); pick(i, btn); return; }
+      selEnd = i;
       [...timesEl.children].forEach(b => b.classList.remove('range','selected'));
-      for (let k = selStartIndex; k <= selEndIndex; k++) {
-        timesEl.children[k].classList.add('range');
-      }
-      timesEl.children[selStartIndex].classList.add('sel-start','selected');
-      timesEl.children[selEndIndex].classList.add('selected');
+      for (let k = selStart; k <= selEnd; k++) timesEl.children[k].classList.add('range');
+      timesEl.children[selStart].classList.add('sel-start','selected');
+      timesEl.children[selEnd].classList.add('selected');
 
-      // end = laatste slot + 30 min
-      const start = new Date(slots[selStartIndex].start.replace(' ', 'T'));
-      const endBase = new Date(slots[selEndIndex].start.replace(' ', 'T'));
-      const end = new Date(endBase.getTime() + 30 * 60000);
-
-      const pad = (n)=> (n<10?'0':'')+n;
-      const toISOshort = (d)=> d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+' '+pad(d.getHours())+':'+pad(d.getMinutes());
-
-      startInput.value = toISOshort(start);
-      endInput.value   = toISOshort(end);
-
-      selSummary.textContent = `Gekozen tijd: ${slots[selStartIndex].label} – ${pad(end.getHours())}:${pad(end.getMinutes())}`;
-      bookForm.style.display = 'block';
+      const start   = new Date(slots[selStart].start.replace(' ', 'T'));
+      const endBase = new Date(slots[selEnd].start.replace(' ', 'T'));
+      const end     = new Date(endBase.getTime() + 30 * 60000);
+      startInp.value = toShort(start);
+      endInp.value   = toShort(end);
+      summary.textContent = `Gekozen tijd: ${slots[selStart].label} – ${pad(end.getHours())}:${pad(end.getMinutes())}`;
+      form.style.display = '';
       submitBtn.disabled = false;
     }
 
     dateEl.addEventListener('change', loadSlots);
     loadSlots();
-  </script>
+  })();
+</script>
+@else
+<script>
+  /* ===== LEENAUTO-AANVRAAG: bouw bericht-string voor contact.store ===== */
+  (function () {
+    const form  = document.getElementById('pxLeenautoForm');
+    const from  = document.getElementById('pxLeenFrom');
+    const to    = document.getElementById('pxLeenTo');
+    const notes = document.getElementById('pxLeenNotes');
+    const msg   = document.getElementById('pxLeenautoMessage');
+    if (!form) return;
+
+    const fmtDate = (s) => {
+      const [y, m, d] = s.split('-');
+      return `${d}-${m}-${y}`;
+    };
+
+    form.addEventListener('submit', () => {
+      const lines = [];
+      lines.push(`[Leenauto-aanvraag]`);
+      if (from.value) lines.push(`Ophalen op: ${fmtDate(from.value)}`);
+      if (to.value)   lines.push(`Terugbrengen op: ${fmtDate(to.value)}`);
+      if (notes.value.trim()) lines.push(`\nAanvullende info:\n${notes.value.trim()}`);
+      msg.value = lines.join('\n');
+    });
+
+    // Auto-set min van 'tot' bij verandering 'van'
+    from.addEventListener('change', () => {
+      if (to.value < from.value) to.value = from.value;
+      to.min = from.value;
+    });
+  })();
+</script>
+@endif
+
 </body>
 </html>

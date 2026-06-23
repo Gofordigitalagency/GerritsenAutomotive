@@ -1,165 +1,89 @@
 @extends('admin.layout')
-@section('title', 'Reclame export')
+@section('title', ($reclame->exists ? 'Reclame bewerken' : 'Nieuwe reclame') . ' — Gerritsen Admin')
+@section('page_title', $reclame->exists ? 'Reclame bewerken' : 'Nieuwe reclame')
 
 @section('content')
-  <h1>Reclame export</h1>
+<div class="adm-dash">
 
-  @if(session('success'))
-    <div class="alert-success">{{ session('success') }}</div>
-  @endif
-
-  <form method="POST"
-        action="{{ $reclame->exists ? route('admin.reclame.update',$reclame) : route('admin.reclame.store') }}">
+  <form method="POST" action="{{ $reclame->exists ? route('admin.reclame.update',$reclame) : route('admin.reclame.store') }}">
     @csrf
     @if($reclame->exists) @method('PUT') @endif
 
-    <div class="form-row">
-      <label>Titel</label>
-      <input name="title" value="{{ old('title',$reclame->title ?? 'WEKENAANBIEDING') }}" required>
+    <div class="form-card">
+      <div class="form-card-head"><h3>Tekst</h3></div>
+      <div class="form-card-body">
+        <div class="form-card-body grid-2" style="padding:0">
+          <label class="input-row">
+            <span>Titel</span>
+            <input name="title" value="{{ old('title', $reclame->title ?? 'WEKENAANBIEDING') }}" required>
+          </label>
+          <label class="input-row">
+            <span>Subtitel</span>
+            <input name="subtitle" value="{{ old('subtitle', $reclame->subtitle ?? 'Alleen deze week scherp geprijsd!') }}" required>
+          </label>
+        </div>
+      </div>
     </div>
 
-    <div class="form-row">
-      <label>Subtitel</label>
-      <input name="subtitle" value="{{ old('subtitle',$reclame->subtitle ?? 'Alleen deze week scherp geprijsd!') }}" required>
-    </div>
-
-    <div class="form-row">
-      <label>Kies max. 4 occasions</label>
-
-      <div class="occ-grid">
-        @foreach($occasions as $o)
-          @php
-            // ✅ FIX: altijd definiëren
-            $checked = in_array($o->id, old('occasion_ids', $selected ?? []));
-
-            $title = trim(($o->merk ?? '').' '.($o->model ?? '').' '.($o->type ?? ''));
-
-            // ✅ Browser-image: gebruik URL, geen public_path()
-            $img = $o->hoofdfoto_path
-              ? asset('storage/'.ltrim($o->hoofdfoto_path,'/'))
-              : null;
-          @endphp
-
-          <label class="occ-card">
-            <input class="occ-check"
-                   type="checkbox"
-                   name="occasion_ids[]"
-                   value="{{ $o->id }}"
-                   {{ $checked ? 'checked' : '' }}>
-
-            <div class="occ-inner">
-              <div class="occ-thumb">
+    <div class="form-card">
+      <div class="form-card-head">
+        <h3>Selecteer auto's <small style="color:var(--muted);font-weight:400">— maximaal 4</small></h3>
+      </div>
+      <div class="form-card-body">
+        <div class="adm-reclame-grid">
+          @foreach($occasions as $o)
+            @php
+              $checked = in_array($o->id, old('occasion_ids', $selected ?? []));
+              $title   = trim(($o->merk ?? '').' '.($o->model ?? '').' '.($o->type ?? ''));
+              $img     = $o->hoofdfoto_path ? asset('storage/'.ltrim($o->hoofdfoto_path,'/')) : null;
+            @endphp
+            <label class="adm-reclame-card">
+              <input class="adm-reclame-check" type="checkbox" name="occasion_ids[]" value="{{ $o->id }}" {{ $checked ? 'checked' : '' }}>
+              <div class="adm-reclame-thumb">
                 @if($img)
                   <img src="{{ $img }}" alt="">
                 @else
-                  <div class="occ-noimg">Geen foto</div>
+                  <span class="adm-reclame-noimg">Geen foto</span>
                 @endif
               </div>
-
-              <div class="occ-info">
-                <div class="occ-title">{{ $title ?: 'Occasion #'.$o->id }}</div>
-                <div class="occ-meta">
+              <div class="adm-reclame-info">
+                <div class="adm-reclame-title">{{ $title ?: 'Occasion #'.$o->id }}</div>
+                <div class="adm-reclame-meta">
                   € {{ number_format((float)($o->prijs ?? 0), 0, ',', '.') }}
-                  • {{ $o->tellerstand ?? '-' }} km
-                  • {{ $o->bouwjaar ?? '-' }}
+                  @if($o->tellerstand) · {{ number_format($o->tellerstand, 0, ',', '.') }} km @endif
+                  @if($o->bouwjaar) · {{ $o->bouwjaar }} @endif
                 </div>
               </div>
-            </div>
-          </label>
-        @endforeach
+              <div class="adm-reclame-mark">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg>
+              </div>
+            </label>
+          @endforeach
+        </div>
       </div>
-
-      <small class="hint">Tip: maximaal 4 selecteren.</small>
     </div>
 
-    <div class="actions">
-      <button class="btn" type="submit">Opslaan</button>
-
+    <div class="page-actions">
+      <a href="{{ route('admin.reclame.index') }}" class="btn">Annuleren</a>
+      <div class="spacer"></div>
       @if($reclame->exists)
-        <a class="btn" href="{{ route('admin.reclame.pdf',$reclame) }}" target="_blank">Export PDF</a>
+        <a href="{{ route('admin.reclame.pdf', $reclame) }}" target="_blank" class="btn">PDF preview →</a>
       @endif
+      <button type="submit" class="btn primary">{{ $reclame->exists ? 'Opslaan' : 'Aanmaken' }}</button>
     </div>
   </form>
+</div>
 
-  <style>
-    .form-row{ margin-bottom:14px; }
-
-    .occ-grid{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px;
-      max-height:360px;
-      overflow:auto;
-      padding:8px;
-      border:1px solid #ddd;
-      border-radius:8px;
-      background:#fff;
-    }
-
-    .occ-card{
-      display:block;
-      border:1px solid #e7e7e7;
-      border-radius:12px;
-      overflow:hidden;
-      background:#fff;
-      cursor:pointer;
-    }
-
-    .occ-inner{
-      display:flex;
-      gap:12px;
-      align-items:center;
-      padding:10px 12px 12px 12px;
-    }
-
-    .occ-check{
-      margin:12px;
-    }
-
-    .occ-thumb{
-      width:110px;
-      height:70px;
-      background:#f3f3f3;
-      border-radius:10px;
-      overflow:hidden;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      flex:0 0 auto;
-    }
-
-    .occ-thumb img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      display:block;
-    }
-
-    .occ-noimg{ font-size:12px; color:#999; }
-
-    .occ-title{ font-weight:800; }
-    .occ-meta{ font-size:12px; color:#666; }
-
-    .hint{ display:block; margin-top:6px; color:#666; }
-
-    .actions{
-      display:flex;
-      gap:10px;
-      margin-top:12px;
-      align-items:center;
-    }
-  </style>
-
-  <script>
-    // max 4 selecteren (client-side)
-    document.addEventListener('change', (e) => {
-      if (e.target.matches('input[type="checkbox"][name="occasion_ids[]"]')) {
-        const checked = document.querySelectorAll('input[name="occasion_ids[]"]:checked');
-        if (checked.length > 4) {
-          e.target.checked = false;
-          alert('Maximaal 4 auto’s selecteren.');
-        }
+<script>
+  // max 4 selecteren (client-side)
+  document.addEventListener('change', (e) => {
+    if (e.target.matches('input[type="checkbox"][name="occasion_ids[]"]')) {
+      const checked = document.querySelectorAll('input[name="occasion_ids[]"]:checked');
+      if (checked.length > 4) {
+        e.target.checked = false;
+        alert('Maximaal 4 auto\'s selecteren.');
       }
-    });
-  </script>
+    }
+  });
+</script>
 @endsection

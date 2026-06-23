@@ -36,6 +36,7 @@ class StoreOccasionRequest extends FormRequest
             'prijs' => 'nullable|integer',
             'oude_prijs' => 'nullable|integer|min:0',
             'verwachte_prijs' => 'nullable|integer|min:0',
+            'inkoop_prijs' => 'nullable|integer|min:0',
             'binnenkort' => 'nullable|boolean',
             'bekleding' => 'nullable|string|max:50',
             'aantal_cilinders' => 'nullable|integer',
