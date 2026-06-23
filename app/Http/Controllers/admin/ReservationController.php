@@ -17,6 +17,7 @@ class ReservationController extends Controller
         if (str_contains($name, 'aanhanger'))  return 'aanhanger';
         if (str_contains($name, 'stofzuiger')) return 'stofzuiger';
         if (str_contains($name, 'koplampen'))  return 'koplampen';
+        if (str_contains($name, 'airco'))      return 'airco';
 
         return 'aanhanger';
     }
@@ -123,6 +124,7 @@ class ReservationController extends Controller
                     'aanhanger'  => '#0ea5e9', // blauw
                     'stofzuiger' => '#f97316', // oranje
                     'koplampen'  => '#22c55e', // groen
+                    'airco'      => '#06b6d4', // cyaan
                     default      => '#6b7280', // grijs
                 };
 

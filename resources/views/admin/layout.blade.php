@@ -40,6 +40,7 @@
                    || request()->routeIs('admin.aanhanger.*')
                    || request()->routeIs('admin.stofzuiger.*')
                    || request()->routeIs('admin.koplampen.*')
+                   || request()->routeIs('admin.airco.*')
                    || request()->routeIs('admin.workshop.*');
       @endphp
 

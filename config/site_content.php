@@ -64,7 +64,7 @@ return [
         'fields' => [
             'over.eyebrow'        => ['type' => 'text',     'label' => 'Eyebrow',           'default' => 'Over ons'],
             'over.title'          => ['type' => 'text',     'label' => 'Titel',             'default' => 'Een klein team. Een hele garage.'],
-            'over.body_p1'        => ['type' => 'longtext', 'label' => 'Alinea 1',          'default' => 'Bij Gerritsen Automotive in Arnhem ben je geen klantnummer. Je hebt direct contact met de mensen die de auto kennen, repareren en verkopen.'],
+            'over.body_p1'        => ['type' => 'longtext', 'label' => 'Alinea 1',          'default' => 'Bij Gerritsen Automotive in Arnhem ben je geen nummertje. Je hebt direct contact met de mensen die de auto kennen, repareren en verkopen.'],
             'over.body_p2'        => ['type' => 'longtext', 'label' => 'Alinea 2',          'default' => 'Persoonlijk advies, duidelijke prijzen en alles op één locatie: verkoop, werkplaats en verhuur. Loop binnen, bel of stuur een berichtje, we helpen je graag.'],
             'over.image'          => ['type' => 'image',    'label' => 'Foto (rechts)',     'default' => 'images/handshake.jpg'],
             'over.person1_name'   => ['type' => 'text',     'label' => 'Persoon 1 — naam',  'default' => 'Shania'],
@@ -84,7 +84,7 @@ return [
             'contact.address'        => ['type' => 'text',  'label' => 'Adres',              'default' => 'Gelderse Rooslaan 14 A, 6841 BE Arnhem'],
             'contact.phone_sales'    => ['type' => 'phone', 'label' => 'Telefoon Verkoop',   'default' => '0638257987'],
             'contact.phone_workshop' => ['type' => 'phone', 'label' => 'Telefoon Werkplaats','default' => '0649951874'],
-            'contact.email'          => ['type' => 'email', 'label' => 'E-mailadres',        'default' => 'info@gerritsenautomotive.nl'],
+            'contact.email'          => ['type' => 'email', 'label' => 'E-mailadres',        'default' => 'Handelsonderneming@mgerritsen.nl'],
             'contact.hours_weekday'  => ['type' => 'text',  'label' => 'Openingstijden ma-vr','default' => 'Ma t/m vr 08:30 – 17:30'],
             'contact.hours_saturday' => ['type' => 'text',  'label' => 'Openingstijden za',  'default' => 'Za 09:00 – 16:00'],
             'contact.hours_sunday'   => ['type' => 'text',  'label' => 'Openingstijden zo',  'default' => 'Zo gesloten'],
@@ -266,7 +266,7 @@ return [
             'diensten_page.svc3_price_amt' => ['type' => 'text',  'label' => 'Koplampen — prijs',       'default' => ''],
             'diensten_page.svc3_price_meta'=> ['type' => 'text',  'label' => 'Koplampen — prijs-suffix','default' => ''],
 
-            'diensten_page.svc4_image'     => ['type' => 'image', 'label' => 'Airco service — foto',     'default' => 'images/afspraak-banner.jpg'],
+            'diensten_page.svc4_image'     => ['type' => 'image', 'label' => 'Airco service — foto',     'default' => 'images/180r.jpeg'],
             'diensten_page.svc4_tag'       => ['type' => 'text',  'label' => 'Airco service — tag',      'default' => 'Service'],
             'diensten_page.svc4_title'     => ['type' => 'text',  'label' => 'Airco service — titel',    'default' => 'Airco service'],
             'diensten_page.svc4_desc'      => ['type' => 'longtext','label' => 'Airco service — tekst',  'default' => 'Airco bijvullen, controleren of een complete onderhoudsbeurt. Weer fris en koel onderweg.'],
@@ -352,7 +352,7 @@ return [
         'fields' => [
             'werkplaats.eyebrow' => ['type' => 'text',     'label' => 'Eyebrow',          'default' => 'Werkplaats'],
             'werkplaats.title'   => ['type' => 'text',     'label' => 'Titel (1e regel)', 'default' => 'APK, beurt of reparatie?'],
-            'werkplaats.title2'  => ['type' => 'text',     'label' => 'Titel (2e regel)', 'default' => 'Vul je kenteken, wij doen de rest.'],
+            'werkplaats.title2'  => ['type' => 'text',     'label' => 'Titel (2e regel)', 'default' => 'Voer hier je kenteken in en wij doen de rest!'],
             'werkplaats.image'   => ['type' => 'image',    'label' => 'Achtergrondfoto',  'default' => 'images/afspraak-banner.jpg'],
         ],
     ],

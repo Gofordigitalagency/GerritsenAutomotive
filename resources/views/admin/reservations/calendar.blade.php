@@ -15,6 +15,7 @@
         <span><span class="adm-calendar-dot" style="background:#3b82f6"></span> Aanhanger</span>
         <span><span class="adm-calendar-dot" style="background:#f97316"></span> Tapijtreiniger</span>
         <span><span class="adm-calendar-dot" style="background:#a855f7"></span> Koplampen</span>
+        <span><span class="adm-calendar-dot" style="background:#06b6d4"></span> Airco service</span>
         <span><span class="adm-calendar-dot" style="background:#10b981"></span> Werkplaats</span>
       </div>
 

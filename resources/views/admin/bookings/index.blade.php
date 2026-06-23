@@ -7,6 +7,7 @@
     'aanhanger'  => ['label' => 'Aanhanger',          'icon' => 'M3 13l2-5a2 2 0 0 1 2-1h10a2 2 0 0 1 2 1l2 5M3 13h18M3 13v4a1 1 0 0 0 1 1h2M21 13v4a1 1 0 0 1-1 1h-2'],
     'stofzuiger' => ['label' => 'Tapijtreiniger',     'icon' => 'M9 3v6h6V3 M12 9v8 M9 20a3 3 0 1 0 6 0 3 3 0 0 0-6 0z'],
     'koplampen'  => ['label' => 'Koplampen',          'icon' => 'M12 2v6 M12 16v6 M4 12h6 M14 12h6 M19.07 4.93l-4.24 4.24 M9.17 14.83l-4.24 4.24 M19.07 19.07l-4.24-4.24 M9.17 9.17 4.93 4.93'],
+    'airco'      => ['label' => 'Airco service',      'icon' => 'M12 2v20 M2 12h20 M4.9 4.9l14.2 14.2 M19.1 4.9L4.9 19.1'],
     'werkplaats' => ['label' => 'Werkplaats',         'icon' => 'M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z'],
   ];
 @endphp

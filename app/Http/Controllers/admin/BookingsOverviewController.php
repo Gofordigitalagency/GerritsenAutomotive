@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 class BookingsOverviewController extends Controller
 {
-    private const TYPES = ['aanhanger', 'stofzuiger', 'koplampen', 'werkplaats'];
+    private const TYPES = ['aanhanger', 'stofzuiger', 'koplampen', 'airco', 'werkplaats'];
 
     public function index(Request $request)
     {
@@ -23,6 +23,7 @@ class BookingsOverviewController extends Controller
             'aanhanger'  => Reservation::ofType('aanhanger')->count(),
             'stofzuiger' => Reservation::ofType('stofzuiger')->count(),
             'koplampen'  => Reservation::ofType('koplampen')->count(),
+            'airco'      => Reservation::ofType('airco')->count(),
             'werkplaats' => class_exists(WorkshopAppointment::class) ? WorkshopAppointment::count() : 0,
         ];
 

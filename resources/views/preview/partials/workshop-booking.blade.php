@@ -155,7 +155,7 @@
     <div class="px-smart-form-error" id="pxSmartFormError" hidden></div>
 
     <p class="px-smart-fallback">
-      Liever even bellen? <a href="tel:{{ setting_tel('contact.phone_workshop') }}">{{ setting('contact.phone_workshop') }}</a>
+      Liever even bellen? <a href="tel:{{ setting_tel('contact.phone_workshop') }}">{{ setting_phone('contact.phone_workshop') }}</a>
     </p>
   </div>
 

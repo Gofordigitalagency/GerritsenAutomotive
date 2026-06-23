@@ -31,7 +31,7 @@
 
         'over.eyebrow'       => 'Over ons',
         'over.title'         => 'Een klein team. Een hele garage.',
-        'over.body_p1'       => 'Bij Gerritsen Automotive in Arnhem ben je geen klantnummer. Je hebt direct contact met de mensen die de auto kennen, repareren en verkopen.',
+        'over.body_p1'       => 'Bij Gerritsen Automotive in Arnhem ben je geen nummertje. Je hebt direct contact met de mensen die de auto kennen, repareren en verkopen.',
         'over.body_p2'       => 'Persoonlijk advies, duidelijke prijzen en alles op één locatie: verkoop, werkplaats en verhuur. Loop binnen, bel of stuur een berichtje, we helpen je graag.',
         'over.image'         => 'images/handshake.jpg',
         'over.person1_name'  => 'Shania',
@@ -42,7 +42,7 @@
         'contact.address'        => 'Gelderse Rooslaan 14 A, 6841 BE Arnhem',
         'contact.phone_sales'    => '0638257987',
         'contact.phone_workshop' => '0649951874',
-        'contact.email'          => 'info@gerritsenautomotive.nl',
+        'contact.email'          => 'Handelsonderneming@mgerritsen.nl',
         'contact.hours_weekday'  => 'Ma t/m vr 08:30 – 17:30',
         'contact.hours_saturday' => 'Za 09:00 – 16:00',
         'contact.hours_sunday'   => 'Zo gesloten',
@@ -63,7 +63,7 @@
 
         'werkplaats.eyebrow' => 'Werkplaats',
         'werkplaats.title'   => 'APK, beurt of reparatie?',
-        'werkplaats.title2'  => 'Vul je kenteken, wij doen de rest.',
+        'werkplaats.title2'  => 'Voer hier je kenteken in en wij doen de rest!',
         'werkplaats.image'   => 'images/afspraak-banner.jpg',
       ];
       return $defaults[$key] ?? $default ?? '';
@@ -102,11 +102,11 @@
         $clean = '0' . substr($clean, 2);
       }
       if (str_starts_with($clean, '06') && strlen($clean) === 10) {
-        return '06 ' . substr($clean, 2, 2) . ' ' . substr($clean, 4, 2)
+        return '+31 6 ' . substr($clean, 2, 2) . ' ' . substr($clean, 4, 2)
              . ' ' . substr($clean, 6, 2) . ' ' . substr($clean, 8, 2);
       }
       if (str_starts_with($clean, '0') && strlen($clean) >= 9) {
-        return substr($clean, 0, 3) . ' ' . substr($clean, 3);
+        return '+31 ' . substr($clean, 1);
       }
       return $raw;
     }
@@ -185,7 +185,7 @@
           <span><b><span class="px-counter" data-target="4.9" data-decimals="1">0,0</span></b> · Google reviews</span>
         </div>
         <span class="px-trust-divider"></span>
-        <div class="px-trust-item"><span>BOVAG aangesloten</span></div>
+        <div class="px-trust-item"><span>RDW Erkend</span></div>
         <span class="px-trust-divider"></span>
         <div class="px-trust-item"><span>Eigen werkplaats</span></div>
       </div>
@@ -379,8 +379,8 @@
         <div class="px-why-icon">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         </div>
-        <h3>BOVAG-zekerheid</h3>
-        <p>Volledige BOVAG-garantie, NAP-controle en eerlijke historie.</p>
+        <h3>Eerlijke historie</h3>
+        <p>NAP-gecontroleerde kilometerstand en een transparante autohistorie.</p>
       </div>
       <div class="px-why-card">
         <div class="px-why-icon">
@@ -723,9 +723,9 @@
         </div>
       </a>
 
-      <a href="{{ route('werkplaats') }}" class="px-service-card">
+      <a href="{{ route('booking.show', ['type' => 'airco']) }}" class="px-service-card">
         <div class="px-service-photo">
-          <img loading="lazy" src="{{ asset('images/afspraak-banner.jpg') }}" alt="Airco service">
+          <img loading="lazy" src="{{ asset('images/180r.jpeg') }}" alt="Airco service">
           <span class="px-service-tag">Service</span>
         </div>
         <div class="px-service-body">
@@ -760,7 +760,7 @@
             <div class="px-person-body">
               <div class="px-person-role">{{ setting('over.person1_role') }}</div>
               <div class="px-person-name">{{ setting('over.person1_name') }}</div>
-              <div class="px-person-phone">{{ setting('contact.phone_sales') }}</div>
+              <div class="px-person-phone">{{ setting_phone('contact.phone_sales') }}</div>
             </div>
           </a>
           <a href="tel:{{ setting_tel('contact.phone_workshop') }}" class="px-person">
@@ -768,7 +768,7 @@
             <div class="px-person-body">
               <div class="px-person-role">{{ setting('over.person2_role') }}</div>
               <div class="px-person-name">{{ setting('over.person2_name') }}</div>
-              <div class="px-person-phone">{{ setting('contact.phone_workshop') }}</div>
+              <div class="px-person-phone">{{ setting_phone('contact.phone_workshop') }}</div>
             </div>
           </a>
         </div>

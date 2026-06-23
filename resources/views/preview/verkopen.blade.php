@@ -163,13 +163,13 @@
         <div class="px-form-foot">
           <button type="submit" class="px-btn px-btn-primary px-btn-lg" data-magnetic>Aanvraag versturen</button>
           <span class="px-form-foot-meta">
-            Liever bellen? <a href="tel:{{ setting_tel('contact.phone_sales') }}">{{ setting('contact.phone_sales') }}</a>
+            Liever bellen? <a href="tel:{{ setting_tel('contact.phone_sales') }}">{{ setting_phone('contact.phone_sales') }}</a>
           </span>
         </div>
       </form>
     </div>
 
-    <p class="px-rsv-help">{{ setting('verkopen_page.help_text') }} <a href="tel:{{ setting_tel('contact.phone_sales') }}">{{ setting('contact.phone_sales') }}</a></p>
+    <p class="px-rsv-help">{{ setting('verkopen_page.help_text') }} <a href="tel:{{ setting_tel('contact.phone_sales') }}">{{ setting_phone('contact.phone_sales') }}</a></p>
   </div>
 </section>
 

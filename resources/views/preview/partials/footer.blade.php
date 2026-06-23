@@ -10,7 +10,8 @@
       <div>
         <h4>Contact</h4>
         <ul class="px-footer-list">
-          <li><a href="tel:{{ setting_tel('contact.phone_sales') }}">{{ setting('contact.phone_sales') }}</a></li>
+          <li><a href="tel:{{ setting_tel('contact.phone_sales') }}">Verkoop: {{ setting_phone('contact.phone_sales') }}</a></li>
+          <li><a href="tel:{{ setting_tel('contact.phone_workshop') }}">Werkplaats: {{ setting_phone('contact.phone_workshop') }}</a></li>
           <li><a href="mailto:{{ setting('contact.email') }}">{{ setting('contact.email') }}</a></li>
           <li>{{ setting('contact.address') }}</li>
         </ul>
@@ -31,7 +32,8 @@
         <ul class="px-footer-list">
           <li><a href="{{ route('booking.show', ['type' => 'aanhanger']) }}">Aanhanger huren</a></li>
           <li><a href="{{ route('booking.show', ['type' => 'stofzuiger']) }}">Stofzuiger</a></li>
-          <li><a href="{{ route('booking.show', ['type' => 'koplampen']) }}">Koplampen polish</a></li>
+          <li><a href="{{ route('booking.show', ['type' => 'koplampen']) }}">Koplampen polijsten</a></li>
+          <li><a href="{{ route('booking.show', ['type' => 'airco']) }}">Airco service</a></li>
           <li><a href="{{ route('booking.show', ['type' => 'leenauto']) }}">Leenauto</a></li>
           <li><a href="{{ route('occasions.binnenkort') }}">Binnenkort</a></li>
           <li><a href="{{ route('sellcar.show') }}">Auto verkopen</a></li>

@@ -42,6 +42,7 @@
     <a href="{{ $linkVerkopen }}">Auto verkopen</a>
     <a href="{{ $linkOver }}">Over ons</a>
     <a href="{{ $linkContact }}">Contact</a>
-    <a href="tel:{{ setting_tel('contact.phone_sales') }}" class="px-mobile-call">Bel ons · {{ setting_phone('contact.phone_sales') }}</a>
+    <a href="tel:{{ setting_tel('contact.phone_sales') }}" class="px-mobile-call">Verkoop · {{ setting_phone('contact.phone_sales') }}</a>
+    <a href="tel:{{ setting_tel('contact.phone_workshop') }}" class="px-mobile-call">Werkplaats · {{ setting_phone('contact.phone_workshop') }}</a>
   </div>
 </header>

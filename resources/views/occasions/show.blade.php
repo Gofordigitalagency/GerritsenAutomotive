@@ -185,7 +185,7 @@
             <div class="px-od-seller-body">
               <span class="px-od-seller-role">{{ setting('over.person1_role') }}</span>
               <span class="px-od-seller-name">{{ setting('over.person1_name') }}</span>
-              <span class="px-od-seller-phone">{{ setting('contact.phone_sales') }}</span>
+              <span class="px-od-seller-phone">{{ setting_phone('contact.phone_sales') }}</span>
             </div>
           </a>
           <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', setting_tel('contact.phone_sales')) }}?text={{ urlencode($waMessage) }}" target="_blank" rel="noopener" class="px-od-seller px-od-seller-wa">

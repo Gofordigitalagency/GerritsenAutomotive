@@ -130,7 +130,7 @@
           ['route' => route('booking.show', ['type' => 'aanhanger']),  'key' => 'svc1'],
           ['route' => route('booking.show', ['type' => 'stofzuiger']), 'key' => 'svc2'],
           ['route' => route('booking.show', ['type' => 'koplampen']),  'key' => 'svc3'],
-          ['route' => route('werkplaats'),                             'key' => 'svc4'],
+          ['route' => route('booking.show', ['type' => 'airco']),      'key' => 'svc4'],
         ];
       @endphp
 

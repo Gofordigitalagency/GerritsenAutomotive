@@ -23,16 +23,21 @@ class BookingController extends Controller
         'aanhanger'  => 60,
         'stofzuiger' => 30,
         'koplampen'  => 60, // nieuw: vaste duur, 1-klik
+        'airco'      => 60, // vaste duur, 1-klik (servicedienst)
     ];
 
     // Toegestane resources voor slot-booking
-    private const RESOURCES = ['aanhanger','stofzuiger','koplampen'];
+    private const RESOURCES = ['aanhanger','stofzuiger','koplampen','airco'];
+
+    // Vaste-duur diensten met 1-klik tijdselectie (i.p.v. start+eind range)
+    private const FIXED_SLOT = ['koplampen','airco'];
 
     // Labels voor nette weergave in mails / UI
     private const LABELS = [
         'aanhanger'  => 'Aanhanger',
         'stofzuiger' => 'Tapijtreiniger',
         'koplampen'  => 'Koplampen polijsten',
+        'airco'      => 'Airco service',
         'leenauto'   => 'Leenauto',
     ];
 
@@ -81,8 +86,8 @@ class BookingController extends Controller
     $close       = \Illuminate\Support\Carbon::parse($date->format('Y-m-d').' '.self::CLOSE_TIME, 'Europe/Amsterdam');
     $durationMin = self::DURATIONS[$type];
 
-    // ✅ stapgrootte per resource: koplampen = 60 min, rest 30 min
-    $stepMinutes = ($type === 'koplampen') ? 60 : self::SLOT_MINUTES;
+    // ✅ stapgrootte: vaste-duur diensten (koplampen/airco) = 60 min, rest 30 min
+    $stepMinutes = in_array($type, self::FIXED_SLOT, true) ? 60 : self::SLOT_MINUTES;
 
     // bestaande reserveringen op die dag
     $dayReservations = Reservation::ofType($type)

@@ -122,7 +122,7 @@
         <div class="px-person-body">
           <div class="px-person-role">{{ setting('over.person1_role') }}</div>
           <div class="px-person-name">{{ setting('over.person1_name') }}</div>
-          <div class="px-person-phone">{{ setting('contact.phone_sales') }}</div>
+          <div class="px-person-phone">{{ setting_phone('contact.phone_sales') }}</div>
         </div>
       </a>
       <a href="tel:{{ setting_tel('contact.phone_workshop') }}" class="px-person px-reveal" style="--rd: .2s">
@@ -130,7 +130,7 @@
         <div class="px-person-body">
           <div class="px-person-role">{{ setting('over.person2_role') }}</div>
           <div class="px-person-name">{{ setting('over.person2_name') }}</div>
-          <div class="px-person-phone">{{ setting('contact.phone_workshop') }}</div>
+          <div class="px-person-phone">{{ setting_phone('contact.phone_workshop') }}</div>
         </div>
       </a>
     </div>

@@ -70,6 +70,7 @@
           'aanhanger'  => ['label' => 'Aanhanger',          'icon' => '<rect x="3" y="11" width="14" height="6" rx="1"/><circle cx="7" cy="19" r="2"/><circle cx="14" cy="19" r="2"/><path d="M17 14h4"/>'],
           'stofzuiger' => ['label' => 'Tapijtreiniger',     'icon' => '<path d="M9 3v6h6V3"/><path d="M12 9v8"/><circle cx="12" cy="20" r="2"/>'],
           'koplampen'  => ['label' => 'Koplampen polijsten','icon' => '<circle cx="12" cy="12" r="9"/><path d="M9 12h6M12 9v6"/>'],
+          'airco'      => ['label' => 'Airco service',      'icon' => '<path d="M12 2v20 M2 12h20 M4.9 4.9l14.2 14.2 M19.1 4.9L4.9 19.1"/>'],
           'leenauto'   => ['label' => 'Leenauto',           'icon' => '<path d="M3 13l2-5a2 2 0 0 1 2-1h10a2 2 0 0 1 2 1l2 5"/><rect x="3" y="13" width="18" height="6" rx="1"/><circle cx="7" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/>'],
         ];
       @endphp
@@ -143,7 +144,7 @@
           <div class="px-form-foot">
             <button type="submit" class="px-btn px-btn-primary px-btn-lg" data-magnetic>Aanvraag versturen</button>
             <span class="px-form-foot-meta">
-              Liever bellen? <a href="tel:{{ setting_tel('contact.phone_workshop') }}">{{ setting('contact.phone_workshop') }}</a>
+              Liever bellen? <a href="tel:{{ setting_tel('contact.phone_workshop') }}">{{ setting_phone('contact.phone_workshop') }}</a>
             </span>
           </div>
         </form>
@@ -205,7 +206,7 @@
       @endif
     </div>
 
-    <p class="px-rsv-help">{{ setting('reserveren_page.help_text') }} <a href="tel:{{ setting_tel('contact.phone_workshop') }}">{{ setting('contact.phone_workshop') }}</a></p>
+    <p class="px-rsv-help">{{ setting('reserveren_page.help_text') }} <a href="tel:{{ setting_tel('contact.phone_workshop') }}">{{ setting_phone('contact.phone_workshop') }}</a></p>
   </div>
 </section>
 
@@ -219,7 +220,7 @@
   (function () {
     const type = @json($type);
     const durationMin = @json($durationMin ?? 60);
-    const oneClick = (type === 'koplampen');
+    const oneClick = (type === 'koplampen' || type === 'airco');
 
     const dateEl    = document.getElementById('pxRsvDate');
     const timesEl   = document.getElementById('pxRsvTimes');

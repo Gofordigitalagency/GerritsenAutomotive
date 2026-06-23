@@ -146,6 +146,14 @@ Route::get('occasions/rdw/{kenteken}', [AdminOccasionController::class, 'rdwLook
     Route::put('/koplampen/{reservation}',      [ReservationController::class, 'update'])->name('koplampen.update');
     Route::delete('/koplampen/{reservation}',   [ReservationController::class, 'destroy'])->name('koplampen.destroy');
 
+    // ✅ Airco service
+    Route::get('/airco',                    [ReservationController::class, 'index'])->name('airco.index');
+    Route::get('/airco/create',             [ReservationController::class, 'create'])->name('airco.create');
+    Route::post('/airco',                   [ReservationController::class, 'store'])->name('airco.store');
+    Route::get('/airco/{reservation}/edit', [ReservationController::class, 'edit'])->name('airco.edit');
+    Route::put('/airco/{reservation}',      [ReservationController::class, 'update'])->name('airco.update');
+    Route::delete('/airco/{reservation}',   [ReservationController::class, 'destroy'])->name('airco.destroy');
+
     // Agenda
     Route::get('/agenda', [ReservationController::class, 'calendar'])->name('agenda.index');
 

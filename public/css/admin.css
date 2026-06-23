@@ -599,7 +599,37 @@ textarea { resize: vertical; line-height: 1.5; }
 }
 
 .pagination-wrap { margin-top: 20px; }
-.pagination-wrap nav { display: flex; justify-content: center; gap: 4px; }
+
+/* Eigen paginatie (vendor/pagination/admin.blade.php) */
+.adm-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 20px;
+}
+.adm-pagination-btn {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--bg-2);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  transition: border-color .15s, color .15s, background .15s;
+}
+.adm-pagination-btn:hover { border-color: var(--accent); color: var(--accent); }
+.adm-pagination-btn.is-active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.adm-pagination-btn.is-disabled { opacity: .4; pointer-events: none; }
+.adm-pagination-dots { padding: 0 4px; color: var(--muted); }
 
 /* Marge-badge */
 .adm-marge {

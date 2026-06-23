@@ -58,7 +58,7 @@
         </div>
         <div class="px-contact-card-body">
           <span class="px-contact-card-label">Verkoop</span>
-          <span class="px-contact-card-value">{{ setting('contact.phone_sales') }}</span>
+          <span class="px-contact-card-value">{{ setting_phone('contact.phone_sales') }}</span>
           <span class="px-contact-card-meta">{{ setting('over.person1_name') }}</span>
         </div>
       </a>
@@ -69,7 +69,7 @@
         </div>
         <div class="px-contact-card-body">
           <span class="px-contact-card-label">Werkplaats</span>
-          <span class="px-contact-card-value">{{ setting('contact.phone_workshop') }}</span>
+          <span class="px-contact-card-value">{{ setting_phone('contact.phone_workshop') }}</span>
           <span class="px-contact-card-meta">{{ setting('over.person2_name') }}</span>
         </div>
       </a>
@@ -180,7 +180,7 @@
         <div class="px-form-foot">
           <button type="submit" class="px-btn px-btn-primary px-btn-lg" data-magnetic>Verstuur bericht</button>
           <span class="px-form-foot-meta">
-            Liever bellen? <a href="tel:{{ setting_tel('contact.phone_sales') }}">{{ setting('contact.phone_sales') }}</a>
+            Liever bellen? <a href="tel:{{ setting_tel('contact.phone_sales') }}">{{ setting_phone('contact.phone_sales') }}</a>
           </span>
         </div>
       </form>

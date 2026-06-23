@@ -70,15 +70,15 @@ if (! function_exists('setting_phone')) {
             $clean = '0' . substr($clean, 2);
         }
 
-        // Nederlandse mobiel: 06 + 4 paren van 2 cijfers (10 cijfers totaal)
+        // Nederlandse mobiel: 06 + 4 paren van 2 cijfers → +31 6 XX XX XX XX
         if (str_starts_with($clean, '06') && strlen($clean) === 10) {
-            return '06 ' . substr($clean, 2, 2) . ' ' . substr($clean, 4, 2)
+            return '+31 6 ' . substr($clean, 2, 2) . ' ' . substr($clean, 4, 2)
                  . ' ' . substr($clean, 6, 2) . ' ' . substr($clean, 8, 2);
         }
 
-        // Vaste nummers: 0 + areacode + rest, met spatie na areacode (3 of 4 cijfers)
+        // Overige Nederlandse nummers (0-prefix) → +31 ...
         if (str_starts_with($clean, '0') && strlen($clean) >= 9) {
-            return substr($clean, 0, 3) . ' ' . substr($clean, 3);
+            return '+31 ' . substr($clean, 1);
         }
 
         return $raw;

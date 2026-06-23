@@ -95,7 +95,7 @@ body { margin:0; padding:0; font-size: 13px; color:#111; }
 }
 
 /* ===== OPTIONS ===== */
-.optsWrap{ margin-top:18px; }
+.optsWrap{ margin-top:8px; }
 
 .optsTitle{
   font-size:13px;
@@ -114,10 +114,10 @@ body { margin:0; padding:0; font-size: 13px; color:#111; }
 ul.bullets{
   margin:0;
   padding-left:18px;
-  line-height:1.8;
+  line-height:1.5;
   font-size:13px;
 }
-ul.bullets li{ margin:0 0 6px 0; }
+ul.bullets li{ margin:0 0 3px 0; }
 
 /* ===== FOOTER ===== */
 .footer{
@@ -159,7 +159,7 @@ ul.bullets li{ margin:0 0 6px 0; }
  $allOptions = array_values(array_filter(array_map('trim', $allOptions)));
 
 /* ===== MAX OPTIES BEPERKEN ===== */
-$maxOptions = 16;
+$maxOptions = 12;
 $shownOptions = array_slice($allOptions, 0, $maxOptions);
 $extraCount = max(0, count($allOptions) - $maxOptions);
 
@@ -225,7 +225,7 @@ $optR = array_slice($shownOptions, $half);
       </tr>
     </table>
 
-    <table style="width:100%; border-collapse:collapse; margin:24px 0;">
+    <table style="width:100%; border-collapse:collapse; margin:14px 0;">
       <tr>
         <td style="vertical-align:middle;">
           <div class="price" style="margin:0;">
@@ -238,9 +238,9 @@ $optR = array_slice($shownOptions, $half);
           </div>
         </td>
         @if(!empty($qrDataUri))
-          <td style="vertical-align:middle; text-align:right; width:150px;">
-            <img src="{{ $qrDataUri }}" alt="QR-code naar deze auto" style="width:120px; height:120px;">
-            <div style="font-size:11px; color:#555; margin-top:2px; text-align:center;">Scan voor foto's &amp; info</div>
+          <td style="vertical-align:middle; text-align:right; width:118px;">
+            <img src="{{ $qrDataUri }}" alt="QR-code naar deze auto" style="width:96px; height:96px;">
+            <div style="font-size:10px; color:#555; margin-top:1px; text-align:center;">Scan voor foto's &amp; info</div>
           </td>
         @endif
       </tr>

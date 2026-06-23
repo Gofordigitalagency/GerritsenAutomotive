@@ -45,7 +45,11 @@ html, body {
 }
 /* `overflow-x: clip` voorkomt horizontale scroll zonder de scroll-context te
    breken zoals `overflow-x: hidden` doet (laatste verstoort `position: sticky`
-   en momentum scrolling op iOS/Chrome). Alleen op body zetten, NIET op html. */
+   en momentum scrolling op iOS/Chrome). Ook op html: anders kunnen
+   `position: fixed` elementen (zoals het off-canvas mobiele menu dat met
+   translateX(100%) buiten beeld staat) de viewport horizontaal oprekken —
+   body-clip raakt fixed-children namelijk niet. */
+html { overflow-x: clip; }
 body { overflow-x: clip; }
 
 img { max-width: 100%; height: auto; display: block; }
@@ -294,6 +298,11 @@ ul { list-style: none; padding: 0; margin: 0; }
 
 .px-menu-btn {
   display: none;
+  /* Boven het mobiele menu-paneel (z-index 99) zodat de knop klikbaar blijft
+     om het menu weer te sluiten. Zonder position+z-index wordt deze statische
+     knop ónder het positioned paneel geschilderd en vangt het paneel de klik. */
+  position: relative;
+  z-index: 101;
   width: 40px; height: 40px;
   border-radius: 50%;
   background: rgba(255,255,255,.05);
@@ -524,7 +533,9 @@ ul { list-style: none; padding: 0; margin: 0; }
 .px-stars { display: flex; gap: 2px; color: #f5c451; }
 
 @media (max-width: 768px) {
-  .px-hero { min-height: auto; padding: 110px 0 60px; }
+  /* Volledige schermhoogte op mobiel. svh = "small viewport height" zodat de
+     hero ook past wanneer de adresbalk zichtbaar is (geen jump/overflow). */
+  .px-hero { min-height: 100vh; min-height: 100svh; padding: 96px 0 48px; }
 }
 
 /* =========================================================
@@ -1659,6 +1670,18 @@ a.px-over-meta-value:hover svg {
   color: var(--px-fg-dim);
 }
 .px-finder-steps span.active { color: var(--px-fg); }
+/* Op mobiel passen 6 uppercase-labels met letter-spacing niet op één regel
+   (liepen aan elkaar vast / duwden de pagina breder). Laten wrappen, gecentreerd
+   en compacter zodat ze leesbaar blijven. */
+@media (max-width: 560px) {
+  .px-finder-steps {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px 12px;
+    font-size: 10px;
+    letter-spacing: 0.05em;
+  }
+}
 
 .px-finder-step { display: none; text-align: center; }
 .px-finder-step.px-active {
