@@ -19,6 +19,7 @@ return [
         'Seizoenscheck',
         'Bandenwissel',
         'Sterretje in de voorruit repareren',
+        'Airco service',
         '*Tip: Airco check uitvoeren',
         '*Tip: Airco onderhoudsbeurt uitvoeren',
         '*Tip: Airco geurbehandeling',

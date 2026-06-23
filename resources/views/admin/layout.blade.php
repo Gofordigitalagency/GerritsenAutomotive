@@ -81,9 +81,9 @@
           <span>Reclame</span>
         </a>
 
-        <a href="{{ route('admin.site-content.edit') }}" class="menu-item {{ request()->routeIs('admin.site-content.*') ? 'active' : '' }}">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-          <span>Site-inhoud</span>
+        <a href="{{ route('admin.landingpages.index') }}" class="menu-item {{ request()->routeIs('admin.landingpages.*') ? 'active' : '' }}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v4H4z"/><path d="M4 12h10"/><path d="M4 16h10"/><path d="M4 20h6"/><path d="M18 13l3 3-3 3"/></svg>
+          <span>Landingspagina's</span>
         </a>
       </nav>
 

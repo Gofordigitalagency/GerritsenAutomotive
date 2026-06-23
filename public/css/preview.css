@@ -701,10 +701,11 @@ ul { list-style: none; padding: 0; margin: 0; }
    ========================================================= */
 .px-services-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 18px;
 }
-@media (max-width: 900px) { .px-services-grid { grid-template-columns: 1fr; } }
+@media (max-width: 1100px) { .px-services-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px)  { .px-services-grid { grid-template-columns: 1fr; } }
 
 .px-service-card {
   display: flex;
@@ -3882,6 +3883,24 @@ a.px-over-meta-value:hover svg {
 .px-vk-form textarea { resize: vertical; line-height: 1.5; }
 .px-vk-form input:focus,
 .px-vk-form textarea:focus { outline: none; border-color: var(--px-accent); }
+
+/* Kentekenplaat behoudt zijn gele plaat-look binnen het verkoopformulier
+   (anders pakt .px-vk-form input[type="text"] de donkere veldstijl). */
+.px-vk-form .px-plate-big input {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 14px 18px;
+  color: #111;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color-scheme: light;
+}
+.px-vk-form .px-plate-big input:focus { border: none; }
+@media (max-width: 480px) {
+  .px-vk-form .px-plate-big input { font-size: 22px; }
+}
 
 .px-vk-uploader {
   display: flex;

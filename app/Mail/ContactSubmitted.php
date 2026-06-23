@@ -22,11 +22,15 @@ class ContactSubmitted extends Mailable
 
     public function build()
     {
+        $subject = !empty($this->data['occasion'])
+            ? 'Reactie op auto: '.$this->data['occasion']
+            : 'Nieuwe contactaanvraag via de website';
+
         return $this
             ->from(config('mail.from.address'), config('mail.from.name'))
             ->to(config('services.contact.to_email'))
             ->replyTo($this->data['email'] ?? config('services.contact.to_email'), $this->data['name'] ?? null)
-            ->subject('Nieuwe contactaanvraag via de website')
+            ->subject($subject)
             ->markdown('mail.contact-submitted', ['data' => $this->data]);
     }
 }

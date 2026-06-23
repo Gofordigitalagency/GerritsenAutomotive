@@ -118,10 +118,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="format-detection" content="telephone=no,email=no,address=no">
-    <meta name="robots" content="noindex,nofollow">
+    <meta name="robots" content="index,follow">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Gerritsen Automotive · Preview</title>
+    <title>Gerritsen Automotive · Betrouwbare occasions in Arnhem</title>
 
     <link rel="icon" type="image/png" href="{{ asset('images/FAVICON-GERRITSEN.png') }}">
 
@@ -714,6 +714,23 @@
         <div class="px-service-body">
           <h3 class="px-service-name">Koplampen polijsten</h3>
           <p class="px-service-desc">Doffe of vergeelde koplampen weer helder. Resultaat binnen één behandeling.</p>
+          <div class="px-service-foot">
+            <div class="px-service-prijs">
+              <span class="px-service-prijs-label">op afspraak</span>
+            </div>
+            <span class="px-service-arrow">→</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="{{ route('werkplaats') }}" class="px-service-card">
+        <div class="px-service-photo">
+          <img loading="lazy" src="{{ asset('images/afspraak-banner.jpg') }}" alt="Airco service">
+          <span class="px-service-tag">Service</span>
+        </div>
+        <div class="px-service-body">
+          <h3 class="px-service-name">Airco service</h3>
+          <p class="px-service-desc">Airco bijvullen, controleren of een complete onderhoudsbeurt. Weer fris en koel onderweg.</p>
           <div class="px-service-foot">
             <div class="px-service-prijs">
               <span class="px-service-prijs-label">op afspraak</span>

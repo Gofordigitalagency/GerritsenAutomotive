@@ -85,6 +85,13 @@
         <span class="px-service-name">Aankoopkeuring</span>
         <span class="px-service-hint">Voor je een auto koopt</span>
       </button>
+      <button type="button" class="px-service" data-svc="Airco service" data-key="airco">
+        <span class="px-service-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/><path d="m20 16-4-4 4-4"/><path d="m4 8 4 4-4 4"/><path d="m16 4-4 4-4-4"/><path d="m8 20 4-4 4 4"/></svg>
+        </span>
+        <span class="px-service-name">Airco service</span>
+        <span class="px-service-hint">Vullen, controle of onderhoud</span>
+      </button>
       <button type="button" class="px-service" data-svc="Anders" data-key="anders">
         <span class="px-service-icon">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>

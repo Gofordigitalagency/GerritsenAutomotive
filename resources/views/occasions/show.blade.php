@@ -305,6 +305,50 @@
         </a>
       </div>
     </div>
+
+    {{-- Reactieformulier — stuurt automatisch mee om welke auto het gaat --}}
+    <form class="px-contact-form px-reveal" method="POST" action="{{ route('contact.store') }}"
+          style="--rd:.1s; margin-top:34px; max-width:680px;">
+      @csrf
+      <input type="text" name="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;" aria-hidden="true">
+      <input type="hidden" name="privacy" value="1">
+      <input type="hidden" name="occasion" value="{{ $pageTitle }}{{ !empty($occasion->bouwjaar) ? ' ('.$occasion->bouwjaar.')' : '' }}">
+      <input type="hidden" name="occasion_url" value="{{ url()->current() }}">
+
+      @if(session('success'))
+        <div class="px-form-success">{{ session('success') }}</div>
+      @endif
+      @if($errors->any())
+        <div class="px-form-error">
+          @foreach($errors->all() as $error)<div>{{ $error }}</div>@endforeach
+        </div>
+      @endif
+
+      <div class="px-form-row">
+        <div class="px-input-wrap">
+          <label for="rcName">Naam</label>
+          <input type="text" id="rcName" name="name" required maxlength="120" value="{{ old('name') }}">
+        </div>
+        <div class="px-input-wrap">
+          <label for="rcEmail">E-mail</label>
+          <input type="email" id="rcEmail" name="email" required maxlength="190" value="{{ old('email') }}">
+        </div>
+      </div>
+
+      <div class="px-input-wrap">
+        <label for="rcPhone">Telefoon (optioneel)</label>
+        <input type="tel" id="rcPhone" name="phone" maxlength="40" value="{{ old('phone') }}">
+      </div>
+
+      <div class="px-input-wrap">
+        <label for="rcMessage">Bericht</label>
+        <textarea id="rcMessage" name="message" required maxlength="5000" rows="4">{{ old('message', 'Ik heb interesse in de '.$pageTitle.'. Ik hoor graag meer.') }}</textarea>
+      </div>
+
+      <div class="px-form-foot">
+        <button type="submit" class="px-btn px-btn-primary px-btn-lg" data-magnetic>Verstuur reactie</button>
+      </div>
+    </form>
   </div>
 </section>
 

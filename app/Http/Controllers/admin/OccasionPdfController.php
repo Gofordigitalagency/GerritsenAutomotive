@@ -8,6 +8,9 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\ErrorCorrectionLevel;
+use Endroid\QrCode\Writer\PngWriter;
 
 
 class OccasionPdfController extends Controller
@@ -59,6 +62,21 @@ Log::info('RAAMKAART FOTO DEBUG', [
         }
         $opties = array_values(array_filter(array_map('trim', $opties)));
 
+        // ✅ QR-code die naar de publieke pagina van déze auto verwijst
+        $carUrl = route('occasions.show', $occasion->slug);
+        $qrDataUri = null;
+        try {
+            $qr = new QrCode(
+                data: $carUrl,
+                errorCorrectionLevel: ErrorCorrectionLevel::Medium,
+                size: 320,
+                margin: 4,
+            );
+            $qrDataUri = (new PngWriter())->write($qr)->getDataUri();
+        } catch (\Throwable $e) {
+            Log::warning('Raamkaart QR-generatie mislukt: '.$e->getMessage());
+        }
+
        $pdf = Pdf::loadView('admin.pdf.raamkaart', [
     'occasion' => $occasion,
     'titel'    => $titel,
@@ -66,6 +84,8 @@ Log::info('RAAMKAART FOTO DEBUG', [
     'photoDataUri' => $photoDataUri,   // ✅ nieuw
     'logo'     => $logo,
     'opties'   => $opties,
+    'qrDataUri' => $qrDataUri,         // ✅ QR naar de auto
+    'carUrl'    => $carUrl,
 ])->setPaper('a4', 'portrait');
 
 

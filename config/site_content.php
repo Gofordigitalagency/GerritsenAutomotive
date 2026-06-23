@@ -265,6 +265,14 @@ return [
             'diensten_page.svc3_price_lbl' => ['type' => 'text',  'label' => 'Koplampen — prijslabel',  'default' => 'op afspraak'],
             'diensten_page.svc3_price_amt' => ['type' => 'text',  'label' => 'Koplampen — prijs',       'default' => ''],
             'diensten_page.svc3_price_meta'=> ['type' => 'text',  'label' => 'Koplampen — prijs-suffix','default' => ''],
+
+            'diensten_page.svc4_image'     => ['type' => 'image', 'label' => 'Airco service — foto',     'default' => 'images/afspraak-banner.jpg'],
+            'diensten_page.svc4_tag'       => ['type' => 'text',  'label' => 'Airco service — tag',      'default' => 'Service'],
+            'diensten_page.svc4_title'     => ['type' => 'text',  'label' => 'Airco service — titel',    'default' => 'Airco service'],
+            'diensten_page.svc4_desc'      => ['type' => 'longtext','label' => 'Airco service — tekst',  'default' => 'Airco bijvullen, controleren of een complete onderhoudsbeurt. Weer fris en koel onderweg.'],
+            'diensten_page.svc4_price_lbl' => ['type' => 'text',  'label' => 'Airco service — prijslabel','default' => 'op afspraak'],
+            'diensten_page.svc4_price_amt' => ['type' => 'text',  'label' => 'Airco service — prijs',    'default' => ''],
+            'diensten_page.svc4_price_meta'=> ['type' => 'text',  'label' => 'Airco service — prijs-suffix','default' => ''],
         ],
     ],
 

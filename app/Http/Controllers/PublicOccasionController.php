@@ -16,8 +16,8 @@ public function home()
         ->latest()
         ->get();
 
-    // Hoofd-domein toont nog de oude home. De nieuwe versie staat op /preview.
-    return view('home_old', compact('nieuw'));
+    // Nieuwe (dark) homepage is nu de hoofdpagina. De oude versie staat in home_old.
+    return view('preview', compact('nieuw'));
 }
 
 public function preview()
@@ -29,11 +29,6 @@ public function preview()
         ->get();
 
     return view('preview', compact('nieuw'));
-}
-
-public function previewAdmin()
-{
-    return view('preview-admin');
 }
 
 public function rdwFull(string $kenteken)

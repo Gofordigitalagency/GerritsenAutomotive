@@ -168,7 +168,10 @@ $half = (int) ceil(count($shownOptions) / 2);
 $optL = array_slice($shownOptions, 0, $half);
 $optR = array_slice($shownOptions, $half);
 
-  $prijs = !empty($occasion->prijs) ? '€ '.number_format($occasion->prijs, 0, ',', '.').',-' : '€ -';
+  $fmt = fn ($v) => '€ '.number_format((float) $v, 0, ',', '.').',-';
+  $hasDiscount = !empty($occasion->oude_prijs) && (float) $occasion->oude_prijs > (float) $occasion->prijs;
+  $prijs     = !empty($occasion->prijs) ? $fmt($occasion->prijs) : '€ -';
+  $oudePrijs = $hasDiscount ? $fmt($occasion->oude_prijs) : null;
 @endphp
 
 <div class="sheet">
@@ -222,9 +225,26 @@ $optR = array_slice($shownOptions, $half);
       </tr>
     </table>
 
-    <div class="price">
-      Vraagprijs: {{ $prijs }}
-    </div>
+    <table style="width:100%; border-collapse:collapse; margin:24px 0;">
+      <tr>
+        <td style="vertical-align:middle;">
+          <div class="price" style="margin:0;">
+            @if($hasDiscount)
+              <span style="font-size:20px; font-weight:400; color:#777; text-decoration:line-through;">{{ $oudePrijs }}</span><br>
+              <span style="color:#c1121f;">Vraagprijs: {{ $prijs }}</span>
+            @else
+              Vraagprijs: {{ $prijs }}
+            @endif
+          </div>
+        </td>
+        @if(!empty($qrDataUri))
+          <td style="vertical-align:middle; text-align:right; width:150px;">
+            <img src="{{ $qrDataUri }}" alt="QR-code naar deze auto" style="width:120px; height:120px;">
+            <div style="font-size:11px; color:#555; margin-top:2px; text-align:center;">Scan voor foto's &amp; info</div>
+          </td>
+        @endif
+      </tr>
+    </table>
 
     <div class="optsWrap">
       <div class="optsTitle">Opties:</div>

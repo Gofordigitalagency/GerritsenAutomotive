@@ -11,7 +11,8 @@ use App\Http\Controllers\SellCarController;
 use App\Http\Controllers\WorkshopAppointmentController;
 use App\Http\Controllers\admin\ReclameController;
 use App\Http\Controllers\admin\WorkshopAppointmentController as AdminWorkshopAppointmentController;
-use App\Http\Controllers\admin\SiteContentController;
+use App\Http\Controllers\admin\LandingPageController as AdminLandingPageController;
+use App\Http\Controllers\LandingPageController;
 
 
 
@@ -33,11 +34,8 @@ Route::get('/over', [PublicOccasionController::class, 'overPage'])->name('over')
 // Contact-pagina (gegevens + map + formulier)
 Route::get('/contact', [PublicOccasionController::class, 'contactPage'])->name('contact');
 
-// /preview toont de nieuwe (dark) homepage als losse demo
-Route::get('/preview', [PublicOccasionController::class, 'preview'])->name('preview');
-
-// Admin auto-toevoegen demo
-Route::get('/preview-admin', [PublicOccasionController::class, 'previewAdmin'])->name('preview.admin');
+// De nieuwe homepage is nu de hoofdpagina (/). /preview verwijst door naar /.
+Route::redirect('/preview', '/', 301)->name('preview');
 
 // Public APIs gebruikt door homepage + admin
 Route::get('/api/rdw/{kenteken}', [PublicOccasionController::class, 'rdwPublic'])->name('rdw.public');
@@ -165,8 +163,15 @@ Route::post('occasions/{occasion}/toggle-status', [
     'toggleStatus'
 ])->name('occasions.toggleStatus');
 
-    // ===== Site-inhoud (CMS): teksten, kleuren, foto's per groep =====
-    Route::get('/site-content/{group?}', [SiteContentController::class, 'edit'])->name('site-content.edit');
-    Route::post('/site-content/{group}',  [SiteContentController::class, 'update'])->name('site-content.update');
+    // ===== Landingspagina's (SEO) =====
+    Route::resource('landingpages', AdminLandingPageController::class)->except(['show']);
 
 });
+
+// --- Publieke SEO-landingspagina's op root-niveau ---------------------------
+// LET OP: deze catch-all moet ALS LAATSTE staan. Alle expliciete routes
+// hierboven krijgen voorrang; alleen onbekende 1-segment-URLs worden als
+// landingspagina behandeld (anders 404).
+Route::get('/{slug}', [LandingPageController::class, 'show'])
+    ->where('slug', '[a-z0-9]+(?:-[a-z0-9]+)*')
+    ->name('landing.show');
