@@ -27,7 +27,7 @@ class MobiloxImporter
             return 'Geen XML ontvangen';
         }
 
-        $xml = @simplexml_load_string($raw);
+        $xml = @simplexml_load_string($raw, 'SimpleXMLElement', LIBXML_NOCDATA);
         if ($xml === false) {
             Log::warning('Mobilox: ongeldige XML ontvangen.');
             return 'Geen geldige XML ontvangen';
@@ -82,11 +82,12 @@ class MobiloxImporter
         $occasion->tellerstand = $this->intVal($xml, 'tellerstand');
         $occasion->brandstof   = $this->mapBrandstof($this->val($xml, 'brandstof'));
         $occasion->transmissie = $this->mapTransmissie($this->val($xml, 'transmissie'));
-        $occasion->omschrijving = $this->val($xml, 'opmerkingen');
+        $occasion->omschrijving = $this->val($xml, 'opmerkingen_nederlands');
 
-        // Prijzen: actieprijs lager dan vraagprijs => korting tonen.
-        $verkoop = $this->firstNumber($xml->verkoopprijs_particulier ?? null);
-        $actie   = $this->firstNumber($xml->actieprijs ?? null);
+        // Prijzen: bedrag uit <verkoopprijs_particulier>/<actieprijs>/<inkoopprijs>.
+        // Actieprijs lager dan vraagprijs => korting tonen.
+        $verkoop = $this->priceFromNode($xml->verkoopprijs_particulier ?? null);
+        $actie   = $this->priceFromNode($xml->actieprijs ?? null);
         if ($actie && $verkoop && $actie < $verkoop) {
             $occasion->prijs      = $actie;
             $occasion->oude_prijs = $verkoop;
@@ -94,7 +95,7 @@ class MobiloxImporter
             $occasion->prijs      = $verkoop ?: $actie;
             $occasion->oude_prijs = null;
         }
-        $inkoop = $this->firstNumber($xml->inkoopprijs ?? null);
+        $inkoop = $this->priceFromNode($xml->inkoopprijs ?? null);
         if ($inkoop) {
             $occasion->inkoop_prijs = $inkoop;
         }
@@ -216,19 +217,20 @@ class MobiloxImporter
         return $digits === '' ? null : (int) $digits;
     }
 
-    /** Zoek het eerste getal (hele euro's) in een (geneste) node. */
-    private function firstNumber($node): ?int
+    /**
+     * Haal het bedrag (hele euro's) uit een prijs-node. De Hexon-structuur is
+     * <verkoopprijs_particulier><prijzen land="nl"><prijs nr="1"><bedrag>2745</bedrag>…
+     * dus we pakken specifiek het eerste <bedrag>, niet zomaar het eerste getal.
+     */
+    private function priceFromNode($node): ?int
     {
         if ($node === null) {
             return null;
         }
-        foreach ($this->textValues($node) as $t) {
-            if (! preg_match('/\d/', $t)) {
-                continue;
-            }
-            $clean = preg_replace('/[^\d.,]/', '', $t);          // alleen cijfers + . ,
-            $clean = preg_replace('/[.,]\d{1,2}$/', '', $clean);  // centen weghalen
-            $clean = str_replace([',', '.'], '', $clean);         // duizendtallen weghalen
+        foreach ($node->xpath('.//bedrag') as $bedrag) {
+            $clean = preg_replace('/[^\d.,]/', '', (string) $bedrag);
+            $clean = preg_replace('/[.,]\d{1,2}$/', '', $clean); // centen weghalen
+            $clean = str_replace([',', '.'], '', $clean);        // duizendtallen weghalen
             if ($clean !== '') {
                 return (int) $clean;
             }
@@ -236,41 +238,20 @@ class MobiloxImporter
         return null;
     }
 
-    private function textValues(\SimpleXMLElement $node): array
-    {
-        $out  = [];
-        $self = trim((string) $node);
-        if ($self !== '') {
-            $out[] = $self;
-        }
-        foreach ($node->attributes() as $a) {
-            $v = trim((string) $a);
-            if ($v !== '') {
-                $out[] = $v;
-            }
-        }
-        foreach ($node->children() as $c) {
-            $out = array_merge($out, $this->textValues($c));
-        }
-        return $out;
-    }
-
     private function apkDate(\SimpleXMLElement $xml): ?string
     {
-        if (! isset($xml->apk)) {
-            return null;
-        }
-        $cand = trim((string) ($xml->apk['datum'] ?? ''));
-        if ($cand === '') {
-            $cand = trim((string) $xml->apk);
-        }
+        $cand = isset($xml->apk) ? trim((string) ($xml->apk['tot'] ?? '')) : '';
         if ($cand === '') {
             return null;
         }
         try {
-            return Carbon::parse($cand)->toDateString();
+            return Carbon::createFromFormat('d-m-Y', $cand)->toDateString();
         } catch (\Throwable) {
-            return null;
+            try {
+                return Carbon::parse($cand)->toDateString();
+            } catch (\Throwable) {
+                return null;
+            }
         }
     }
 
@@ -282,9 +263,10 @@ class MobiloxImporter
                 continue;
             }
             foreach ($xml->$group->children() as $child) {
-                $val = trim((string) $child);
-                if ($val !== '') {
-                    $opts[] = $val;
+                // Elk item is bv. <accessoire><naam>Airco</naam>…</accessoire>
+                $naam = isset($child->naam) ? trim((string) $child->naam) : trim((string) $child);
+                if ($naam !== '') {
+                    $opts[] = $naam;
                 }
             }
         }
