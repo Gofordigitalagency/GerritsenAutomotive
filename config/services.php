@@ -35,4 +35,12 @@ return [
     'to_email' => env('CONTACT_TO_EMAIL'),
 ],
 
+    // Mobilox/Hexon incrementele voorraadkoppeling (EWI).
+    // 'token' beveiligt het inkomende endpoint: Mobilox roept de URL aan met ?key=<token>.
+    // TIJDELIJK: fallback-token zodat de productietest werkt zonder .env-aanpassing.
+    // Wordt teruggedraaid na de test; daarna alleen via env(MOBILOX_TOKEN).
+    'mobilox' => [
+        'token' => env('MOBILOX_TOKEN', 'mbx_live_test_7Hq2Lx9Rk4Zt'),
+    ],
+
 ];

@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 class Occasion extends Model
 {
     protected $fillable = [
+    'hexon_nr',
     'merk','model','type','transmissie','brandstof','kenteken', 'kleur', 'interieurkleur','btw_marge',
     'cilinderinhoud','carrosserie','max_trekgewicht','apk_tot','energielabel','wegenbelasting_min',
     'aantal_deuren','tellerstand','bouwjaar','prijs','bekleding','aantal_cilinders','topsnelheid',
