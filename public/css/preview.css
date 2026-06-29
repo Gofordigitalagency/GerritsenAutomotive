@@ -922,6 +922,13 @@ ul { list-style: none; padding: 0; margin: 0; }
   margin: 0 -24px 28px;
   padding: 16px 24px 0;
   border-bottom: 1px solid var(--px-border);
+  transition: transform .35s var(--px-ease), opacity .35s var(--px-ease);
+}
+/* Klapt in bij omlaag scrollen, komt terug bij omhoog scrollen */
+.px-toolbar-sticky.toolbar-collapsed {
+  transform: translateY(-130%);
+  opacity: 0;
+  pointer-events: none;
 }
 .px-toolbar-sticky::after {
   content: '';

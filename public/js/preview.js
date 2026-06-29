@@ -12,9 +12,21 @@
 
   /* ---------- NAV scroll state ---------- */
   const nav = $('#pxNav');
+  const toolbar = $('#pxToolbar');
+  let lastScrollY = window.scrollY;
   const onScroll = () => {
-    if (window.scrollY > 24) nav.classList.add('scrolled');
-    else nav.classList.remove('scrolled');
+    const y = window.scrollY;
+    nav.classList.toggle('scrolled', y > 24);
+    // Sticky zoek/filter-balk: inklappen bij omlaag scrollen (zodra hij vastplakt),
+    // weer tonen bij omhoog scrollen.
+    if (toolbar) {
+      if (y < lastScrollY) {
+        toolbar.classList.remove('toolbar-collapsed');
+      } else if (y > lastScrollY && toolbar.getBoundingClientRect().top <= 72) {
+        toolbar.classList.add('toolbar-collapsed');
+      }
+    }
+    lastScrollY = y;
   };
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
