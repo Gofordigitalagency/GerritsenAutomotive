@@ -30,3 +30,6 @@ Route::get('/mobilox/incremental', function () {
         ->header('Content-Type', 'text/plain; charset=UTF-8');
 });
 
+// TIJDELIJK (debug): laatste ontvangen XML bekijken voor mapping-afstemming.
+Route::get('/mobilox/last', [MobiloxController::class, 'lastPayload']);
+

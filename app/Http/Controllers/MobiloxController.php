@@ -32,6 +32,24 @@ class MobiloxController extends Controller
     }
 
     /**
+     * TIJDELIJK (debug): toon de laatst ontvangen Mobilox-XML, zodat de
+     * veld-mapping op echte data afgestemd kan worden. Beveiligd met token.
+     */
+    public function lastPayload(Request $request)
+    {
+        $token = config('services.mobilox.token');
+        if (empty($token) || ! hash_equals($token, $this->providedToken($request))) {
+            return response('Niet geautoriseerd', 401)->header('Content-Type', 'text/plain; charset=UTF-8');
+        }
+        $files = collect(\Illuminate\Support\Facades\Storage::disk('local')->files('mobilox/incoming'))->sort()->values();
+        if ($files->isEmpty()) {
+            return response('Geen payloads gelogd', 404)->header('Content-Type', 'text/plain; charset=UTF-8');
+        }
+        return response(\Illuminate\Support\Facades\Storage::disk('local')->get($files->last()), 200)
+            ->header('Content-Type', 'text/plain; charset=UTF-8');
+    }
+
+    /**
      * Token uit het verzoek halen: ?key=, Basic Auth (gebruiker/wachtwoord),
      * of handmatig uit de Authorization-header (sommige servers geven
      * PHP_AUTH_PW niet door aan PHP).
