@@ -102,7 +102,8 @@ class DashboardController extends Controller
             $weekEnd   = $weekStart->copy()->endOfWeek();
             $rows = Occasion::whereNotNull('verkocht_datum')
                 ->whereBetween('verkocht_datum', [$weekStart->toDateString(), $weekEnd->toDateString()])
-                ->get(['verkoopprijs', 'inkoop_prijs']);
+                ->orderByDesc('verkocht_datum')
+                ->get(['merk', 'model', 'type', 'verkoopprijs', 'inkoop_prijs', 'verkocht_datum']);
             $weeks[] = [
                 'label'  => $weekStart->format('d M'),
                 'short'  => 'W' . $weekStart->isoWeek(),
@@ -112,6 +113,11 @@ class DashboardController extends Controller
                     return $c + ((float) $o->verkoopprijs - (float) $o->inkoop_prijs);
                 }, 0),
                 'count'  => $rows->count(),
+                'cars'   => $rows->map(fn ($o) => [
+                    'titel' => trim(($o->merk ?? '') . ' ' . ($o->model ?? '') . ' ' . ($o->type ?? '')),
+                    'prijs' => (float) $o->verkoopprijs,
+                    'datum' => optional($o->verkocht_datum)->format('d-m-Y'),
+                ])->values()->all(),
             ];
         }
         $weeksMaxOmzet = collect($weeks)->max('omzet') ?: 1;

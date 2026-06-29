@@ -74,12 +74,14 @@
             $omzetPct = $weeksMaxOmzet > 0 ? ($w['omzet'] / $weeksMaxOmzet) * 100 : 0;
             $margePct = $w['omzet'] > 0 ? ($w['marge'] / $w['omzet']) * 100 : 0;
           @endphp
-          <div class="adm-chart-bar" title="{{ $w['count'] }} verkoop{{ $w['count'] === 1 ? '' : 'en' }} · Omzet € {{ number_format($w['omzet'], 0, ',', '.') }} · Marge € {{ number_format($w['marge'], 0, ',', '.') }}">
+          <div class="adm-chart-bar" data-week="{{ $loop->index }}" title="{{ $w['count'] }} verkoop{{ $w['count'] === 1 ? '' : 'en' }} · Omzet € {{ number_format($w['omzet'], 0, ',', '.') }} · Marge € {{ number_format($w['marge'], 0, ',', '.') }}">
             <div class="adm-chart-bar-value">
               @if($w['omzet'] > 0)€ {{ number_format($w['omzet'] / 1000, $w['omzet'] >= 10000 ? 0 : 1, ',', '.') }}k @endif
             </div>
-            <div class="adm-chart-bar-stack" style="height: {{ max($omzetPct, 2) }}%">
-              <div class="adm-chart-bar-marge" style="height: {{ $margePct }}%"></div>
+            <div class="adm-chart-bar-track">
+              <div class="adm-chart-bar-stack" style="height: {{ max($omzetPct, 2) }}%">
+                <div class="adm-chart-bar-marge" style="height: {{ $margePct }}%"></div>
+              </div>
             </div>
             <div class="adm-chart-bar-label">{{ $w['label'] }}</div>
           </div>
@@ -89,6 +91,42 @@
         <span><span class="adm-chart-dot" style="background:var(--accent)"></span> Omzet</span>
         <span><span class="adm-chart-dot" style="background:var(--success)"></span> Gerealiseerde marge</span>
       </div>
+
+      <div class="adm-chart-detail" id="chartDetail" hidden></div>
+
+      <script>
+        (function () {
+          const weeks  = @json($weeks);
+          const detail = document.getElementById('chartDetail');
+          const fmt = n => '€ ' + Math.round(n).toLocaleString('nl-NL');
+
+          document.querySelectorAll('.adm-chart .adm-chart-bar').forEach(bar => {
+            bar.addEventListener('click', () => {
+              const w = weeks[+bar.dataset.week];
+              if (!w) return;
+
+              document.querySelectorAll('.adm-chart-bar.is-active').forEach(b => b.classList.remove('is-active'));
+              bar.classList.add('is-active');
+
+              if (!w.count) {
+                detail.innerHTML =
+                  '<div class="adm-chart-detail-head">Week ' + w.label + '</div>' +
+                  '<p class="adm-chart-detail-empty">Geen verkopen in deze week.</p>';
+              } else {
+                const rows = w.cars.map(c =>
+                  '<li><span>' + (c.titel || 'Onbekend') + '<small> · ' + c.datum + '</small></span>' +
+                  '<span>' + fmt(c.prijs) + '</span></li>'
+                ).join('');
+                detail.innerHTML =
+                  '<div class="adm-chart-detail-head">Week ' + w.label + ' — ' + w.count +
+                  ' verkocht · omzet ' + fmt(w.omzet) + ' · marge ' + fmt(w.marge) + '</div>' +
+                  '<ul class="adm-chart-detail-list">' + rows + '</ul>';
+              }
+              detail.hidden = false;
+            });
+          });
+        })();
+      </script>
     @endif
   </div>
 

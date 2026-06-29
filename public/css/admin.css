@@ -1471,10 +1471,10 @@ nav[role="navigation"] span[aria-current="page"] {
   display: flex;
   align-items: stretch;
   background: #FFD400;
-  border-radius: 12px;
+  border-radius: 10px;
   overflow: hidden;
   position: relative;
-  box-shadow: 0 4px 14px rgba(255, 212, 0, .15);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .3);
   transition: box-shadow .25s, transform .25s;
 }
 .adm-plate:focus-within {
@@ -1486,12 +1486,12 @@ nav[role="navigation"] span[aria-current="page"] {
   align-items: center;
   justify-content: center;
   gap: 2px;
-  width: 56px;
+  width: 46px;
   background: #003399;
   color: #fff;
   font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
   font-weight: 800;
-  font-size: 18px;
+  font-size: 14px;
   letter-spacing: .04em;
   flex-shrink: 0;
 }
@@ -1504,19 +1504,25 @@ nav[role="navigation"] span[aria-current="page"] {
   flex: 1;
   border: 0;
   background: transparent;
-  padding: 0 22px;
+  padding: 12px 18px;
   font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
-  font-size: 32px;
+  font-size: 24px;
   font-weight: 800;
-  letter-spacing: .12em;
+  letter-spacing: .1em;
   color: #1a1a1a;
   text-transform: uppercase;
+}
+/* Niet de donkere admin-veldstijl op de gele plaat-input */
+.adm-plate input:focus {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  outline: none;
 }
 .adm-plate input::placeholder {
   color: rgba(26, 26, 26, .35);
   font-weight: 700;
 }
-.adm-plate input:focus { outline: none; }
 
 .adm-plate-action {
   display: inline-flex;
@@ -2011,7 +2017,11 @@ nav[role="navigation"] span[aria-current="page"] {
   align-items: center;
   height: 100%;
   position: relative;
-  cursor: help;
+  cursor: pointer;
+}
+.adm-chart-bar.is-active .adm-chart-bar-stack {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 .adm-chart-bar-value {
   font-size: 10.5px;
@@ -2019,6 +2029,16 @@ nav[role="navigation"] span[aria-current="page"] {
   font-variant-numeric: tabular-nums;
   height: 16px;
   font-weight: 500;
+}
+/* Verticale zone voor de staaf; balkhoogte (%) schaalt hierbinnen, niet over
+   de hele kolom — voorkomt dat een volle balk de labels overschiet. */
+.adm-chart-bar-track {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
 }
 .adm-chart-bar-stack {
   width: 80%;
@@ -2073,6 +2093,27 @@ nav[role="navigation"] span[aria-current="page"] {
   border-radius: 3px;
   display: inline-block;
 }
+/* Detailpaneel onder de grafiek (klik op staaf) */
+.adm-chart-detail {
+  margin-top: 14px;
+  padding: 14px 16px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.adm-chart-detail-head { font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+.adm-chart-detail-empty { margin: 0; color: var(--muted); font-size: 13px; }
+.adm-chart-detail-list { list-style: none; margin: 0; padding: 0; }
+.adm-chart-detail-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13.5px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--border);
+}
+.adm-chart-detail-list li:last-child { border-bottom: 0; }
+.adm-chart-detail-list small { color: var(--muted); }
 
 /* Sold-form in occasion edit */
 .adm-sold-form { display: grid; gap: 14px; }

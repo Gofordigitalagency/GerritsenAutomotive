@@ -13,11 +13,15 @@ use App\Http\Controllers\admin\ReclameController;
 use App\Http\Controllers\admin\WorkshopAppointmentController as AdminWorkshopAppointmentController;
 use App\Http\Controllers\admin\LandingPageController as AdminLandingPageController;
 use App\Http\Controllers\LandingPageController;
+use App\Http\Controllers\SitemapController;
 
 
 
 // --- Publiek ---
 Route::get('/', [PublicOccasionController::class, 'home'])->name('home');
+
+// SEO sitemap
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 
 // Aanbod-pagina (volwaardige page met filter + sort)
 Route::get('/aanbod', [PublicOccasionController::class, 'aanbodPage'])->name('aanbod');
