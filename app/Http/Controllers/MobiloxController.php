@@ -28,6 +28,10 @@ class MobiloxController extends Controller
 
         $result = $importer->handle($request->getContent());
 
+        // Foto's ná het verzenden van de respons downloaden (op de achtergrond),
+        // zodat Mobilox direct "1" terugkrijgt en de sync niet timeout op downloads.
+        app()->terminating(fn () => $importer->flushPhotos());
+
         return response($result, 200)->header('Content-Type', 'text/plain; charset=UTF-8');
     }
 

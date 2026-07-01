@@ -19,6 +19,9 @@ use Illuminate\Support\Str;
  */
 class MobiloxImporter
 {
+    /** Voertuigen waarvan de foto's ná de HTTP-respons opgehaald worden. */
+    private array $pendingPhotos = [];
+
     public function handle(string $raw): string
     {
         $this->logRaw($raw);
@@ -109,7 +112,26 @@ class MobiloxImporter
 
         $occasion->save(); // slug wordt automatisch gegenereerd bij nieuw
 
-        $this->syncPhotos($xml, $occasion);
+        // Foto's pas ná de respons downloaden (zie flushPhotos): houdt de
+        // respons naar Mobilox snel, zodat de sync niet vastloopt op downloads.
+        $this->pendingPhotos[] = ['xml' => $xml, 'occasion' => $occasion];
+    }
+
+    /** Download de foto's van zojuist verwerkte voertuigen (na de HTTP-respons). */
+    public function flushPhotos(): void
+    {
+        if (empty($this->pendingPhotos)) {
+            return;
+        }
+        @set_time_limit(180);
+        foreach ($this->pendingPhotos as $p) {
+            try {
+                $this->syncPhotos($p['xml'], $p['occasion']);
+            } catch (\Throwable $e) {
+                Log::warning('Mobilox: foto-sync mislukt (#' . $p['occasion']->hexon_nr . '): ' . $e->getMessage());
+            }
+        }
+        $this->pendingPhotos = [];
     }
 
     // ------------------------------------------------------------------ delete
