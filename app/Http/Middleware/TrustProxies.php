@@ -10,9 +10,14 @@ class TrustProxies extends Middleware
     /**
      * The trusted proxies for this application.
      *
+     * '*' vertrouwt de (lokale) nginx-proxy op Forge, zodat Laravel de
+     * X-Forwarded-Proto: https header honoreert en $request->isSecure()
+     * correct true teruggeeft. De app is alleen via die nginx bereikbaar,
+     * dus dit is veilig op een single-server Forge-setup.
+     *
      * @var array<int, string>|string|null
      */
-    protected $proxies;
+    protected $proxies = '*';
 
     /**
      * The headers that should be used to detect proxies.
