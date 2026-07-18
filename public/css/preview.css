@@ -257,13 +257,18 @@ ul { list-style: none; padding: 0; margin: 0; }
   top: 0; left: 0; right: 0;
   z-index: 100;
   padding: 16px 0;
-  transition: padding .3s var(--px-ease), background .3s var(--px-ease);
+  transition: transform .35s var(--px-ease), padding .3s var(--px-ease), background .3s var(--px-ease);
+  will-change: transform;
 }
 .px-nav.scrolled {
   padding: 10px 0;
   background: rgba(11,12,16,.85);
   backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--px-border);
+}
+/* Bovenste balk schuift netjes naar boven weg bij omlaag scrollen. */
+.px-nav.nav-hidden {
+  transform: translateY(-100%);
 }
 
 .px-nav-inner {

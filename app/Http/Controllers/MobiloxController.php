@@ -54,6 +54,40 @@ class MobiloxController extends Controller
     }
 
     /**
+     * TIJDELIJK (backfill): draai alle reeds gelogde payloads opnieuw door de
+     * importer, zodat bestaande auto's de nieuwe veld-mapping (o.a. omschrijving)
+     * overnemen zonder dat Mobilox opnieuw hoeft te pushen. Foto's worden niet
+     * opnieuw gedownload (bestaande blijven staan). Beveiligd met token.
+     */
+    public function reprocess(Request $request, MobiloxImporter $importer)
+    {
+        $token = config('services.mobilox.token');
+        if (empty($token) || ! hash_equals($token, $this->providedToken($request))) {
+            return response('Niet geautoriseerd', 401)->header('Content-Type', 'text/plain; charset=UTF-8');
+        }
+
+        $disk  = \Illuminate\Support\Facades\Storage::disk('local');
+        $files = collect($disk->files('mobilox/incoming'))
+            ->filter(fn ($f) => \Illuminate\Support\Str::endsWith($f, ['.xml']))
+            ->sort()->values();
+
+        $done = 0;
+        $log  = [];
+        foreach ($files as $f) {
+            $result = $importer->handle($disk->get($f));
+            $log[]  = basename($f) . ' => ' . $result;
+            if ($result === '1') {
+                $done++;
+            }
+        }
+
+        return response(
+            "Herverwerkt: {$done}/{$files->count()} payloads\n" . implode("\n", $log),
+            200
+        )->header('Content-Type', 'text/plain; charset=UTF-8');
+    }
+
+    /**
      * Token uit het verzoek halen: ?key=, Basic Auth (gebruiker/wachtwoord),
      * of handmatig uit de Authorization-header (sommige servers geven
      * PHP_AUTH_PW niet door aan PHP).

@@ -33,3 +33,6 @@ Route::get('/mobilox/incremental', function () {
 // TIJDELIJK (debug): laatste ontvangen XML bekijken voor mapping-afstemming.
 Route::get('/mobilox/last', [MobiloxController::class, 'lastPayload']);
 
+// TIJDELIJK (backfill): bestaande auto's bijwerken met de nieuwste mapping.
+Route::get('/mobilox/reprocess', [MobiloxController::class, 'reprocess']);
+

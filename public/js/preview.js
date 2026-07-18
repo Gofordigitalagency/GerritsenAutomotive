@@ -14,9 +14,23 @@
   const nav = $('#pxNav');
   const toolbar = $('#pxToolbar');
   let lastScrollY = window.scrollY;
+  const NAV_HIDE_AFTER = 120; // px voordat de header mag wegschuiven
   const onScroll = () => {
     const y = window.scrollY;
     nav.classList.toggle('scrolled', y > 24);
+
+    // Header (bovenste balk) netjes naar boven wegschuiven bij omlaag scrollen,
+    // en weer terug laten komen zodra je omhoog scrollt of bovenaan bent.
+    // De drempel voorkomt geflikker bij minieme muis-/touch-bewegingen.
+    if (Math.abs(y - lastScrollY) > 4) {
+      if (y > lastScrollY && y > NAV_HIDE_AFTER) {
+        nav.classList.add('nav-hidden');
+      } else if (y < lastScrollY) {
+        nav.classList.remove('nav-hidden');
+      }
+    }
+    if (y <= NAV_HIDE_AFTER) nav.classList.remove('nav-hidden');
+
     // Sticky zoek/filter-balk: inklappen bij omlaag scrollen (zodra hij vastplakt),
     // weer tonen bij omhoog scrollen.
     if (toolbar) {
@@ -40,6 +54,7 @@
       menuBtn.classList.toggle('open', open);
       menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
       document.body.style.overflow = open ? 'hidden' : '';
+      if (open) nav.classList.remove('nav-hidden'); // header zichtbaar houden bij open menu
     });
     $$('a', mobile).forEach(a => a.addEventListener('click', () => {
       mobile.classList.remove('open');

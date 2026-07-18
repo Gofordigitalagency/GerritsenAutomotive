@@ -85,7 +85,7 @@ class MobiloxImporter
         $occasion->tellerstand = $this->intVal($xml, 'tellerstand');
         $occasion->brandstof   = $this->mapBrandstof($this->val($xml, 'brandstof'));
         $occasion->transmissie = $this->mapTransmissie($this->val($xml, 'transmissie'));
-        $occasion->omschrijving = $this->val($xml, 'opmerkingen_nederlands');
+        $occasion->omschrijving = $this->descriptionFromXml($xml);
 
         // Prijzen: bedrag uit <verkoopprijs_particulier>/<actieprijs>/<inkoopprijs>.
         // Actieprijs lager dan vraagprijs => korting tonen.
@@ -237,6 +237,56 @@ class MobiloxImporter
         }
         $digits = preg_replace('/[^\d]/', '', $v);
         return $digits === '' ? null : (int) $digits;
+    }
+
+    /**
+     * De omschrijving levert Hexon aan als HTML-advertentietekst in <opmerkingen>
+     * (soms in <opmerkingen_nederlands>). Die tekst begint meestal met een
+     * automatisch gegenereerd specificatie-/optieblok in <ul>-lijsten, gevolgd
+     * door de eigenlijke verkooptekst. Specs en opties tonen we al apart op de
+     * pagina, dus we knippen dat gegenereerde blok weg en houden de vrije tekst
+     * over. Het resultaat is platte tekst (de pagina rendert via nl2br(e(...))).
+     */
+    private function descriptionFromXml(\SimpleXMLElement $xml): ?string
+    {
+        $html = $this->val($xml, 'opmerkingen')
+            ?? $this->val($xml, 'opmerkingen_nederlands');
+        if ($html === null) {
+            return null;
+        }
+
+        // Gegenereerd specs/opties-blok vooraan weghalen: pak alles ná de
+        // laatste </ul>. Blijft er dan geen tekst over, gebruik toch alles.
+        if (stripos($html, '</ul>') !== false) {
+            $rest = substr($html, strripos($html, '</ul>') + 5);
+            if (trim(strip_tags($rest)) !== '') {
+                $html = $rest;
+            }
+        }
+
+        return $this->htmlToText($html);
+    }
+
+    /** Zet Hexon-advertentie-HTML om naar nette platte tekst met regeleindes. */
+    private function htmlToText(string $html): ?string
+    {
+        // Lijstitems -> bullets; regel-/blok-tags -> regeleinde.
+        $text = preg_replace('/<\s*li[^>]*>/i', "\n• ", $html);
+        $text = preg_replace('/<\s*br\s*\/?>/i', "\n", $text);
+        $text = preg_replace('/<\/\s*(p|div|ul|ol|tr|h[1-6])\s*>/i', "\n", $text);
+        $text = strip_tags($text);
+
+        // HTML-entiteiten (&euro; &egrave; &bull; &nbsp; …) decoderen.
+        $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $text = str_replace("\xC2\xA0", ' ', $text); // non-breaking space -> spatie
+
+        // Overtollige witruimte opschonen.
+        $text = preg_replace('/[ \t]+/', ' ', $text);
+        $text = preg_replace('/ *\n */', "\n", $text);
+        $text = preg_replace('/\n{3,}/', "\n\n", $text);
+        $text = trim($text);
+
+        return $text === '' ? null : $text;
     }
 
     /**
