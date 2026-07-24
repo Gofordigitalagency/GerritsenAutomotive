@@ -364,7 +364,13 @@ class MobiloxImporter
      * Verdeel de Hexon-opties over de vier categorieën (exterieur/interieur/
      * veiligheid/overige) en normaliseer ze naar de canonieke labels uit
      * config/occasion_options, zodat de admin-checkboxes correct aangevinkt
-     * worden. Onbekende opties blijven behouden onder "overige" (niets verdwijnt).
+     * worden.
+     *
+     * Hexon levert dezelfde feature vaak in meerdere schrijfwijzen (ruwe naam,
+     * gestandaardiseerde naam én zoekaccessoire). Niet-herkende namen laten we
+     * daarom vallen i.p.v. ze als losse tekst te bewaren — anders ontstaan
+     * duplicaten ("ABS" naast "Antiblokkeersysteem"). De canonieke variant is er
+     * dan al; ontdubbeling gebeurt op canoniek label.
      */
     private function mapOptions(\SimpleXMLElement $xml): array
     {
@@ -373,13 +379,12 @@ class MobiloxImporter
 
         foreach ($this->rawOptionNames($xml) as $naam) {
             $hit = $this->matchOption($naam, $index);
-            if ($hit !== null) {
-                [$cat, $label] = $hit;
-                if (! in_array($label, $result[$cat], true)) {
-                    $result[$cat][] = $label;
-                }
-            } elseif (! in_array($naam, $result['overige'], true)) {
-                $result['overige'][] = $naam;
+            if ($hit === null) {
+                continue; // onbekende/duplicaat-schrijfwijze overslaan
+            }
+            [$cat, $label] = $hit;
+            if (! in_array($label, $result[$cat], true)) {
+                $result[$cat][] = $label;
             }
         }
         return $result;
