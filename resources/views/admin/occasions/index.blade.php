@@ -88,7 +88,9 @@
   <form action="{{ route('admin.occasions.toggleStatus', $o) }}" method="post" style="display:inline;">
     @csrf
     @php
-      $isVerkocht = str_contains($o->titel, '(VERKOCHT)');
+      // Zelfde bron als toggleStatus (verkocht_datum óf "(VERKOCHT)"-marker),
+      // anders raakt de knop uit sync en is er twee keer klikken nodig.
+      $isVerkocht = $o->is_sold;
     @endphp
 
     @if($isVerkocht)

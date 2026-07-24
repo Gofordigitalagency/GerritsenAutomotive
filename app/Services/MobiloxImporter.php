@@ -73,8 +73,18 @@ class MobiloxImporter
     {
         $occasion = Occasion::firstOrNew(['hexon_nr' => $hexonNr]);
 
+        // Verkocht-status vaststellen vóór we velden overschrijven. Mobilox stuurt
+        // alleen het kale model; als de auto in de admin als verkocht is gemarkeerd
+        // (verkocht_datum of "(VERKOCHT)"-marker) moet die markering behouden blijven,
+        // anders duikt een verkochte auto weer op in het publieke aanbod.
+        $wasSold = $occasion->exists && $occasion->is_sold;
+
         $occasion->merk        = $this->val($xml, 'merk');
-        $occasion->model       = $this->val($xml, 'model');
+        $model = $this->val($xml, 'model');
+        if ($wasSold && $model !== null && stripos($model, '(VERKOCHT)') === false) {
+            $model = trim($model . ' (VERKOCHT)');
+        }
+        $occasion->model       = $model;
         $occasion->type        = $this->val($xml, 'type');
         $occasion->kenteken    = $this->val($xml, 'kenteken');
         $occasion->carrosserie = $this->val($xml, 'carrosserie');
@@ -107,7 +117,11 @@ class MobiloxImporter
             $occasion->apk_tot = $apk;
         }
 
-        $occasion->overige_options = $this->extractOptions($xml);
+        $mapped = $this->mapOptions($xml);
+        $occasion->exterieur_options  = $mapped['exterieur']  ?: null;
+        $occasion->interieur_options  = $mapped['interieur']  ?: null;
+        $occasion->veiligheid_options = $mapped['veiligheid'] ?: null;
+        $occasion->overige_options    = $mapped['overige']    ?: null;
         $occasion->binnenkort = false;
 
         $occasion->save(); // slug wordt automatisch gegenereerd bij nieuw
@@ -327,7 +341,8 @@ class MobiloxImporter
         }
     }
 
-    private function extractOptions(\SimpleXMLElement $xml): array
+    /** Alle ruwe Hexon-optienamen verzamelen (accessoires/optiepakketten/zoekaccessoires). */
+    private function rawOptionNames(\SimpleXMLElement $xml): array
     {
         $opts = [];
         foreach (['accessoires', 'optiepakketten', 'zoekaccessoires'] as $group) {
@@ -343,6 +358,152 @@ class MobiloxImporter
             }
         }
         return array_values(array_unique(array_filter($opts)));
+    }
+
+    /**
+     * Verdeel de Hexon-opties over de vier categorieën (exterieur/interieur/
+     * veiligheid/overige) en normaliseer ze naar de canonieke labels uit
+     * config/occasion_options, zodat de admin-checkboxes correct aangevinkt
+     * worden. Onbekende opties blijven behouden onder "overige" (niets verdwijnt).
+     */
+    private function mapOptions(\SimpleXMLElement $xml): array
+    {
+        $result = ['exterieur' => [], 'interieur' => [], 'veiligheid' => [], 'overige' => []];
+        $index  = $this->canonicalOptionIndex();
+
+        foreach ($this->rawOptionNames($xml) as $naam) {
+            $hit = $this->matchOption($naam, $index);
+            if ($hit !== null) {
+                [$cat, $label] = $hit;
+                if (! in_array($label, $result[$cat], true)) {
+                    $result[$cat][] = $label;
+                }
+            } elseif (! in_array($naam, $result['overige'], true)) {
+                $result['overige'][] = $naam;
+            }
+        }
+        return $result;
+    }
+
+    /** Canonieke opties uit config indexeren: genormaliseerde vorm => [categorie, label]. */
+    private function canonicalOptionIndex(): array
+    {
+        static $index = null;
+        if ($index !== null) {
+            return $index;
+        }
+        $index = [];
+        foreach ((array) config('occasion_options', []) as $cat => $labels) {
+            foreach ((array) $labels as $label) {
+                $norm = $this->normOpt($label);
+                if ($norm === '') {
+                    continue;
+                }
+                $index[$norm] = [$cat, $label];
+                $index[str_replace(' ', '', $norm)] = [$cat, $label];
+            }
+        }
+        return $index;
+    }
+
+    /** Eén Hexon-optienaam matchen op een canoniek label. Retour: [categorie, label] of null. */
+    private function matchOption(string $naam, array $index): ?array
+    {
+        $n = $this->normOpt($naam);
+        if ($n === '') {
+            return null;
+        }
+        // 1) exacte (genormaliseerde) match, incl. variant zonder spaties
+        if (isset($index[$n]))                        return $index[$n];
+        $nospace = str_replace(' ', '', $n);
+        if (isset($index[$nospace]))                  return $index[$nospace];
+
+        // 2) alias-tabel voor bekende Hexon-afwijkingen
+        $aliases = $this->optionAliases();
+        if (isset($aliases[$n])) {
+            return $index[$this->normOpt($aliases[$n])] ?? null;
+        }
+
+        // 3) prefix-match: "lichtmetalen velgen 16" => "Lichtmetalen velgen"
+        foreach ($index as $normLabel => $catLabel) {
+            if (strlen($normLabel) >= 5 && str_starts_with($n, $normLabel . ' ')) {
+                return $catLabel;
+            }
+        }
+        return null;
+    }
+
+    /** Normaliseer een optienaam voor vergelijking (lowercase, accenten/leestekens weg). */
+    private function normOpt(string $s): string
+    {
+        $s = mb_strtolower($s, 'UTF-8');
+        $s = strtr($s, [
+            'á'=>'a','à'=>'a','ä'=>'a','â'=>'a','é'=>'e','è'=>'e','ë'=>'e','ê'=>'e',
+            'í'=>'i','ì'=>'i','ï'=>'i','î'=>'i','ó'=>'o','ò'=>'o','ö'=>'o','ô'=>'o',
+            'ú'=>'u','ù'=>'u','ü'=>'u','û'=>'u','ç'=>'c','ñ'=>'n',
+        ]);
+        // veelvoorkomende afkortingen uitschrijven
+        $s = preg_replace('/\belek\.?\b/u', 'elektrisch', $s);
+        $s = preg_replace('/\baut\.?\b/u', 'automatisch', $s);
+        // leestekens -> spatie, witruimte normaliseren
+        $s = preg_replace('/[^a-z0-9]+/u', ' ', $s);
+        return trim(preg_replace('/\s+/', ' ', $s));
+    }
+
+    /** Bekende Hexon-namen die afwijken van de canonieke labels. Keys worden genormaliseerd. */
+    private function optionAliases(): array
+    {
+        static $cache = null;
+        if ($cache !== null) {
+            return $cache;
+        }
+        $raw = [
+            // Veiligheid
+            'Anti Blokkeer Systeem' => 'ABS',
+            'Airbags' => 'Airbag',
+            'Bestuurdersairbag' => 'Airbag bestuurder',
+            'Passagiersairbag' => 'Airbag passagier',
+            'Zij airbag(s) voor' => 'Zij-airbags',
+            'Zij airbag(s) achter' => 'Zij-airbags',
+            'Zij airbags' => 'Zij-airbags',
+            'Hoofdairbags' => 'Hoofd airbag',
+            'Isofix bevestiging voor kinderzitjes' => 'Isofix',
+            'Alarmsysteem' => 'Alarm',
+            'Alarm klasse 1(startblokkering)' => 'Alarm',
+            'Startblokkering' => 'Startonderbreker',
+            'Bandenspanningscontrolesysteem' => 'Bandenspanningscontrole',
+            'Elektronisch stabiliteitsprogramma' => 'Electronic Stability Program',
+            'ESP' => 'Electronic Stability Program',
+            // Exterieur
+            'Panoramadak' => 'Panorama dak',
+            'Panoramadak var. transparantie' => 'Panorama dak',
+            'Metaalkleur' => 'Metallic lak',
+            'Getint glas' => 'Getinte ramen',
+            'Zonwerend glas' => 'Getinte ramen',
+            // Interieur / klimaat / media
+            'Airco' => 'Airconditioning',
+            'Airco automatisch' => 'Automatische klimaatregeling',
+            'Climate control' => 'Automatische klimaatregeling',
+            'Climatronic' => 'Automatische klimaatregeling',
+            'Elektrische ramen voor' => 'Elektrische ramen',
+            'Elektrische ramen achter' => 'Elektrische ramen',
+            'Elek. bedienbare ramen' => 'Elektrische ramen',
+            'Buitenspiegels elektrisch verstelbaar' => 'Elektrisch verstelbare buitenspiegels',
+            'Buitenspiegels elektrisch verstel- en verwarmbaar' => 'Elektrisch verstelbare buitenspiegels',
+            'Elek. verstelbare spiegels' => 'Elektrisch verstelbare buitenspiegels',
+            'Radio CD speler' => 'Radio',
+            'Radio/CD-speler' => 'Radio',
+            'Navigatie' => 'Navigatiesysteem',
+            'Cruise controle' => 'Cruise control',
+            // Overige
+            'Centrale vergrendeling met afstandsbediening' => 'Centrale deurvergrendeling met afstandsbediening',
+            'Binnenspiegel aut. dimmend' => 'Binnenspiegel automatisch dimmend',
+        ];
+        $out = [];
+        foreach ($raw as $k => $v) {
+            $out[$this->normOpt($k)] = $v;
+        }
+        return $cache = $out;
     }
 
     private function mapBrandstof(?string $v): ?string
