@@ -268,12 +268,13 @@ ul { list-style: none; padding: 0; margin: 0; }
 .px-vacation-banner {
   position: fixed;
   top: 0; left: 0; right: 0;
-  z-index: 99;
+  z-index: 101; /* boven de header zodat de banner nooit overlapt wordt */
+  min-height: var(--vac-h, 46px);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding: 9px 18px;
+  padding: 6px 18px;
   background: linear-gradient(90deg, var(--px-red, #e11d2a), #b3121d);
   color: #fff;
   font-size: 14px;
@@ -2846,7 +2847,7 @@ a.px-over-meta-value:hover svg {
    ========================================================= */
 .px-scroll-progress {
   position: fixed;
-  top: 0; left: 0; right: 0;
+  top: var(--vac-h, 0px); left: 0; right: 0;
   height: 2px;
   background: linear-gradient(90deg, var(--px-accent), var(--px-accent-soft));
   box-shadow: 0 0 12px var(--px-accent-glow);
