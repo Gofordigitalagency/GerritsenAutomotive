@@ -10,6 +10,8 @@
   $linkContact    = '/contact';
 @endphp
 
+@include('preview.partials.vacation-banner')
+
 <header class="px-nav" id="pxNav">
   <div class="px-nav-inner">
     <a href="/" class="px-logo" aria-label="Gerritsen Automotive">

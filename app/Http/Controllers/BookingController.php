@@ -82,6 +82,11 @@ class BookingController extends Controller
     $type = $this->normalizeType($request->query('type'));
     $date = \Illuminate\Support\Carbon::parse($request->query('date'))->timezone('Europe/Amsterdam');
 
+    // Vakantie/sluiting: op die dagen geen tijden aanbieden.
+    if (function_exists('vacation_blocks') && vacation_blocks($date->toDateString())) {
+        return response()->json([]);
+    }
+
     $open        = \Illuminate\Support\Carbon::parse($date->format('Y-m-d').' '.self::OPEN_TIME,  'Europe/Amsterdam');
     $close       = \Illuminate\Support\Carbon::parse($date->format('Y-m-d').' '.self::CLOSE_TIME, 'Europe/Amsterdam');
     $durationMin = self::DURATIONS[$type];
@@ -133,6 +138,13 @@ class BookingController extends Controller
 
         $start = Carbon::parse($data['start_at'], 'Europe/Amsterdam');
         $end   = Carbon::parse($data['end_at'],   'Europe/Amsterdam');
+
+        // Vakantie/sluiting: geen reserveringen in die periode.
+        if (function_exists('vacation_blocks') && vacation_blocks($start->toDateString())) {
+            $weer = Carbon::parse(config('vacation.to'))->addDay()->format('d-m-Y');
+            return back()->withInput()
+                ->withErrors(['start_at' => "In deze periode zijn wij met vakantie. Reserveren kan weer vanaf {$weer}."]);
+        }
 
         // Overlap-check
         if (Reservation::overlaps($type, $start, $end)) {

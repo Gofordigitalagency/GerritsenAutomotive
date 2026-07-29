@@ -28,6 +28,8 @@
   --px-shadow-lg: 0 20px 60px rgba(0,0,0,.5);
 
   --px-ease: cubic-bezier(.22,.61,.36,1);
+
+  --vac-h: 0px; /* hoogte vakantiebanner; door preview.js gezet indien actief */
 }
 
 /* ---------- Reset ---------- */
@@ -50,7 +52,7 @@ html, body {
    translateX(100%) buiten beeld staat) de viewport horizontaal oprekken —
    body-clip raakt fixed-children namelijk niet. */
 html { overflow-x: clip; }
-body { overflow-x: clip; }
+body { overflow-x: clip; padding-top: var(--vac-h, 0px); }
 
 img { max-width: 100%; height: auto; display: block; }
 a { color: inherit; text-decoration: none; }
@@ -254,11 +256,34 @@ ul { list-style: none; padding: 0; margin: 0; }
    ========================================================= */
 .px-nav {
   position: fixed;
-  top: 0; left: 0; right: 0;
+  top: var(--vac-h, 0px); left: 0; right: 0;
   z-index: 100;
   padding: 16px 0;
   transition: transform .35s var(--px-ease), padding .3s var(--px-ease), background .3s var(--px-ease);
   will-change: transform;
+}
+
+/* Vakantiebanner: vaste balk bovenaan; de header + pagina schuiven eronder
+   dankzij de --vac-h variabele (gezet door preview.js op de bannerhoogte). */
+.px-vacation-banner {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 99;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 9px 18px;
+  background: linear-gradient(90deg, var(--px-red, #e11d2a), #b3121d);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+  text-align: center;
+}
+.px-vacation-banner-icon { font-size: 16px; }
+@media (max-width: 600px) {
+  .px-vacation-banner { font-size: 12.5px; padding: 8px 14px; }
 }
 .px-nav.scrolled {
   padding: 10px 0;

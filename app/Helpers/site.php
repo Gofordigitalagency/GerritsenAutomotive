@@ -53,6 +53,59 @@ if (! function_exists('setting_tel')) {
     }
 }
 
+if (! function_exists('vacation_active')) {
+    /**
+     * Is de vakantie-/sluitingsmelding op dit moment relevant? True zolang de
+     * vakantie is ingeschakeld én nog niet voorbij is (t/m de laatste dag).
+     */
+    function vacation_active(): bool
+    {
+        $from = config('vacation.from');
+        $to   = config('vacation.to');
+        if (! config('vacation.enabled') || ! $from || ! $to) {
+            return false;
+        }
+        return \Illuminate\Support\Carbon::today('Europe/Amsterdam')
+            ->lte(\Illuminate\Support\Carbon::parse($to)->endOfDay());
+    }
+}
+
+if (! function_exists('vacation_blocks')) {
+    /**
+     * Valt de opgegeven datum binnen de vakantieperiode (t/m)? Gebruikt om
+     * boekingen op die dagen te weigeren.
+     */
+    function vacation_blocks(?string $date): bool
+    {
+        if (! config('vacation.enabled') || ! $date) {
+            return false;
+        }
+        try {
+            $d = \Illuminate\Support\Carbon::parse($date)->toDateString();
+        } catch (\Throwable) {
+            return false;
+        }
+        return $d >= config('vacation.from') && $d <= config('vacation.to');
+    }
+}
+
+if (! function_exists('vacation_first_available')) {
+    /** Eerstvolgende boekbare dag ná de vakantie (Y-m-d). */
+    function vacation_first_available(): string
+    {
+        return \Illuminate\Support\Carbon::parse(config('vacation.to'))
+            ->addDay()->toDateString();
+    }
+}
+
+if (! function_exists('vacation_message')) {
+    /** De vakantiemelding-tekst. */
+    function vacation_message(): string
+    {
+        return (string) config('vacation.message', '');
+    }
+}
+
 if (! function_exists('setting_phone')) {
     /**
      * Display-format voor telefoonnummers: "06 38 25 79 87".

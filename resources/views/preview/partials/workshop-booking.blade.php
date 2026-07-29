@@ -116,7 +116,14 @@
       <span>Kies een dag</span>
       <span class="px-smart-pick-hint">Werkplaats geopend di–za</span>
     </div>
-    <div class="px-day-strip" id="pxDayStrip"></div>
+    @if(function_exists('vacation_active') && vacation_active())
+      <p class="px-smart-vac-note">🏖️ {{ vacation_message() }}</p>
+    @endif
+    <div class="px-day-strip" id="pxDayStrip"
+      @if(function_exists('vacation_active') && vacation_active())
+        data-vac-from="{{ config('vacation.from') }}" data-vac-to="{{ config('vacation.to') }}"
+      @endif
+    ></div>
 
     <div class="px-smart-pick-label">
       <span>Kies een tijd</span>

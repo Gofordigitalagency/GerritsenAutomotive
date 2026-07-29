@@ -16,6 +16,15 @@ class ContactController extends Controller
         return back()->with('success', 'Bedankt!');
     }
 
+    // Vakantie/sluiting: leenauto-aanvraag met een ophaaldatum binnen de
+    // vakantieperiode weigeren (werkplaats-widget blokkeert al client-side).
+    if (function_exists('vacation_blocks') && $request->filled('leenauto_from')
+        && vacation_blocks($request->input('leenauto_from'))) {
+        $weer = \Illuminate\Support\Carbon::parse(config('vacation.to'))->addDay()->format('d-m-Y');
+        return back()->withInput()
+            ->withErrors(['leenauto_from' => "In deze periode zijn wij met vakantie. Een leenauto kan weer vanaf {$weer}."]);
+    }
+
     $validated = $request->validate([
         'name'         => ['required','string','max:120'],
         'email'        => ['required','email','max:190'],

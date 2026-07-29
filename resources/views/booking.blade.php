@@ -64,6 +64,17 @@
       </div>
     @endif
 
+    @php
+      $vacActive = function_exists('vacation_active') && vacation_active();
+      $rsvMin     = $vacActive ? vacation_first_available() : now()->toDateString();
+      $rsvMinPlus = \Illuminate\Support\Carbon::parse($rsvMin)->addDay()->toDateString();
+    @endphp
+    @if($vacActive)
+      <div style="margin-bottom:22px;padding:14px 18px;border-radius:12px;background:rgba(225,29,42,.12);border:1px solid rgba(225,29,42,.4);color:#fff;font-weight:600;">
+        🏖️ {{ vacation_message() }}
+      </div>
+    @endif
+
     <div class="px-rsv-tabs">
       @php
         $tabs = [
@@ -112,11 +123,11 @@
           <div class="px-form-row">
             <div class="px-input-wrap">
               <label for="pxLeenFrom">Ophalen op</label>
-              <input type="date" id="pxLeenFrom" name="leenauto_from" required min="{{ now()->toDateString() }}" value="{{ now()->toDateString() }}">
+              <input type="date" id="pxLeenFrom" name="leenauto_from" required min="{{ $rsvMin }}" value="{{ $rsvMin }}">
             </div>
             <div class="px-input-wrap">
               <label for="pxLeenTo">Terugbrengen op</label>
-              <input type="date" id="pxLeenTo" name="leenauto_to" required min="{{ now()->toDateString() }}" value="{{ now()->addDay()->toDateString() }}">
+              <input type="date" id="pxLeenTo" name="leenauto_to" required min="{{ $rsvMin }}" value="{{ $rsvMinPlus }}">
             </div>
           </div>
 
@@ -162,7 +173,7 @@
         <div class="px-rsv-grid">
           <div class="px-input-wrap">
             <label for="pxRsvDate">Datum</label>
-            <input class="px-rsv-control" type="date" id="pxRsvDate" min="{{ now()->toDateString() }}" value="{{ now()->toDateString() }}">
+            <input class="px-rsv-control" type="date" id="pxRsvDate" min="{{ $rsvMin }}" value="{{ $rsvMin }}">
           </div>
           <div class="px-input-wrap">
             <label>Beschikbare tijden</label>

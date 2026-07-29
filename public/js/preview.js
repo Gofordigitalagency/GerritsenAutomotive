@@ -10,6 +10,15 @@
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const isFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
+  /* ---------- Vakantiebanner: hoogte doorgeven aan de layout ---------- */
+  const vacBanner = $('#pxVacationBanner');
+  if (vacBanner) {
+    const setVacH = () => document.documentElement.style.setProperty('--vac-h', vacBanner.offsetHeight + 'px');
+    setVacH();
+    window.addEventListener('resize', setVacH);
+    window.addEventListener('load', setVacH);
+  }
+
   /* ---------- NAV scroll state ---------- */
   const nav = $('#pxNav');
   const toolbar = $('#pxToolbar');
@@ -932,9 +941,26 @@
     const timeStrip  = $('#pxTimeStrip');
     const selDateLbl = $('#pxSelectedDate');
 
+    // Lokale ISO-datum (YYYY-MM-DD) zonder timezone-shift
+    const localIso = (d) => {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const da = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${da}`;
+    };
+    // Vakantie/sluitingsperiode (uit data-attributen op de day-strip)
+    const vacFrom = dayStrip && dayStrip.dataset.vacFrom ? dayStrip.dataset.vacFrom : null;
+    const vacTo   = dayStrip && dayStrip.dataset.vacTo   ? dayStrip.dataset.vacTo   : null;
+    const inVacation = (d) => {
+      if (!vacFrom || !vacTo) return false;
+      const iso = localIso(d);
+      return iso >= vacFrom && iso <= vacTo;
+    };
+
     function buildDayStrip() {
       if (!dayStrip) return;
-      // Genereer eerstvolgende 14 werkdagen (skip zondag + maandag — werkplaats di–za)
+      // Genereer eerstvolgende 14 werkdagen (skip zondag + maandag — werkplaats di–za,
+      // en sla de vakantie-/sluitingsperiode over)
       const today = new Date(); today.setHours(0,0,0,0);
       const cursor = new Date(today);
       const now = new Date();
@@ -943,8 +969,9 @@
       if (now.getHours() >= 16) cursor.setDate(cursor.getDate() + 1);
 
       const items = [];
-      while (items.length < 14) {
-        if (cursor.getDay() !== 0 && cursor.getDay() !== 1) {
+      let guard = 0;
+      while (items.length < 14 && guard++ < 400) {
+        if (cursor.getDay() !== 0 && cursor.getDay() !== 1 && !inVacation(cursor)) {
           items.push(new Date(cursor));
         }
         cursor.setDate(cursor.getDate() + 1);
