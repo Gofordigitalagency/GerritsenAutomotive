@@ -31,9 +31,16 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    // Ontvanger voor formulier-mails (contact, auto verkopen, reserveringen).
+    // Fallback naar het vaste bedrijfsadres zodat dit NOOIT null is — anders
+    // crasht de mailverzending (Symfony Mime Address vereist een string).
+    // Zowel 'to_email' (top-level) als 'contact.to_email' worden gebruikt in
+    // de code; beide wijzen naar hetzelfde adres.
+    'to_email' => env('CONTACT_TO_EMAIL') ?: 'Handelsonderneming@mgerritsen.nl',
+
     'contact' => [
-    'to_email' => env('CONTACT_TO_EMAIL'),
-],
+        'to_email' => env('CONTACT_TO_EMAIL') ?: 'Handelsonderneming@mgerritsen.nl',
+    ],
 
     // Mobilox/Hexon incrementele voorraadkoppeling (EWI).
     // 'token' beveiligt het inkomende endpoint: Mobilox roept de URL aan met ?key=<token>.

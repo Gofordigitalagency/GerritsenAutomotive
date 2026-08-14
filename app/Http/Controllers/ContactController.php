@@ -48,9 +48,9 @@ class ContactController extends Controller
     ];
 
     try {
-        Mail::to(config('services.to_email'))->send(
-            new \App\Mail\ContactSubmitted($data)
-        );
+        // De ontvanger (services.contact.to_email) wordt in de Mailable zelf
+        // gezet; hier niet nog eens ->to() zodat het adres niet dubbel wordt.
+        Mail::send(new \App\Mail\ContactSubmitted($data));
     } catch (\Throwable $e) {
         Log::error('Contact mail failed: '.$e->getMessage(), ['exception' => $e]);
         return back()->withErrors(['mail' => 'Verzenden mislukt. Probeer het later nog eens.']);

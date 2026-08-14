@@ -40,11 +40,18 @@ class SellCarController extends Controller
             }
         }
 
-        // Mail verzenden (pas e-mailadres aan)
-Mail::send('mail.sellcar', ['data' => $data, 'photos' => $stored], function ($m) {
-    $m->to(config('services.to_email'))
-      ->subject('Nieuwe inkoop-aanmelding (Auto verkopen)');
-});
+        // Mail verzenden. Mislukt dat (mailconfig/SMTP), dan loggen we het maar
+        // laten we het formulier niet crashen met een 500.
+        try {
+            Mail::send('mail.sellcar', ['data' => $data, 'photos' => $stored], function ($m) {
+                $m->to(config('services.contact.to_email'))
+                  ->subject('Nieuwe inkoop-aanmelding (Auto verkopen)');
+            });
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Sellcar mail mislukt: '.$e->getMessage(), ['exception' => $e]);
+            return back()->withInput()
+                ->withErrors(['mail' => 'Er ging iets mis bij het verzenden. Bel of mail ons gerust — dan regelen we het direct.']);
+        }
 
         return back()->with('success','Bedankt! We hebben uw gegevens ontvangen en nemen snel contact op.');
     }
