@@ -13,7 +13,7 @@ return [
     | Datums in Y-m-d.
     */
     'enabled' => true,
-    'from'    => '2026-07-29',
-    'to'      => '2026-08-10',
-    'message' => 'Wij zijn met vakantie t/m 10 augustus — reserveren en afspraken kunnen weer vanaf 11 augustus.',
+    'from'    => '2026-08-22',
+    'to'      => '2026-09-01',
+    'message' => 'Wij zijn met vakantie t/m 1 september — reserveren en afspraken kunnen weer vanaf 2 september.',
 ];
