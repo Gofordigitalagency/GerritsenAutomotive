@@ -42,6 +42,7 @@
 
     $waMessage = 'Hoi! Ik heb interesse in de ' . $pageTitle
         . (!empty($occasion->bouwjaar) ? ' (' . $occasion->bouwjaar . ')' : '')
+        . (!empty($occasion->kenteken) ? ' met kenteken ' . strtoupper(trim($occasion->kenteken)) : '')
         . '. Is deze nog beschikbaar?';
 @endphp
 <!DOCTYPE html>
