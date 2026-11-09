@@ -3321,7 +3321,7 @@ a.px-over-meta-value:hover svg {
   align-items: start;
 }
 @media (max-width: 980px) {
-  .px-od-shell { grid-template-columns: 1fr; gap: 22px; }
+  .px-od-shell { grid-template-columns: minmax(0, 1fr); gap: 22px; }
 }
 
 /* Galerij */
